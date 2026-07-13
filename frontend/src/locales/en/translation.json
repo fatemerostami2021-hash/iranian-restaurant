@@ -5,6 +5,7 @@
   "nav": {
     "home": "Home",
     "menu": "Menu",
+    "articles": "Articles",
     "about": "About",
     "contact": "Contact",
     "cart": "Cart"
@@ -14,16 +15,38 @@
     "subtitle": "Traditional flavors, crafted with love, served in Doha",
     "cta": "Explore Menu"
   },
+  "breakfast": "Breakfast",
+  "main": "Main Dishes",
+  "combo": "Combo Trays",
+  "appetizer": "Appetizers",
+  "drinks": "Drinks",
+  "view_all": "View All",
+  "baja_dag": "Baja Dag",
+  "ash_sabzi": "Ash Sabzi",
+  "cheese_bread": "Cheese Bread",
+  "foul": "Foul",
+  "liver": "Liver",
+  "mix_tikka": "Mix Tikka",
+  "kofta": "Kofta",
+  "chicken_saffron": "Chicken Saffron",
+  "lamb_chops": "Lamb Chops",
+  "kabab_barg": "Kabab Barg",
+  "tray_5": "Tray 5 Persons",
+  "tray_10": "Tray 10 Persons",
+  "tray_15": "Tray 15 Persons",
+  "tray_20": "Tray 20 Persons",
+  "salad_shirazi": "Shirazi Salad",
+  "yogurt_cucumber": "Yogurt & Cucumber",
+  "hummus": "Hummus",
+  "tandoor_bread": "Tandoor Bread",
+  "french_fries": "French Fries",
+  "tea": "Tea",
+  "soda": "Soda",
+  "doogh": "Doogh",
+  "water": "Water",
+  "leben": "Leben",
   "menu": {
     "title": "Our Menu",
-    "categories": {
-      "all": "All",
-      "kabab": "Kabab",
-      "appetizer": "Appetizers",
-      "stew": "Stews",
-      "dessert": "Desserts",
-      "drink": "Drinks"
-    },
     "addToCart": "Add to Cart",
     "ingredients": "Ingredients",
     "prepTime": "min preparation"
@@ -44,7 +67,7 @@
     "submit": "Place Order"
   },
   "footer": {
-    "rights": "All rights reserved",
-    "followUs": "Follow Us"
+    "followUs": "Follow Us",
+    "rights": "All rights reserved"
   }
 }

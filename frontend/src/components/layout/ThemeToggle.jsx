@@ -4,13 +4,18 @@ import { FiSun, FiMoon } from 'react-icons/fi';
 export default function ThemeToggle() {
   const { theme, toggleTheme } = useTheme();
 
+  const buttonClasses = theme === 'dark'
+    ? 'bg-[#F4B41A]/20 hover:bg-[#F4B41A]/40 text-[#F4B41A]'
+    : 'bg-[#E67E22]/20 hover:bg-[#E67E22]/40 text-[#E67E22]';
+
   return (
     <button
       onClick={toggleTheme}
-      className="w-9 h-9 flex items-center justify-center rounded-full bg-gray-100 dark:bg-surface-metal text-gray-700 dark:text-gray-200 hover:opacity-80 transition"
+      className={`p-2 rounded-full ${buttonClasses} transition-all duration-300`}
+      type="button"
       aria-label="Toggle theme"
     >
-      {theme === 'light' ? <FiMoon size={18} /> : <FiSun size={18} />}
+      {theme === 'dark' ? <FiSun size={20} /> : <FiMoon size={20} />}
     </button>
   );
 }

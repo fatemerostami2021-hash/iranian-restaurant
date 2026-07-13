@@ -24,3 +24,6 @@ export const ThemeProvider = ({ children }) => {
 };
 
 export const useTheme = () => useContext(ThemeContext);
+
+// ✅ اضافه کردن این خط برای export کردن ThemeContext
+export { ThemeContext };

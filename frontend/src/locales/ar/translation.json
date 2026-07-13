@@ -5,6 +5,7 @@
   "nav": {
     "home": "الرئيسية",
     "menu": "القائمة",
+    "articles": "المقالات",
     "about": "من نحن",
     "contact": "اتصل بنا",
     "cart": "السلة"
@@ -14,16 +15,38 @@
     "subtitle": "نكهات تقليدية، محضّرة بحب، في الدوحة",
     "cta": "استكشف القائمة"
   },
+  "breakfast": "الإفطار",
+  "main": "الأطباق الرئيسية",
+  "combo": "الصواني",
+  "appetizer": "المقبلات",
+  "drinks": "المشروبات",
+  "view_all": "عرض الكل",
+  "baja_dag": "باجة داغ",
+  "ash_sabzi": "آش سبزي",
+  "cheese_bread": "خبز بالجبن",
+  "foul": "فول",
+  "liver": "كبدة",
+  "mix_tikka": "ميكس تيكا",
+  "kofta": "كفتة",
+  "chicken_saffron": "دجاج بالزعفران",
+  "lamb_chops": "ريش غنم",
+  "kabab_barg": "كباب برك",
+  "tray_5": "صينية ٥ أشخاص",
+  "tray_10": "صينية ١٠ أشخاص",
+  "tray_15": "صينية ١٥ شخص",
+  "tray_20": "صينية ٢٠ شخص",
+  "salad_shirazi": "سلطة شيرازي",
+  "yogurt_cucumber": "روب وخيار",
+  "hummus": "حمص",
+  "tandoor_bread": "خبز تندور",
+  "french_fries": "بطاطس مقلية",
+  "tea": "شاي",
+  "soda": "مشروب غازي",
+  "doogh": "دوغ",
+  "water": "ماء",
+  "leben": "لبن",
   "menu": {
     "title": "قائمتنا",
-    "categories": {
-      "all": "الكل",
-      "kabab": "كباب",
-      "appetizer": "مقبلات",
-      "stew": "يخنة",
-      "dessert": "حلويات",
-      "drink": "مشروبات"
-    },
     "addToCart": "أضف إلى السلة",
     "ingredients": "المكونات",
     "prepTime": "دقيقة وقت التحضير"
@@ -44,7 +67,7 @@
     "submit": "تأكيد الطلب"
   },
   "footer": {
-    "rights": "جميع الحقوق محفوظة",
-    "followUs": "تابعنا"
+    "followUs": "تابعنا",
+    "rights": "جميع الحقوق محفوظة"
   }
 }
