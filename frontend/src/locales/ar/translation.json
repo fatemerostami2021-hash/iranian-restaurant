@@ -1,11 +1,9 @@
 {
-  "restaurant": {
-    "name": "كباب داغ نان داغ"
-  },
+  "restaurant": { "name": "كباب داغ نان داغ" },
   "nav": {
     "home": "الرئيسية",
     "menu": "القائمة",
-    "articles": "المقالات",
+    "articles": "مقالات",
     "about": "من نحن",
     "contact": "اتصل بنا",
     "cart": "السلة"
@@ -15,33 +13,39 @@
     "subtitle": "نكهات تقليدية، محضّرة بحب، في الدوحة",
     "cta": "استكشف القائمة"
   },
-  "breakfast": "الإفطار",
+  "breakfast": "فطور",
   "main": "الأطباق الرئيسية",
   "combo": "الصواني",
   "appetizer": "المقبلات",
   "drinks": "المشروبات",
-  "view_all": "عرض الكل",
+  "all": "الكل",
+  "view_all": "مشاهدة الكل",
+  "food-stories": "قصص الطعام",
+  "history": "التاريخ",
+  "culture": "الثقافة",
+  "city-stories": "قصص المدن",
+  "fun-facts": "حقائق ممتعة",
   "baja_dag": "باجة داغ",
   "ash_sabzi": "آش سبزي",
   "cheese_bread": "خبز بالجبن",
   "foul": "فول",
   "liver": "كبدة",
-  "mix_tikka": "ميكس تيكا",
+  "mix_tikka": "مشاوي مشكلة",
   "kofta": "كفتة",
   "chicken_saffron": "دجاج بالزعفران",
-  "lamb_chops": "ريش غنم",
+  "lamb_chops": "ريش",
   "kabab_barg": "كباب برك",
   "tray_5": "صينية ٥ أشخاص",
   "tray_10": "صينية ١٠ أشخاص",
-  "tray_15": "صينية ١٥ شخص",
-  "tray_20": "صينية ٢٠ شخص",
+  "tray_15": "صينية ١٥ أشخاص",
+  "tray_20": "صينية ٢٠ أشخاص",
   "salad_shirazi": "سلطة شيرازي",
-  "yogurt_cucumber": "روب وخيار",
+  "yogurt_cucumber": "روب و خيار",
   "hummus": "حمص",
-  "tandoor_bread": "خبز تندور",
+  "tandoor_bread": "خبز تندوري",
   "french_fries": "بطاطس مقلية",
   "tea": "شاي",
-  "soda": "مشروب غازي",
+  "soda": "نوشابه",
   "doogh": "دوغ",
   "water": "ماء",
   "leben": "لبن",
@@ -49,7 +53,15 @@
     "title": "قائمتنا",
     "addToCart": "أضف إلى السلة",
     "ingredients": "المكونات",
-    "prepTime": "دقيقة وقت التحضير"
+    "prepTime": "دقيقة وقت التحضير",
+    "categories": {
+      "all": "الكل",
+      "breakfast": "فطور",
+      "main": "الأطباق الرئيسية",
+      "combo": "الصواني",
+      "appetizer": "المقبلات",
+      "drinks": "المشروبات"
+    }
   },
   "cart": {
     "title": "طلبك",
@@ -69,5 +81,23 @@
   "footer": {
     "followUs": "تابعنا",
     "rights": "جميع الحقوق محفوظة"
+  },
+  "articles": {
+    "title": "المقالات",
+    "search": "ابحث في المقالات...",
+    "categories": {
+      "all": "الكل",
+      "food-stories": "قصص الطعام",
+      "history": "التاريخ",
+      "culture": "الثقافة",
+      "city-stories": "قصص المدن",
+      "fun-facts": "حقائق ممتعة"
+    },
+    "readMore": "اقرأ المزيد",
+    "views": "المشاهدات",
+    "likes": "الإعجابات",
+    "readTime": "دقيقة قراءة",
+    "noArticles": "لم يتم العثور على مقالات",
+    "featured": "مميز"
   }
 }

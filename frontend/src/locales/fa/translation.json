@@ -20,6 +20,7 @@
   "combo": "سینی‌ها",
   "appetizer": "پیش‌غذا",
   "drinks": "نوشیدنی‌ها",
+  "all": "همه",
   "view_all": "مشاهده همه",
   "baja_dag": "باجه داغ",
   "ash_sabzi": "آش سبزی",
@@ -39,7 +40,7 @@
   "yogurt_cucumber": "ماست و خیار",
   "hummus": "حمص",
   "tandoor_bread": "نان تندوری",
-  "french_fries": "سیب‌زمینی",
+  "french_fries": "سیب‌زمینی سرخ‌کرده",
   "tea": "چای",
   "soda": "نوشابه",
   "doogh": "دوغ",
@@ -49,7 +50,15 @@
     "title": "منوی ما",
     "addToCart": "افزودن به سبد",
     "ingredients": "مواد اولیه",
-    "prepTime": "دقیقه زمان آماده‌سازی"
+    "prepTime": "دقیقه زمان آماده‌سازی",
+    "categories": {
+      "all": "همه",
+      "breakfast": "صبحانه",
+      "main": "غذای اصلی",
+      "combo": "سینی‌ها",
+      "appetizer": "پیش‌غذا",
+      "drinks": "نوشیدنی‌ها"
+    }
   },
   "cart": {
     "title": "سبد سفارش شما",
@@ -69,5 +78,23 @@
   "footer": {
     "followUs": "ما را دنبال کنید",
     "rights": "تمامی حقوق محفوظ است"
+  },
+  "articles": {
+    "title": "مطالب خواندنی",
+    "search": "جستجو در مقالات...",
+    "categories": {
+      "all": "همه",
+      "food-stories": "داستان‌های غذا",
+      "history": "تاریخ و تمدن",
+      "culture": "فرهنگ و آداب",
+      "city-stories": "داستان شهرها",
+      "fun-facts": "سرگرمی و دانستنی‌ها"
+    },
+    "readMore": "ادامه مطلب",
+    "views": "بازدید",
+    "likes": "پسندیده",
+    "readTime": "دقیقه مطالعه",
+    "noArticles": "مقاله‌ای یافت نشد",
+    "featured": "ویژه"
   }
 }

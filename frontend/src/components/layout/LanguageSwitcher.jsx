@@ -13,6 +13,10 @@ export default function LanguageSwitcher() {
   const { theme } = useTheme();
   const currentLang = i18n.language || 'fa';
 
+  const changeLanguage = (code) => {
+    i18n.changeLanguage(code);
+  };
+
   const buttonClasses = theme === 'dark'
     ? 'text-white hover:text-[#F4B41A] hover:bg-white/5'
     : 'text-[#3E2723] hover:text-[#E67E22] hover:bg-[#E67E22]/5';
@@ -21,6 +25,11 @@ export default function LanguageSwitcher() {
     ? 'bg-[#1C1C1C] border-[#E67E22]/30'
     : 'bg-[#F7F0E6] border-[#E67E22]/20';
 
+  const getCurrentLabel = () => {
+    const lang = languages.find(l => l.code === currentLang);
+    return lang ? lang.flag : '🌐';
+  };
+
   return (
     <div className="relative group">
       <button
@@ -28,9 +37,7 @@ export default function LanguageSwitcher() {
         type="button"
       >
         <MdLanguage size={18} />
-        <span className="hidden sm:inline">
-          {languages.find(l => l.code === currentLang)?.flag || '🌐'}
-        </span>
+        <span className="hidden sm:inline">{getCurrentLabel()}</span>
         <span className="text-xs opacity-50">▼</span>
       </button>
 
@@ -38,7 +45,7 @@ export default function LanguageSwitcher() {
         {languages.map(({ code, label, flag }) => (
           <button
             key={code}
-            onClick={() => i18n.changeLanguage(code)}
+            onClick={() => changeLanguage(code)}
             className={`
               w-full flex items-center gap-2 px-4 py-2.5 text-sm transition-colors
               ${currentLang === code 

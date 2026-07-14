@@ -6,6 +6,7 @@ import mongoose from 'mongoose';
 import dishRoutes from './routes/dishRoutes.js';
 import orderRoutes from './routes/orderRoutes.js';
 import authRoutes from './routes/authRoutes.js';
+import articleRoutes from './routes/articleRoutes.js'; // ← اضافه شد
 
 dotenv.config();
 
@@ -19,6 +20,7 @@ app.use('/uploads', express.static('public/uploads'));
 app.use('/api/dishes', dishRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/auth', authRoutes);
+app.use('/api/articles', articleRoutes); // ← اضافه شد
 
 app.get('/', (req, res) => {
   res.json({ status: 'ok', message: 'Iranian Restaurant API running' });

@@ -20,6 +20,7 @@
   "combo": "Combo Trays",
   "appetizer": "Appetizers",
   "drinks": "Drinks",
+  "all": "All",
   "view_all": "View All",
   "baja_dag": "Baja Dag",
   "ash_sabzi": "Ash Sabzi",
@@ -49,7 +50,15 @@
     "title": "Our Menu",
     "addToCart": "Add to Cart",
     "ingredients": "Ingredients",
-    "prepTime": "min preparation"
+    "prepTime": "min preparation",
+    "categories": {
+      "all": "All",
+      "breakfast": "Breakfast",
+      "main": "Main Dishes",
+      "combo": "Combo Trays",
+      "appetizer": "Appetizers",
+      "drinks": "Drinks"
+    }
   },
   "cart": {
     "title": "Your Order",
@@ -69,5 +78,23 @@
   "footer": {
     "followUs": "Follow Us",
     "rights": "All rights reserved"
+  },
+  "articles": {
+    "title": "Articles",
+    "search": "Search articles...",
+    "categories": {
+      "all": "All",
+      "food-stories": "Food Stories",
+      "history": "History",
+      "culture": "Culture",
+      "city-stories": "City Stories",
+      "fun-facts": "Fun Facts"
+    },
+    "readMore": "Read More",
+    "views": "Views",
+    "likes": "Likes",
+    "readTime": "min read",
+    "noArticles": "No articles found",
+    "featured": "Featured"
   }
 }

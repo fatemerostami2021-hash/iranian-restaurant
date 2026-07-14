@@ -5,13 +5,11 @@ import Layout from './components/layout/Layout';
 import Home from './pages/Home';
 import Menu from './pages/Menu';
 import Articles from './pages/Articles';
+import ArticleDetail from './pages/ArticleDetail';
 import About from './pages/About';
 import Contact from './pages/Contact';
-import { useTranslation } from 'react-i18next';
 
 function App() {
-  const { t } = useTranslation();
-
   return (
     <Router>
       <ThemeProvider>
@@ -21,6 +19,7 @@ function App() {
               <Route path="/" element={<Home />} />
               <Route path="/menu" element={<Menu />} />
               <Route path="/articles" element={<Articles />} />
+              <Route path="/articles/:slug" element={<ArticleDetail />} />
               <Route path="/about" element={<About />} />
               <Route path="/contact" element={<Contact />} />
             </Routes>

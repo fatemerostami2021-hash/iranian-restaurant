@@ -1,27 +1,47 @@
 import mongoose from 'mongoose';
 
 const dishSchema = new mongoose.Schema({
-  name: {
-    en: { type: String, required: true },
-    fa: { type: String, required: true },
-    ar: { type: String, required: true },
+  code: {
+    type: String,
+    unique: true
   },
+  name: {
+    en: String,
+    fa: String,
+    ar: String
+  },
+  slug: {
+    type: String,
+    unique: true,
+    sparse: true
+  },
+  category: {
+    type: String,
+    enum: ['breakfast', 'main', 'combo', 'appetizer', 'drinks'],
+    required: true
+  },
+  price: Number,
+  unit: String,
+  weight: String,
   description: {
     en: String,
     fa: String,
-    ar: String,
+    ar: String
   },
-  price: { type: Number, required: true },
-  category: { type: String, required: true },
-  image: String,
-  ingredients: [{
-    en: String,
-    fa: String,
-    ar: String,
-  }],
-  rating: { type: Number, default: 0 },
-  prepTime: Number,
-  isAvailable: { type: Boolean, default: true },
-}, { timestamps: true });
+  inStock: {
+    type: Boolean,
+    default: true
+  },
+  images: [String],
+  createdAt: {
+    type: Date,
+    default: Date.now
+  },
+  updatedAt: {
+    type: Date,
+    default: Date.now
+  }
+});
 
-export default mongoose.model('Dish', dishSchema);
+const Dish = mongoose.model('Dish', dishSchema);
+export default Dish;
