@@ -4,6 +4,7 @@ import { CartProvider } from './context/CartContext';
 import Layout from './components/layout/Layout';
 import Home from './pages/Home';
 import Menu from './pages/Menu';
+import CategoryPage from './pages/CategoryPage';
 import Articles from './pages/Articles';
 import ArticleDetail from './pages/ArticleDetail';
 import About from './pages/About';
@@ -18,6 +19,7 @@ function App() {
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/menu" element={<Menu />} />
+              <Route path="/menu/category/:categoryKey" element={<CategoryPage />} />
               <Route path="/articles" element={<Articles />} />
               <Route path="/articles/:slug" element={<ArticleDetail />} />
               <Route path="/about" element={<About />} />

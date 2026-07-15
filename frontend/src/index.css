@@ -83,3 +83,319 @@
     @apply bg-[#E67E22];
   }
 }
+
+/* ===== Hexagon dish cards ===== */
+.hex-card-wrap {
+  width: 190px;
+  margin: -24px 6px;
+}
+@media (min-width: 768px) {
+  .hex-card-wrap { width: 210px; }
+}
+
+.hex-card {
+  position: relative;
+  cursor: pointer;
+  transform-style: preserve-3d;
+  transition: transform 0.15s ease-out, filter 0.25s ease;
+  filter: drop-shadow(0 6px 14px rgba(0,0,0,0.25));
+}
+
+.hex-card__face {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1.1;
+  clip-path: polygon(25% 3%, 75% 3%, 100% 50%, 75% 97%, 25% 97%, 0% 50%);
+  background: #1a1a1a;
+  overflow: hidden;
+  transition: box-shadow 0.25s ease;
+  box-shadow: inset 0 0 0 3px rgba(212,175,55,0.35);
+}
+
+.hex-card:hover .hex-card__face {
+  box-shadow: inset 0 0 0 3px #d4af37, 0 0 26px 4px rgba(212,175,55,0.55);
+}
+
+.hex-card--highlight .hex-card__face {
+  box-shadow: inset 0 0 0 3px #d4af37, 0 0 30px 6px rgba(212,175,55,0.7);
+}
+
+.hex-card__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: translateZ(20px) scale(1.08);
+  transition: transform 0.3s ease, filter 0.3s ease;
+}
+.hex-card:hover .hex-card__img {
+  transform: translateZ(28px) scale(1.16);
+  filter: saturate(1.15) brightness(1.05);
+}
+
+.hex-card__shine {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.28) 0%, transparent 35%, transparent 65%, rgba(212,175,55,0.18) 100%);
+  opacity: 0;
+  transition: opacity 0.25s ease;
+  pointer-events: none;
+}
+.hex-card:hover .hex-card__shine { opacity: 1; }
+
+.hex-card__info {
+  text-align: center;
+  margin-top: -6px;
+  transform: translateZ(30px);
+}
+.hex-card__name {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: inherit;
+  line-height: 1.2;
+  padding: 0 4px;
+}
+.hex-card__price {
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #d4af37;
+  background: rgba(212,175,55,0.12);
+  border: 1px solid rgba(212,175,55,0.4);
+  border-radius: 999px;
+  padding: 1px 10px;
+  margin-bottom: 2px;
+}
+
+.hex-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  padding-top: 24px;
+}
+.hex-grid > .hex-card-wrap:nth-child(odd) {
+  margin-top: 40px;
+}
+
+/* ===== Hex dish item (image + info panel) ===== */
+.hex-item {
+  width: 200px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.hex-item__stage {
+  width: 150px;
+}
+.hex-card {
+  position: relative;
+  cursor: default;
+  transform-style: preserve-3d;
+  transition: transform 0.15s ease-out;
+  filter: drop-shadow(0 6px 14px rgba(0,0,0,0.25));
+}
+.hex-card__face {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1.1;
+  clip-path: polygon(25% 3%, 75% 3%, 100% 50%, 75% 97%, 25% 97%, 0% 50%);
+  background: #1a1a1a;
+  overflow: hidden;
+  box-shadow: inset 0 0 0 3px rgba(212,175,55,0.35);
+  transition: box-shadow 0.25s ease;
+}
+.hex-item:hover .hex-card__face {
+  box-shadow: inset 0 0 0 3px #d4af37, 0 0 22px 3px rgba(212,175,55,0.5);
+}
+.hex-item--highlight .hex-card__face {
+  box-shadow: inset 0 0 0 3px #d4af37, 0 0 26px 5px rgba(212,175,55,0.7);
+}
+.hex-card__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scale(1.08);
+  transition: transform 0.3s ease, filter 0.3s ease;
+}
+.hex-item:hover .hex-card__img {
+  transform: scale(1.16);
+  filter: saturate(1.15) brightness(1.05);
+}
+.hex-card__shine {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.28) 0%, transparent 35%, transparent 65%, rgba(212,175,55,0.18) 100%);
+  opacity: 0;
+  transition: opacity 0.25s ease;
+  pointer-events: none;
+}
+.hex-item:hover .hex-card__shine { opacity: 1; }
+
+.hex-card__actions {
+  position: absolute;
+  top: 8px;
+  inset-inline-end: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  opacity: 0;
+  transform: translateX(6px);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+.hex-item:hover .hex-card__actions {
+  opacity: 1;
+  transform: translateX(0);
+}
+.hex-icon-btn {
+  width: 26px;
+  height: 26px;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255,255,255,0.9);
+  color: #333;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+.hex-icon-btn:hover { background: #d4af37; color: #fff; }
+.hex-icon-btn--active { background: #d4af37; color: #fff; }
+
+.hex-item__info {
+  width: 100%;
+  max-width: 190px;
+  margin-top: -10px;
+  background: transparent;
+  text-align: center;
+  padding: 0 4px;
+}
+
+.hex-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px 4px;
+  padding-top: 16px;
+}
+
+/* ===== Hex dish item (bigger image + responsive grid + gold animated frame) ===== */
+.hex-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 40px 24px;
+  padding-top: 24px;
+  justify-items: center;
+}
+@media (min-width: 640px) {
+  .hex-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (min-width: 1024px) {
+  .hex-grid { grid-template-columns: repeat(3, 1fr); }
+}
+
+.hex-item {
+  width: 100%;
+  max-width: 300px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.hex-item__stage {
+  width: 100%;
+  max-width: 250px;
+}
+
+.hex-card {
+  position: relative;
+  cursor: default;
+  transform-style: preserve-3d;
+  transition: transform 0.15s ease-out;
+  filter: drop-shadow(0 10px 20px rgba(0,0,0,0.28));
+}
+
+/* قاب طلایی متحرک دور عکس */
+.hex-card__frame {
+  position: relative;
+  padding: 6px;
+  clip-path: polygon(25% 3%, 75% 3%, 100% 50%, 75% 97%, 25% 97%, 0% 50%);
+  background: linear-gradient(135deg, #fff3c4, #d4af37 45%, #9c7a1a 75%, #f5d67e);
+  animation: goldFramePulse 3s ease-in-out infinite;
+}
+@keyframes goldFramePulse {
+  0%, 100% { filter: brightness(0.95) saturate(1); }
+  50% { filter: brightness(1.3) saturate(1.2); }
+}
+.hex-item--highlight .hex-card__frame {
+  animation: goldFramePulse 1.4s ease-in-out infinite;
+}
+
+.hex-card__face {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1.05;
+  clip-path: polygon(25% 3%, 75% 3%, 100% 50%, 75% 97%, 25% 97%, 0% 50%);
+  background: #1a1a1a;
+  overflow: hidden;
+}
+.hex-card__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scale(1.05);
+  transition: transform 0.3s ease, filter 0.3s ease;
+}
+.hex-item:hover .hex-card__img {
+  transform: scale(1.12);
+  filter: saturate(1.15) brightness(1.05);
+}
+
+/* نور کشویی همیشگی روی عکس */
+.hex-card__shine {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(120deg, transparent 35%, rgba(255,255,255,0.32) 50%, transparent 65%);
+  background-size: 260% 260%;
+  animation: hexShineSweep 4.5s ease-in-out infinite;
+  pointer-events: none;
+}
+@keyframes hexShineSweep {
+  0% { background-position: -160% -160%; }
+  100% { background-position: 160% 160%; }
+}
+
+.hex-card__actions {
+  position: absolute;
+  top: 10px;
+  inset-inline-end: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  opacity: 0;
+  transform: translateX(6px);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+.hex-item:hover .hex-card__actions {
+  opacity: 1;
+  transform: translateX(0);
+}
+.hex-icon-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255,255,255,0.9);
+  color: #333;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+.hex-icon-btn:hover { background: #d4af37; color: #fff; }
+.hex-icon-btn--active { background: #d4af37; color: #fff; }
+
+/* فاصله‌ی مشخص بین عکس و متن */
+.hex-item__info {
+  width: 100%;
+  max-width: 240px;
+  margin-top: 22px;
+  background: transparent;
+  text-align: center;
+  padding: 0 4px;
+}

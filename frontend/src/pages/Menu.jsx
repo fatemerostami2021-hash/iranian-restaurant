@@ -4,34 +4,48 @@ import { useSearchParams } from 'react-router-dom';
 import { MdSearch } from 'react-icons/md';
 import { useDishes } from '../hooks/useDishes';
 import CategoryFilter from '../components/menu/CategoryFilter';
-import DishCard from '../components/menu/DishCard';
+import HexDishCard from '../components/menu/HexDishCard';
+import FeaturedSlider from '../components/menu/FeaturedSlider';
+import QuickViewModal from '../components/menu/QuickViewModal';
 
 export default function Menu() {
   const { t, i18n } = useTranslation();
-  const [searchParams] = useSearchParams();
-  const targetSlug = searchParams.get('dish');
+  const [searchParams, setSearchParams] = useSearchParams();
+  const highlightId = searchParams.get('highlight');
+  const urlCategory = searchParams.get('category') || 'all';
 
-  const [category, setCategory] = useState('all');
+  const [category, setCategory] = useState(urlCategory);
   const [searchTerm, setSearchTerm] = useState('');
+  const [quickViewDish, setQuickViewDish] = useState(null);
   const { dishes, loading, error } = useDishes(category);
+  const { dishes: allDishes } = useDishes('all');
   const hasScrolled = useRef(false);
-
   const lang = i18n.language;
 
-  const filteredDishes = dishes.filter(dish => {
+  useEffect(() => {
+    setCategory(urlCategory);
+  }, [urlCategory]);
+
+  const handleCategoryChange = (key) => {
+    setCategory(key);
+    setSearchParams(key === 'all' ? {} : { category: key });
+  };
+
+  const filteredDishes = dishes.filter((dish) => {
+    if (!searchTerm) return true;
     const name = dish.name?.[lang] || dish.name?.en || '';
     return name.toLowerCase().includes(searchTerm.toLowerCase());
   });
 
   useEffect(() => {
-    if (!loading && targetSlug && !hasScrolled.current) {
-      const el = document.getElementById(`dish-${targetSlug}`);
+    if (!loading && highlightId && !hasScrolled.current) {
+      const el = document.getElementById(`dish-${highlightId}`);
       if (el) {
         el.scrollIntoView({ behavior: 'smooth', block: 'center' });
         hasScrolled.current = true;
       }
     }
-  }, [loading, dishes, targetSlug]);
+  }, [loading, dishes, highlightId]);
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-10">
@@ -43,7 +57,7 @@ export default function Menu() {
           <MdSearch className="text-gray-400" size={20} />
           <input
             type="text"
-            placeholder="جستجو در منو..."
+            placeholder={lang === 'fa' ? 'جستجو در منو...' : lang === 'ar' ? 'ابحث في القائمة...' : 'Search menu...'}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="bg-transparent outline-none flex-1 text-gray-700 dark:text-gray-200"
@@ -51,7 +65,9 @@ export default function Menu() {
         </div>
       </div>
 
-      <CategoryFilter active={category} onChange={setCategory} />
+      {category === 'all' && !searchTerm && <FeaturedSlider dishes={allDishes} />}
+
+      <CategoryFilter active={category} onChange={handleCategoryChange} />
 
       {loading && (
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
@@ -65,22 +81,24 @@ export default function Menu() {
 
       {!loading && !error && filteredDishes.length === 0 && (
         <p className="text-center text-gray-400 py-10">
-          {searchTerm ? 'هیچ غذایی با این نام پیدا نشد' : t('menu.categories.all') + ' - No items'}
+          {searchTerm ? (lang === 'fa' ? 'هیچ غذایی با این نام پیدا نشد' : 'No items found') : t('all') + ' - No items'}
         </p>
       )}
 
       {!loading && !error && filteredDishes.length > 0 && (
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+        <div className="hex-grid">
           {filteredDishes.map((dish) => (
-            <DishCard
+            <HexDishCard
               key={dish._id}
               dish={dish}
-              id={`dish-${dish.slug}`}
-              highlight={dish.slug === targetSlug}
+              highlight={dish._id === highlightId}
+              onQuickView={setQuickViewDish}
             />
           ))}
         </div>
       )}
+
+      <QuickViewModal dish={quickViewDish} onClose={() => setQuickViewDish(null)} />
     </div>
   );
 }
