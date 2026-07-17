@@ -8,31 +8,32 @@ export default {
   theme: {
     extend: {
       colors: {
-        // ===== رنگ‌های اصلی بر اساس لوگو =====
+        // ===== رنگ‌های اصلی =====
         primary: {
-          DEFAULT: '#F4B41A',      // طلایی شعله
-          dark: '#E67E22',         // نارنجی تیره
-          light: '#F5C842',        // طلایی روشن
-          deeper: '#C62828',       // قرمز کباب
-          accent: '#E53935',       // قرمز روشن
-        },
-        // ===== رنگ‌های مکمل =====
-        secondary: {
-          green: '#5E8C31',        // سبز زیتونی
-          darkGreen: '#2E7D32',    // سبز تیره
+          DEFAULT: '#D32F2F',      // قرمز اصلی
+          dark: '#B71C1C',         // قرمز تیره
+          light: '#F44336',        // قرمز روشن
+          golden: '#FFD700',       // طلایی
+          goldenDark: '#F9A825',   // طلایی تیره
+          goldenLight: '#FFEB3B',  // طلایی روشن
         },
         // ===== رنگ‌های پس‌زمینه =====
-        surface: {
-          dark: '#1C1C1C',         // مشکی ذغالی
-          metal: '#3E2723',        // قهوه‌ای تیره
-          light: '#F7F0E6',        // کرم روشن
+        background: {
+          light: '#FFF8F0',        // کرم روشن (تم لایت)
+          dark: '#1C1C1C',         // مشکی ذغالی (تم تاریک)
           card: '#FFFFFF',         // سفید کارت‌ها
+        },
+        surface: {
+          light: '#F5EDE0',        // سطح کرم (تم لایت)
+          dark: '#1C1C1C',         // سطح تیره (تم تاریک)
+          metal: '#3E2723',        // قهوه‌ای تیره
+          card: '#FFFFFF',         // کارت‌ها
         },
         // ===== رنگ‌های متن =====
         text: {
-          primary: '#FFFFFF',
-          secondary: '#F4B41A',
-          muted: '#BDBDBD',
+          light: '#1A1A1A',        // مشکی (تم لایت)
+          dark: '#F7F0E6',         // کرم روشن (تم تاریک)
+          muted: '#666666',        // خاکستری
         },
       },
       fontFamily: {
@@ -40,11 +41,8 @@ export default {
         en: ['Inter', 'system-ui', 'sans-serif'],
         ar: ['Cairo', 'system-ui', 'sans-serif'],
       },
-      // ===== گرادیان‌ها =====
       backgroundImage: {
-        'header-gradient': 'linear-gradient(135deg, #1C1C1C 0%, #3E2723 45%, #E67E22 100%)',
-        'hero-gradient': 'linear-gradient(135deg, #1C1C1C 0%, #2E7D32 30%, #E67E22 100%)',
-        'card-hover': 'linear-gradient(135deg, #F4B41A 0%, #E67E22 100%)',
+        'header-gradient': 'linear-gradient(135deg, #B71C1C 0%, #D32F2F 45%, #FFD700 100%)',
       },
     },
   },

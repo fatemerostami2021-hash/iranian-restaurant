@@ -35,7 +35,6 @@ export default function Header() {
   const [megaMenuOpen, setMegaMenuOpen] = useState(false);
   const timeoutRef = useState(null);
 
-  // ===== مدیریت باز شدن با تاخیر =====
   const handleMenuEnter = () => {
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
@@ -45,7 +44,6 @@ export default function Header() {
   };
 
   const handleMenuLeave = () => {
-    // تاخیر برای بستن - به مگامنو اجازه میده تا ماوس رو بگیره
     timeoutRef.current = setTimeout(() => {
       setMegaMenuOpen(false);
     }, 200);
@@ -58,23 +56,33 @@ export default function Header() {
 
   const logoSrc = '/images/logo/logo-header.png';
 
+  // ===== کلاس‌های پویا بر اساس تم (قرمز و طلایی) =====
   const headerClasses = theme === 'dark' 
-    ? 'bg-[#1C1C1C] border-[#E67E22]/30' 
-    : 'bg-[#F7F0E6] border-[#E67E22]/20';
+    ? 'bg-[#1C1C1C] border-[#F4B41A]/30' 
+    : 'bg-[#FFF8F0] border-[#D32F2F]/20';
 
   const textClasses = theme === 'dark'
     ? 'text-white hover:text-[#F4B41A]'
-    : 'text-[#3E2723] hover:text-[#E67E22]';
+    : 'text-[#1A1A1A] hover:text-[#D32F2F]';
 
   const iconClasses = theme === 'dark'
     ? 'text-gray-400 group-hover:text-[#F4B41A]'
-    : 'text-[#5D4037] group-hover:text-[#E67E22]';
+    : 'text-[#666666] group-hover:text-[#D32F2F]';
+
+  const activeClasses = theme === 'dark'
+    ? 'text-[#F4B41A] bg-[#F4B41A]/10'
+    : 'text-[#D32F2F] bg-[#D32F2F]/10';
+
+  const brandColor = theme === 'dark'
+    ? 'text-[#F4B41A]'
+    : 'text-[#D32F2F]';
 
   return (
     <>
       <header className={`sticky top-0 z-30 ${headerClasses} border-b shadow-lg transition-colors duration-300`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
           <div className="flex items-center justify-between gap-4">
+            {/* ===== لوگو + نام رستوران ===== */}
             <Link to="/" className="flex items-center gap-3 shrink-0 group">
               <img 
                 src={logoSrc}
@@ -82,8 +90,12 @@ export default function Header() {
                 className="h-12 w-auto object-contain transition-transform duration-300 group-hover:scale-105"
                 loading="lazy"
               />
+              <span className={`text-xl font-bold ${brandColor} whitespace-nowrap transition-colors duration-300`}>
+                {t('restaurant.name')}
+              </span>
             </Link>
 
+            {/* ===== منوی دسکتاپ ===== */}
             <nav className="hidden lg:flex items-center gap-1">
               {navItems.map(({ key, icon: Icon, href, hasMegaMenu }) => {
                 const active = isActive(href);
@@ -101,14 +113,14 @@ export default function Header() {
                         text-sm font-medium rounded-xl
                         transition-all duration-200 relative
                         ${active 
-                          ? 'text-[#F4B41A] bg-[#F4B41A]/10' 
+                          ? activeClasses
                           : `${textClasses} hover:bg-white/5 dark:hover:bg-white/5`
                         }
                       `}
                     >
                       <Icon 
                         size={20} 
-                        className={active ? 'text-[#F4B41A]' : iconClasses} 
+                        className={active ? (theme === 'dark' ? 'text-[#F4B41A]' : 'text-[#D32F2F]') : iconClasses} 
                       />
                       <span>{t(`nav.${key}`)}</span>
                       {hasMegaMenu && (
@@ -118,7 +130,7 @@ export default function Header() {
                         />
                       )}
                       {active && (
-                        <span className="absolute -bottom-0.5 left-1/2 transform -translate-x-1/2 w-6 h-0.5 bg-[#F4B41A] rounded-full" />
+                        <span className={`absolute -bottom-0.5 left-1/2 transform -translate-x-1/2 w-6 h-0.5 ${theme === 'dark' ? 'bg-[#F4B41A]' : 'bg-[#D32F2F]'} rounded-full`} />
                       )}
                     </Link>
                     
@@ -132,8 +144,10 @@ export default function Header() {
               })}
             </nav>
 
+            {/* ===== منوی تبلت ===== */}
             <TabletNav />
 
+            {/* ===== دکمه‌های سمت راست ===== */}
             <div className="flex items-center gap-2 shrink-0">
               <CartIcon />
               <LanguageSwitcher />

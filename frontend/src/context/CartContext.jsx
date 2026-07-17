@@ -3,50 +3,84 @@ import { createContext, useContext, useState, useEffect } from 'react';
 const CartContext = createContext();
 
 export const CartProvider = ({ children }) => {
-  const [items, setItems] = useState(() => {
+  // ===== مقداردهی اولیه از localStorage =====
+  const [cart, setCart] = useState(() => {
     const saved = localStorage.getItem('cart');
     return saved ? JSON.parse(saved) : [];
   });
 
+  // ===== ذخیره در localStorage با هر تغییر =====
   useEffect(() => {
-    localStorage.setItem('cart', JSON.stringify(items));
-  }, [items]);
+    localStorage.setItem('cart', JSON.stringify(cart));
+  }, [cart]);
 
-  const addItem = (dish, quantity = 1) => {
-    setItems((prev) => {
-      const existing = prev.find((i) => i._id === dish._id);
+  // ===== افزودن آیتم =====
+  const addItem = (newItem) => {
+    setCart((prev) => {
+      const existing = prev.find((item) => item._id === newItem._id);
       if (existing) {
-        return prev.map((i) =>
-          i._id === dish._id ? { ...i, quantity: i.quantity + quantity } : i
+        return prev.map((item) =>
+          item._id === newItem._id
+            ? { ...item, quantity: item.quantity + (newItem.quantity || 1) }
+            : item
         );
       }
-      return [...prev, { ...dish, quantity }];
+      return [...prev, { ...newItem, quantity: newItem.quantity || 1 }];
     });
   };
 
+  // ===== حذف آیتم =====
   const removeItem = (id) => {
-    setItems((prev) => prev.filter((i) => i._id !== id));
+    setCart((prev) => prev.filter((item) => item._id !== id));
   };
 
+  // ===== به‌روزرسانی تعداد =====
   const updateQuantity = (id, quantity) => {
-    if (quantity < 1) return removeItem(id);
-    setItems((prev) =>
-      prev.map((i) => (i._id === id ? { ...i, quantity } : i))
+    if (quantity < 1) {
+      removeItem(id);
+      return;
+    }
+    setCart((prev) =>
+      prev.map((item) =>
+        item._id === id ? { ...item, quantity } : item
+      )
     );
   };
 
-  const clearCart = () => setItems([]);
+  // ===== خالی کردن سبد =====
+  const clearCart = () => {
+    setCart([]);
+  };
 
-  const totalItems = items.reduce((sum, i) => sum + i.quantity, 0);
-  const totalPrice = items.reduce((sum, i) => sum + i.price * i.quantity, 0);
+  // ===== محاسبه تعداد کل =====
+  const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+
+  // ===== محاسبه قیمت کل =====
+  const totalPrice = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
   return (
     <CartContext.Provider
-      value={{ items, addItem, removeItem, updateQuantity, clearCart, totalItems, totalPrice }}
+      value={{
+        cart,
+        addItem,
+        removeItem,
+        updateQuantity,
+        clearCart,
+        totalItems,
+        totalPrice,
+      }}
     >
       {children}
     </CartContext.Provider>
   );
 };
 
-export const useCart = () => useContext(CartContext);
+export const useCart = () => {
+  const context = useContext(CartContext);
+  if (!context) {
+    throw new Error('useCart must be used within a CartProvider');
+  }
+  return context;
+};
+
+export default CartContext;

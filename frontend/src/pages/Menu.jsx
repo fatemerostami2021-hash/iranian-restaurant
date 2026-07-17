@@ -4,13 +4,15 @@ import { useSearchParams } from 'react-router-dom';
 import { MdSearch } from 'react-icons/md';
 import { useDishes } from '../hooks/useDishes';
 import CategoryFilter from '../components/menu/CategoryFilter';
-import HexDishCard from '../components/menu/HexDishCard';
-import FeaturedSlider from '../components/menu/FeaturedSlider';
+import DishCard from '../components/menu/DishCard';
 import QuickViewModal from '../components/menu/QuickViewModal';
+import { useTheme } from '../context/ThemeContext';
 
 export default function Menu() {
   const { t, i18n } = useTranslation();
-  const [searchParams, setSearchParams] = useSearchParams();
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
+  const [searchParams] = useSearchParams();
   const highlightId = searchParams.get('highlight');
   const urlCategory = searchParams.get('category') || 'all';
 
@@ -18,9 +20,15 @@ export default function Menu() {
   const [searchTerm, setSearchTerm] = useState('');
   const [quickViewDish, setQuickViewDish] = useState(null);
   const { dishes, loading, error } = useDishes(category);
-  const { dishes: allDishes } = useDishes('all');
   const hasScrolled = useRef(false);
   const lang = i18n.language;
+
+  const bgClass = isDark ? 'bg-[#1C1C1C]' : 'bg-[#FFF8F0]';
+  const textClass = isDark ? 'text-[#F7F0E6]' : 'text-[#1A1A1A]';
+  const mutedClass = isDark ? 'text-gray-400' : 'text-[#666666]';
+  const inputBg = isDark ? 'bg-[#2D2D2D]' : 'bg-gray-100';
+  const inputText = isDark ? 'text-[#F7F0E6]' : 'text-[#1A1A1A]';
+  const borderClass = isDark ? 'border-[#3E2723]' : 'border-[#E8DDD0]';
 
   useEffect(() => {
     setCategory(urlCategory);
@@ -28,7 +36,6 @@ export default function Menu() {
 
   const handleCategoryChange = (key) => {
     setCategory(key);
-    setSearchParams(key === 'all' ? {} : { category: key });
   };
 
   const filteredDishes = dishes.filter((dish) => {
@@ -47,48 +54,56 @@ export default function Menu() {
     }
   }, [loading, dishes, highlightId]);
 
+  if (loading) {
+    return (
+      <section className={`max-w-6xl mx-auto px-4 py-12 ${bgClass}`}>
+        <div className="flex items-center gap-3 mb-8">
+          <h1 className={`text-3xl font-bold ${textClass}`}>{t('menu.title')}</h1>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {[1, 2, 3, 4, 5, 6].map(i => (
+            <div key={i} className="bg-gray-100 dark:bg-gray-800 rounded-2xl h-64 animate-pulse" />
+          ))}
+        </div>
+      </section>
+    );
+  }
+
+  if (error) {
+    return <p className="text-center text-red-500 py-10">{error}</p>;
+  }
+
   return (
-    <div className="max-w-6xl mx-auto px-4 py-10">
+    <section className={`max-w-6xl mx-auto px-4 py-12 ${bgClass} transition-colors duration-300`}>
+      {/* ===== هدر ===== */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
-        <h1 className="text-2xl font-bold text-primary-dark dark:text-primary-light">
+        <h1 className={`text-3xl font-bold ${textClass}`}>
           {t('menu.title')}
         </h1>
-        <div className="flex items-center gap-2 bg-gray-100 dark:bg-surface-metal rounded-xl px-4 py-2 flex-1 max-w-sm">
-          <MdSearch className="text-gray-400" size={20} />
+        <div className={`flex items-center gap-2 ${inputBg} rounded-xl px-4 py-2 flex-1 max-w-sm transition-colors duration-300 border ${borderClass}`}>
+          <MdSearch className={mutedClass} size={20} />
           <input
             type="text"
             placeholder={lang === 'fa' ? 'جستجو در منو...' : lang === 'ar' ? 'ابحث في القائمة...' : 'Search menu...'}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="bg-transparent outline-none flex-1 text-gray-700 dark:text-gray-200"
+            className={`bg-transparent outline-none flex-1 ${inputText}`}
           />
         </div>
       </div>
 
-      {category === 'all' && !searchTerm && <FeaturedSlider dishes={allDishes} />}
-
+      {/* ===== فیلتر ===== */}
       <CategoryFilter active={category} onChange={handleCategoryChange} />
 
-      {loading && (
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-          {Array.from({ length: 8 }).map((_, i) => (
-            <div key={i} className="animate-pulse bg-gray-100 dark:bg-surface-metal rounded-2xl aspect-square" />
-          ))}
-        </div>
-      )}
-
-      {error && <p className="text-center text-red-500 py-10">{error}</p>}
-
-      {!loading && !error && filteredDishes.length === 0 && (
-        <p className="text-center text-gray-400 py-10">
-          {searchTerm ? (lang === 'fa' ? 'هیچ غذایی با این نام پیدا نشد' : 'No items found') : t('all') + ' - No items'}
+      {/* ===== لیست غذاها ===== */}
+      {filteredDishes.length === 0 ? (
+        <p className={`text-center ${mutedClass} py-10`}>
+          {searchTerm ? 'هیچ غذایی با این نام پیدا نشد' : t('all') + ' - No items'}
         </p>
-      )}
-
-      {!loading && !error && filteredDishes.length > 0 && (
-        <div className="hex-grid">
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredDishes.map((dish) => (
-            <HexDishCard
+            <DishCard
               key={dish._id}
               dish={dish}
               highlight={dish._id === highlightId}
@@ -98,7 +113,11 @@ export default function Menu() {
         </div>
       )}
 
-      <QuickViewModal dish={quickViewDish} onClose={() => setQuickViewDish(null)} />
-    </div>
+      {/* ===== مودال ===== */}
+      <QuickViewModal 
+        dish={quickViewDish} 
+        onClose={() => setQuickViewDish(null)} 
+      />
+    </section>
   );
 }
