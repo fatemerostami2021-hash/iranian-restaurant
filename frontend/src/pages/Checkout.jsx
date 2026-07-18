@@ -3,8 +3,8 @@ import { useTranslation } from 'react-i18next';
 import { useTheme } from '../context/ThemeContext';
 import { useCart } from '../context/CartContext';
 import { Link, useNavigate } from 'react-router-dom';
-import { 
-  FiUser, FiPhone, FiMapPin, FiMail, FiClock, 
+import {
+  FiUser, FiPhone, FiMapPin, FiMail, FiClock,
   FiCalendar, FiMessageSquare, FiCheckCircle,
   FiTruck, FiCreditCard
 } from 'react-icons/fi';
@@ -102,12 +102,59 @@ export default function Checkout() {
     e.preventDefault();
     if (!validateStep()) return;
     setIsSubmitting(true);
-    setTimeout(() => {
+
+    const orderPayload = {
+      customerName: `${formData.firstName} ${formData.lastName}`,
+      phone: formData.phone,
+      address: formData.deliveryMethod === 'delivery'
+        ? `${formData.address}, Zone ${formData.zone}, Building ${formData.building}`
+        : '',
+      tableNumber: formData.tableNumber,
+      notes: formData.notes,
+      items: cart.map((item) => ({
+        dish: item._id,
+        quantity: item.quantity,
+        priceAtOrder: item.price,
+      })),
+      totalPrice: grandTotal,
+    };
+
+    try {
+      const res = await fetch('/api/orders', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(orderPayload),
+      });
+
+      if (!res.ok) throw new Error('Order failed');
+
+      const itemsList = cart
+        .map((item) => {
+          const name = item.name?.[lang] || item.name?.en || '';
+          return `- ${name} x${item.quantity} = ${(item.price * item.quantity).toFixed(1)} QR`;
+        })
+        .join('\n');
+
+      const message =
+        `Order - Kabab Dagh Nan Dagh\n\n` +
+        `Name: ${formData.firstName} ${formData.lastName}\n` +
+        `Phone: ${formData.phone}\n` +
+        `${formData.deliveryMethod === 'delivery' ? `Address: ${formData.address}, ${formData.zone}` : 'Pickup at restaurant'}\n\n` +
+        `${itemsList}\n\n` +
+        `Total: ${grandTotal.toFixed(1)} QR\n` +
+        `Notes: ${formData.notes || 'None'}`;
+
+      const waNumber = '97433000157';
+      window.open(`https://wa.me/${waNumber}?text=${encodeURIComponent(message)}`, '_blank');
+
       setIsSubmitting(false);
       setIsSuccess(true);
       clearCart();
       setTimeout(() => navigate('/'), 3000);
-    }, 2000);
+    } catch (err) {
+      setIsSubmitting(false);
+      setErrors({ submit: 'Order failed, please try again.' });
+    }
   };
 
   const steps = [
@@ -138,7 +185,7 @@ export default function Checkout() {
             <FiCheckCircle className="text-green-500" size={48} />
           </div>
           <h2 className={`text-3xl font-bold ${textColor} mb-4`}>
-            {t('checkout.success') || '✅ سفارش با موفقیت ثبت شد!'}
+            {t('checkout.success') || 'سفارش با موفقیت ثبت شد!'}
           </h2>
           <p className={`${mutedColor} text-lg mb-6`}>
             {t('checkout.successMessage') || 'از اعتماد شما سپاسگزاریم. سفارش شما در اسرع وقت آماده و ارسال خواهد شد.'}
@@ -171,8 +218,8 @@ export default function Checkout() {
                   )}
                   <div className={`
                     flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-300
-                    ${step >= s.number 
-                      ? 'bg-[#FFD700] text-[#1A1A1A]' 
+                    ${step >= s.number
+                      ? 'bg-[#FFD700] text-[#1A1A1A]'
                       : 'bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400'
                     }
                     ${step === s.number ? 'ring-2 ring-[#FFD700]/50 ring-offset-2' : ''}
@@ -198,7 +245,7 @@ export default function Checkout() {
                       name="firstName"
                       value={formData.firstName}
                       onChange={handleChange}
-                      className={`w-full px-4 py-3 rounded-xl border ${borderClass} ${inputBg} ${textColor} focus:outline-none focus:ring-2 focus:ring-[${primaryColor}]/30 transition-all duration-300 ${errors.firstName ? 'border-red-500' : ''}`}
+                      className={`w-full px-4 py-3 rounded-xl border ${borderClass} ${inputBg} ${textColor} focus:outline-none ${errors.firstName ? 'border-red-500' : ''}`}
                       placeholder={t('checkout.firstNamePlaceholder') || 'نام خود را وارد کنید'}
                     />
                     {errors.firstName && <p className="text-red-500 text-xs mt-1">{errors.firstName}</p>}
@@ -212,7 +259,7 @@ export default function Checkout() {
                       name="lastName"
                       value={formData.lastName}
                       onChange={handleChange}
-                      className={`w-full px-4 py-3 rounded-xl border ${borderClass} ${inputBg} ${textColor} focus:outline-none focus:ring-2 focus:ring-[${primaryColor}]/30 transition-all duration-300 ${errors.lastName ? 'border-red-500' : ''}`}
+                      className={`w-full px-4 py-3 rounded-xl border ${borderClass} ${inputBg} ${textColor} focus:outline-none ${errors.lastName ? 'border-red-500' : ''}`}
                       placeholder={t('checkout.lastNamePlaceholder') || 'نام خانوادگی خود را وارد کنید'}
                     />
                     {errors.lastName && <p className="text-red-500 text-xs mt-1">{errors.lastName}</p>}
@@ -227,7 +274,7 @@ export default function Checkout() {
                     name="email"
                     value={formData.email}
                     onChange={handleChange}
-                    className={`w-full px-4 py-3 rounded-xl border ${borderClass} ${inputBg} ${textColor} focus:outline-none focus:ring-2 focus:ring-[${primaryColor}]/30 transition-all duration-300 ${errors.email ? 'border-red-500' : ''}`}
+                    className={`w-full px-4 py-3 rounded-xl border ${borderClass} ${inputBg} ${textColor} focus:outline-none ${errors.email ? 'border-red-500' : ''}`}
                     placeholder={t('checkout.emailPlaceholder') || 'example@email.com'}
                   />
                   {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
@@ -241,13 +288,13 @@ export default function Checkout() {
                     name="phone"
                     value={formData.phone}
                     onChange={handleChange}
-                    className={`w-full px-4 py-3 rounded-xl border ${borderClass} ${inputBg} ${textColor} focus:outline-none focus:ring-2 focus:ring-[${primaryColor}]/30 transition-all duration-300 ${errors.phone ? 'border-red-500' : ''}`}
+                    className={`w-full px-4 py-3 rounded-xl border ${borderClass} ${inputBg} ${textColor} focus:outline-none ${errors.phone ? 'border-red-500' : ''}`}
                     placeholder={t('checkout.phonePlaceholder') || '+974 3300 0157'}
                   />
                   {errors.phone && <p className="text-red-500 text-xs mt-1">{errors.phone}</p>}
                 </div>
                 <button type="button" onClick={nextStep} className="w-full py-3.5 bg-[#FFD700] hover:bg-[#F9A825] text-[#1A1A1A] font-bold text-lg rounded-2xl transition-all duration-300 hover:scale-[1.02] shadow-lg shadow-[#FFD700]/30">
-                  {t('checkout.continue') || 'ادامه →'}
+                  {t('checkout.continue') || 'ادامه'}
                 </button>
               </div>
             )}
@@ -262,17 +309,17 @@ export default function Checkout() {
                     <button
                       type="button"
                       onClick={() => setFormData(prev => ({ ...prev, deliveryMethod: 'delivery' }))}
-                      className={`p-4 rounded-xl border-2 transition-all duration-300 ${formData.deliveryMethod === 'delivery' ? `border-[${primaryColor}] bg-[${primaryColor}]/10` : `border-${borderClass} hover:border-[${primaryColor}]/50`}`}
+                      className={`p-4 rounded-xl border-2 transition-all duration-300 ${formData.deliveryMethod === 'delivery' ? 'border-[#D32F2F] bg-[#D32F2F]/10' : 'border-gray-300 dark:border-gray-700'}`}
                     >
-                      <FiTruck size={24} className={`mx-auto mb-2 ${formData.deliveryMethod === 'delivery' ? `text-[${primaryColor}]` : mutedColor}`} />
+                      <FiTruck size={24} className={`mx-auto mb-2 ${formData.deliveryMethod === 'delivery' ? 'text-[#D32F2F]' : mutedColor}`} />
                       <span className={`text-sm font-medium ${textColor}`}>{t('checkout.delivery') || 'تحویل در محل'}</span>
                     </button>
                     <button
                       type="button"
                       onClick={() => setFormData(prev => ({ ...prev, deliveryMethod: 'pickup' }))}
-                      className={`p-4 rounded-xl border-2 transition-all duration-300 ${formData.deliveryMethod === 'pickup' ? `border-[${primaryColor}] bg-[${primaryColor}]/10` : `border-${borderClass} hover:border-[${primaryColor}]/50`}`}
+                      className={`p-4 rounded-xl border-2 transition-all duration-300 ${formData.deliveryMethod === 'pickup' ? 'border-[#D32F2F] bg-[#D32F2F]/10' : 'border-gray-300 dark:border-gray-700'}`}
                     >
-                      <FiMapPin size={24} className={`mx-auto mb-2 ${formData.deliveryMethod === 'pickup' ? `text-[${primaryColor}]` : mutedColor}`} />
+                      <FiMapPin size={24} className={`mx-auto mb-2 ${formData.deliveryMethod === 'pickup' ? 'text-[#D32F2F]' : mutedColor}`} />
                       <span className={`text-sm font-medium ${textColor}`}>{t('checkout.pickup') || 'تحویل حضوری'}</span>
                     </button>
                   </div>
@@ -289,7 +336,7 @@ export default function Checkout() {
                         value={formData.address}
                         onChange={handleChange}
                         rows="2"
-                        className={`w-full px-4 py-3 rounded-xl border ${borderClass} ${inputBg} ${textColor} focus:outline-none focus:ring-2 focus:ring-[${primaryColor}]/30 transition-all duration-300 ${errors.address ? 'border-red-500' : ''}`}
+                        className={`w-full px-4 py-3 rounded-xl border ${borderClass} ${inputBg} ${textColor} focus:outline-none ${errors.address ? 'border-red-500' : ''}`}
                         placeholder={t('checkout.addressPlaceholder') || 'خیابان، ساختمان، پلاک'}
                       />
                       {errors.address && <p className="text-red-500 text-xs mt-1">{errors.address}</p>}
@@ -302,7 +349,7 @@ export default function Checkout() {
                           name="zone"
                           value={formData.zone}
                           onChange={handleChange}
-                          className={`w-full px-4 py-3 rounded-xl border ${borderClass} ${inputBg} ${textColor} focus:outline-none focus:ring-2 focus:ring-[${primaryColor}]/30 transition-all duration-300 ${errors.zone ? 'border-red-500' : ''}`}
+                          className={`w-full px-4 py-3 rounded-xl border ${borderClass} ${inputBg} ${textColor} focus:outline-none ${errors.zone ? 'border-red-500' : ''}`}
                           placeholder={t('checkout.zonePlaceholder') || 'منطقه ۵۵'}
                         />
                         {errors.zone && <p className="text-red-500 text-xs mt-1">{errors.zone}</p>}
@@ -314,7 +361,7 @@ export default function Checkout() {
                           name="building"
                           value={formData.building}
                           onChange={handleChange}
-                          className={`w-full px-4 py-3 rounded-xl border ${borderClass} ${inputBg} ${textColor} focus:outline-none focus:ring-2 focus:ring-[${primaryColor}]/30 transition-all duration-300`}
+                          className={`w-full px-4 py-3 rounded-xl border ${borderClass} ${inputBg} ${textColor} focus:outline-none`}
                           placeholder={t('checkout.buildingPlaceholder') || 'ساختمان ۳۵۰'}
                         />
                       </div>
@@ -331,7 +378,7 @@ export default function Checkout() {
                       name="deliveryTime"
                       value={formData.deliveryTime}
                       onChange={handleChange}
-                      className={`w-full px-4 py-3 rounded-xl border ${borderClass} ${inputBg} ${textColor} focus:outline-none focus:ring-2 focus:ring-[${primaryColor}]/30 transition-all duration-300`}
+                      className={`w-full px-4 py-3 rounded-xl border ${borderClass} ${inputBg} ${textColor} focus:outline-none`}
                     >
                       <option value="asap">{t('checkout.asap') || 'در اسرع وقت'}</option>
                       <option value="30">۳۰ {t('checkout.minutes') || 'دقیقه'}</option>
@@ -348,7 +395,7 @@ export default function Checkout() {
                       name="tableNumber"
                       value={formData.tableNumber}
                       onChange={handleChange}
-                      className={`w-full px-4 py-3 rounded-xl border ${borderClass} ${inputBg} ${textColor} focus:outline-none focus:ring-2 focus:ring-[${primaryColor}]/30 transition-all duration-300`}
+                      className={`w-full px-4 py-3 rounded-xl border ${borderClass} ${inputBg} ${textColor} focus:outline-none`}
                       placeholder={t('checkout.tableNumberPlaceholder') || 'مثلاً: ۵'}
                     />
                   </div>
@@ -363,17 +410,17 @@ export default function Checkout() {
                     value={formData.notes}
                     onChange={handleChange}
                     rows="2"
-                    className={`w-full px-4 py-3 rounded-xl border ${borderClass} ${inputBg} ${textColor} focus:outline-none focus:ring-2 focus:ring-[${primaryColor}]/30 transition-all duration-300`}
+                    className={`w-full px-4 py-3 rounded-xl border ${borderClass} ${inputBg} ${textColor} focus:outline-none`}
                     placeholder={t('checkout.notesPlaceholder') || 'هر گونه توضیح خاص...'}
                   />
                 </div>
 
                 <div className="flex gap-4">
                   <button type="button" onClick={prevStep} className="px-6 py-3 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 font-bold rounded-2xl hover:bg-gray-300 dark:hover:bg-gray-600 transition-all duration-300">
-                    ← {t('checkout.back') || 'بازگشت'}
+                    {t('checkout.back') || 'بازگشت'}
                   </button>
                   <button type="button" onClick={nextStep} className="flex-1 py-3.5 bg-[#FFD700] hover:bg-[#F9A825] text-[#1A1A1A] font-bold text-lg rounded-2xl transition-all duration-300 hover:scale-[1.02] shadow-lg shadow-[#FFD700]/30">
-                    {t('checkout.continue') || 'ادامه →'}
+                    {t('checkout.continue') || 'ادامه'}
                   </button>
                 </div>
               </div>
@@ -387,7 +434,7 @@ export default function Checkout() {
                     const itemName = item.name?.[lang] || item.name?.en || '';
                     return (
                       <div key={item._id} className="flex justify-between text-sm py-1 border-b border-white/5 last:border-0">
-                        <span className={textColor}>{itemName} ×{item.quantity}</span>
+                        <span className={textColor}>{itemName} x{item.quantity}</span>
                         <span className={mutedColor}>{(item.price * item.quantity).toFixed(1)} QR</span>
                       </div>
                     );
@@ -398,7 +445,7 @@ export default function Checkout() {
                   <FiCreditCard className="text-green-500" size={24} />
                   <div>
                     <p className={`text-sm font-medium ${textColor}`}>{t('checkout.securePayment') || 'پرداخت امن'}</p>
-                    <p className={`text-xs ${mutedColor}`}>{t('checkout.securePaymentDesc') || 'اطلاعات شما با رمزنگاری کامل محافظت می‌شود'}</p>
+                    <p className={`text-xs ${mutedColor}`}>{t('checkout.securePaymentDesc') || 'اطلاعات شما با رمزنگاری کامل محافظت می\u200cشود'}</p>
                   </div>
                 </div>
 
@@ -412,35 +459,27 @@ export default function Checkout() {
                   />
                   <div>
                     <label className={`text-sm ${textColor}`}>
-                      {t('checkout.acceptTerms') || 'شرایط و قوانین را می‌پذیرم'} <span className="text-red-500">*</span>
+                      {t('checkout.acceptTerms') || 'شرایط و قوانین را می\u200cپذیرم'} <span className="text-red-500">*</span>
                     </label>
                     <p className={`text-xs ${mutedColor}`}>
-                      {t('checkout.acceptTermsDesc') || 'با ثبت سفارش، با شرایط و قوانین رستوران موافقت می‌کنید.'}
+                      {t('checkout.acceptTermsDesc') || 'با ثبت سفارش، با شرایط و قوانین رستوران موافقت می\u200cکنید.'}
                     </p>
                     {errors.acceptTerms && <p className="text-red-500 text-xs mt-1">{errors.acceptTerms}</p>}
                   </div>
                 </div>
 
+                {errors.submit && <p className="text-red-500 text-sm text-center">{errors.submit}</p>}
+
                 <div className="flex gap-4">
                   <button type="button" onClick={prevStep} className="px-6 py-3 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 font-bold rounded-2xl hover:bg-gray-300 dark:hover:bg-gray-600 transition-all duration-300">
-                    ← {t('checkout.back') || 'بازگشت'}
+                    {t('checkout.back') || 'بازگشت'}
                   </button>
                   <button
                     type="submit"
                     disabled={isSubmitting}
                     className={`flex-1 py-3.5 bg-[#FFD700] hover:bg-[#F9A825] text-[#1A1A1A] font-bold text-lg rounded-2xl transition-all duration-300 hover:scale-[1.02] shadow-lg shadow-[#FFD700]/30 flex items-center justify-center gap-2 ${isSubmitting ? 'opacity-70 cursor-not-allowed' : ''}`}
                   >
-                    {isSubmitting ? (
-                      <>
-                        <span className="animate-spin">⏳</span>
-                        {t('checkout.submitting') || 'در حال ثبت...'}
-                      </>
-                    ) : (
-                      <>
-                        {t('checkout.submit') || 'ثبت نهایی سفارش'}
-                        <span className="text-sm opacity-70">→</span>
-                      </>
-                    )}
+                    {isSubmitting ? (t('checkout.submitting') || 'در حال ثبت...') : (t('checkout.submit') || 'ثبت نهایی سفارش')}
                   </button>
                 </div>
               </div>
@@ -457,7 +496,7 @@ export default function Checkout() {
                 return (
                   <div key={item._id} className="flex justify-between items-center text-sm">
                     <span className={textColor}>
-                      {itemName} <span className={mutedColor}>×{item.quantity}</span>
+                      {itemName} <span className={mutedColor}>x{item.quantity}</span>
                     </span>
                     <span className={`font-bold ${textColor}`}>{(item.price * item.quantity).toFixed(1)} QR</span>
                   </div>
@@ -475,7 +514,7 @@ export default function Checkout() {
               </div>
               <div className="flex justify-between pt-2 border-t border-white/10">
                 <span className={`text-base font-bold ${textColor}`}>{t('cart.total')}</span>
-                <span className={`text-lg font-black text-[${primaryColor}]`}>
+                <span className="text-lg font-black text-[#D32F2F] dark:text-[#FFD700]">
                   {grandTotal.toFixed(1)} QR
                 </span>
               </div>
@@ -484,7 +523,7 @@ export default function Checkout() {
               </p>
             </div>
             <Link to="/menu" className="block text-center mt-4 text-sm text-[#FFD700] hover:underline">
-              ← {t('cart.backToMenu') || 'بازگشت به منو'}
+              {t('cart.backToMenu') || 'بازگشت به منو'}
             </Link>
           </div>
         </div>

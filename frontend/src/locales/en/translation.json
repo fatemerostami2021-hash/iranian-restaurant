@@ -1,5 +1,7 @@
 {
-  "restaurant": { "name": "Kabab Dagh Nan Dagh" },
+  "restaurant": {
+    "name": "Kabab Dagh Nan Dagh"
+  },
   "nav": {
     "home": "Home",
     "menu": "Menu",
@@ -240,6 +242,49 @@
       "a3": "Yes, we have several vegetarian appetizers like Hummus and Shirazi Salad.",
       "q4": "How can I reserve a table?",
       "a4": "Call the restaurant directly or send a message via the Contact Us page."
+    },
+    "videoGallery": {
+      "badge": "Home Catering Service",
+      "title": "A Cinematic Experience of Our Catering Service",
+      "subtitle": "A deep look into our service delivery, equipment and special party moments",
+      "relatedTitle": "Related Videos",
+      "videoCount": "Videos",
+      "views": "Views",
+      "nowPlaying": "Now Playing",
+      "categories": {
+        "featured": "Featured",
+        "space": "Equipment",
+        "cooking": "Live Cooking",
+        "events": "Events",
+        "team": "Our Team",
+        "catering": "Home Service"
+      },
+      "videos": {
+        "main": {
+          "title": "Experience a Royal BBQ at Your Home",
+          "desc": "Our professional team comes to your home with full equipment to serve fresh, hot kebab in front of your guests. Create a unique and memorable night!"
+        },
+        "tour": {
+          "title": "Equipment and Mobile Setup",
+          "desc": "A look at our professional mobile kitchen setup that provides the best service with minimal intrusion into your space."
+        },
+        "kabab": {
+          "title": "Master Kebab in Your Presence",
+          "desc": "Watch the art of grilling with charcoal and pure smoky aroma, right in your yard or reception hall. The excitement of a professional kitchen in your home!"
+        },
+        "moments": {
+          "title": "Special and Memorable Parties",
+          "desc": "Parties, birthdays and corporate events that became a unique and memorable night with our home kebab catering service."
+        },
+        "chef": {
+          "title": "Head Chef and Expert Team",
+          "desc": "Meet our head chefs and support team who come to your home in uniform with full hygiene standards."
+        },
+        "catering": {
+          "title": "Hot Kebab at Your Home",
+          "desc": "Whether your party is at home, garden or cinema, we deliver and serve royal hot kebab with VIP service."
+        }
+      }
     }
   }
 }

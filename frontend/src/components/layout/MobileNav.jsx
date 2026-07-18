@@ -9,6 +9,7 @@ import {
   MdPhoneInTalk,
   MdClose,
   MdShoppingCart,
+  MdAdminPanelSettings,
   MdBreakfastDining,
   MdLunchDining,
   MdDinnerDining,
@@ -32,6 +33,7 @@ const menuCategories = [
 
 export default function MobileNav({ open, onClose }) {
   const { t } = useTranslation();
+  const isLoggedIn = localStorage.getItem('adminToken') !== null;
 
   return (
     <AnimatePresence>
@@ -55,12 +57,9 @@ export default function MobileNav({ open, onClose }) {
               {/* هدر موبایل */}
               <div className="flex items-center justify-between p-4 border-b border-gray-100 dark:border-surface-metal">
                 <Link to="/" onClick={onClose} className="flex items-center gap-2">
-                  <img 
-                    src="/images/logo/logo-header.png"
-                    alt={t('restaurant.name')}
-                    className="h-10 w-auto object-contain"
-                    loading="lazy"
-                  />
+                  <span className="text-lg font-bold text-primary-dark dark:text-primary-light">
+                    {t('restaurant.name')}
+                  </span>
                 </Link>
                 <button 
                   onClick={onClose}
@@ -83,6 +82,18 @@ export default function MobileNav({ open, onClose }) {
                     <span className="font-medium">{t(`nav.${key}`)}</span>
                   </Link>
                 ))}
+
+                {/* ===== دکمه لاگین ادمین در موبایل ===== */}
+                <Link
+                  to={isLoggedIn ? '/admin/dashboard' : '/admin/login'}
+                  onClick={onClose}
+                  className="flex items-center gap-3 px-4 py-3 text-gray-700 dark:text-gray-200 hover:bg-primary/10 dark:hover:bg-primary/20 rounded-xl transition-all group mt-4 border-t border-gray-100 dark:border-gray-700 pt-4"
+                >
+                  <MdAdminPanelSettings size={22} className="text-gray-500 dark:text-gray-400 group-hover:text-primary transition" />
+                  <span className="font-medium">
+                    {isLoggedIn ? 'پنل مدیریت' : 'ورود به پنل'}
+                  </span>
+                </Link>
 
                 {/* دسته‌بندی‌های منو در موبایل */}
                 <div className="mt-4 pt-4 border-t border-gray-100 dark:border-gray-700">

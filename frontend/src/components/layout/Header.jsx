@@ -7,7 +7,8 @@ import {
   MdMenuBook,
   MdArticle,
   MdInfo,
-  MdPhoneInTalk
+  MdPhoneInTalk,
+  MdAdminPanelSettings
 } from 'react-icons/md';
 import { BiChevronDown } from 'react-icons/bi';
 
@@ -56,7 +57,6 @@ export default function Header() {
 
   const logoSrc = '/images/logo/logo-header.png';
 
-  // ===== کلاس‌های پویا بر اساس تم (قرمز و طلایی) =====
   const headerClasses = theme === 'dark' 
     ? 'bg-[#1C1C1C] border-[#F4B41A]/30' 
     : 'bg-[#FFF8F0] border-[#D32F2F]/20';
@@ -77,12 +77,13 @@ export default function Header() {
     ? 'text-[#F4B41A]'
     : 'text-[#D32F2F]';
 
+  const isLoggedIn = localStorage.getItem('adminToken') !== null;
+
   return (
     <>
       <header className={`sticky top-0 z-30 ${headerClasses} border-b shadow-lg transition-colors duration-300`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
           <div className="flex items-center justify-between gap-4">
-            {/* ===== لوگو + نام رستوران ===== */}
             <Link to="/" className="flex items-center gap-3 shrink-0 group">
               <img 
                 src={logoSrc}
@@ -95,7 +96,6 @@ export default function Header() {
               </span>
             </Link>
 
-            {/* ===== منوی دسکتاپ ===== */}
             <nav className="hidden lg:flex items-center gap-1">
               {navItems.map(({ key, icon: Icon, href, hasMegaMenu }) => {
                 const active = isActive(href);
@@ -144,11 +144,17 @@ export default function Header() {
               })}
             </nav>
 
-            {/* ===== منوی تبلت ===== */}
             <TabletNav />
 
-            {/* ===== دکمه‌های سمت راست ===== */}
             <div className="flex items-center gap-2 shrink-0">
+              <Link
+                to={isLoggedIn ? '/admin/dashboard' : '/admin/login'}
+                className={`p-2 rounded-full hover:bg-white/10 transition-colors duration-300 group ${textClasses}`}
+                title={isLoggedIn ? 'پنل مدیریت' : 'ورود به پنل مدیریت'}
+              >
+                <MdAdminPanelSettings size={22} />
+              </Link>
+
               <CartIcon />
               <LanguageSwitcher />
               <ThemeToggle />
