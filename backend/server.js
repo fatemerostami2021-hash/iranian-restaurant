@@ -9,6 +9,7 @@ import dishRoutes from './routes/dishRoutes.js';
 import orderRoutes from './routes/orderRoutes.js';
 import authRoutes from './routes/authRoutes.js';
 import articleRoutes from './routes/articleRoutes.js';
+import reservationRoutes from './routes/reservationRoutes.js'; // ✅ اضافه شد
 
 // ===== پنل ادمین =====
 import { login, getDashboardStats, getOrders, updateOrderStatus } from './controllers/adminController.js';
@@ -68,6 +69,9 @@ app.get('/api/admin/articles', verifyAdminToken, getArticles);
 app.post('/api/admin/articles', verifyAdminToken, createArticle);
 app.put('/api/admin/articles/:id', verifyAdminToken, updateArticle);
 app.delete('/api/admin/articles/:id', verifyAdminToken, deleteArticle);
+
+// ===== Routes ادمین - مدیریت رزروها =====
+app.use('/api/admin/reservations', reservationRoutes); // ✅ اضافه شد
 
 // ===== Routes ادمین - آپلود فایل =====
 app.post('/api/admin/upload/image', verifyAdminToken, upload.single('image'), uploadFile);
