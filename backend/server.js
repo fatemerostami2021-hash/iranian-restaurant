@@ -4,12 +4,13 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import multer from 'multer';
 import fs from 'fs';
+import nodemailer from 'nodemailer';
 
 import dishRoutes from './routes/dishRoutes.js';
 import orderRoutes from './routes/orderRoutes.js';
 import authRoutes from './routes/authRoutes.js';
 import articleRoutes from './routes/articleRoutes.js';
-import reservationRoutes from './routes/reservationRoutes.js'; // ✅ اضافه شد
+import reservationRoutes from './routes/reservationRoutes.js';
 
 // ===== پنل ادمین =====
 import { login, getDashboardStats, getOrders, updateOrderStatus } from './controllers/adminController.js';
@@ -17,7 +18,7 @@ import { verifyAdminToken } from './middleware/authMiddleware.js';
 
 // ===== کنترلرهای مدیریت =====
 import { getDishes, createDish, updateDish, deleteDish } from './controllers/dishController.js';
-import { getArticles, createArticle, updateArticle, deleteArticle } from './controllers/articleController.js';
+import { getAllAdminArticles, createArticle, updateArticle, deleteArticle } from './controllers/articleController.js';
 import { uploadFile } from './controllers/uploadController.js';
 
 dotenv.config();
@@ -65,17 +66,52 @@ app.put('/api/admin/dishes/:id', verifyAdminToken, updateDish);
 app.delete('/api/admin/dishes/:id', verifyAdminToken, deleteDish);
 
 // ===== Routes ادمین - مدیریت مقالات =====
-app.get('/api/admin/articles', verifyAdminToken, getArticles);
+app.get('/api/admin/articles', verifyAdminToken, getAllAdminArticles);
 app.post('/api/admin/articles', verifyAdminToken, createArticle);
 app.put('/api/admin/articles/:id', verifyAdminToken, updateArticle);
 app.delete('/api/admin/articles/:id', verifyAdminToken, deleteArticle);
 
 // ===== Routes ادمین - مدیریت رزروها =====
-app.use('/api/admin/reservations', reservationRoutes); // ✅ اضافه شد
+app.use('/api/admin/reservations', reservationRoutes);
 
 // ===== Routes ادمین - آپلود فایل =====
 app.post('/api/admin/upload/image', verifyAdminToken, upload.single('image'), uploadFile);
 app.post('/api/admin/upload/video', verifyAdminToken, upload.single('video'), uploadFile);
+
+// ===== Route ارسال ایمیل تماس (عمومی) =====
+app.post('/api/contact/send-email', async (req, res) => {
+  const { name, phone, email, message, locationLink } = req.body;
+  
+  try {
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: process.env.EMAIL_USER || 'rostamy141@gmail.com',
+        pass: process.env.EMAIL_PASS || 'your_app_password_here',
+      },
+    });
+
+    await transporter.sendMail({
+      from: `"Website Contact" <${process.env.EMAIL_USER || 'rostamy141@gmail.com'}>`,
+      to: 'rostamy141@gmail.com',
+      subject: `پیام جدید از ${name}`,
+      text: `
+        نام: ${name}
+        تلفن: ${phone}
+        ایمیل: ${email}
+        لوکیشن: ${locationLink || 'ثبت نشده'}
+        
+        پیام:
+        ${message}
+      `,
+    });
+
+    res.status(200).json({ message: 'ایمیل با موفقیت ارسال شد' });
+  } catch (error) {
+    console.error('Email error:', error);
+    res.status(500).json({ message: 'خطا در ارسال ایمیل' });
+  }
+});
 
 // ===== Health Check =====
 app.get('/', (req, res) => {

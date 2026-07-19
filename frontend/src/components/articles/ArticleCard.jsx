@@ -3,17 +3,30 @@ import { useTranslation } from 'react-i18next';
 import { useTheme } from '../../context/ThemeContext';
 import { MdVisibility, MdFavorite, MdAccessTime } from 'react-icons/md';
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+
 export default function ArticleCard({ article }) {
   const { i18n, t } = useTranslation();
   const { theme } = useTheme();
-  const lang = i18n.language; // ← زبان فعلی: 'fa', 'en', 'ar'
+  const lang = i18n.language;
 
-  // ===== دریافت محتوا بر اساس زبان فعلی =====
   const title = article.title?.[lang] || article.title?.fa || 'بدون عنوان';
   const excerpt = article.excerpt?.[lang] || article.excerpt?.fa || '';
-  const slug = article.slug?.[lang] || article.slug?.fa || article._id;
-  const category = article.category?.[lang] || article.category?.fa || '';
-  const image = article.featuredImage || '/images/articles/placeholder.jpg';
+  
+  // هندل اسلاگ استرینگ یا آبجکت
+  const slug = typeof article.slug === 'object' 
+    ? (article.slug?.[lang] || article.slug?.fa || article._id) 
+    : (article.slug || article._id);
+    
+  // هندل دسته‌بندی استرینگ یا آبجکت
+  const category = typeof article.category === 'object' 
+    ? (article.category?.[lang] || article.category?.fa || '') 
+    : (article.category || '');
+    
+  // دریافت عکس از آرایه images
+  const image = article.images && article.images.length > 0
+    ? (article.images[0].startsWith('http') ? article.images[0] : `${API_URL}${article.images[0]}`)
+    : '/images/articles/placeholder.jpg';
 
   const cardBg = theme === 'dark' ? 'bg-surface-dark' : 'bg-white';
   const textColor = theme === 'dark' ? 'text-primary-light' : 'text-primary-dark';
@@ -32,7 +45,7 @@ export default function ArticleCard({ article }) {
           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
           loading="lazy"
         />
-        {article.isFeatured && (
+        {article.featured && (
           <span className="absolute top-3 right-3 bg-[#F4B41A] text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg">
             {t('articles.featured') || 'ویژه'}
           </span>
@@ -50,9 +63,7 @@ export default function ArticleCard({ article }) {
         </h3>
 
         {excerpt && (
-          <p className={`text-sm ${mutedColor} line-clamp-2 mb-4`}>
-            {excerpt}
-          </p>
+          <p className={`text-sm ${mutedColor} line-clamp-2 mb-4`}>{excerpt}</p>
         )}
 
         <div className={`flex items-center justify-between text-xs ${mutedColor} border-t ${borderColor} pt-3`}>

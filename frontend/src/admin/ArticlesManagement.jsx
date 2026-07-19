@@ -8,11 +8,13 @@ import {
 } from 'react-icons/fi';
 import axios from 'axios';
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+
 // ===== کامپوننت فرم افزودن/ویرایش مقاله =====
 function ArticleForm({ article, onSave, onCancel, isEditing }) {
   const [formData, setFormData] = useState({
     title: { fa: '', en: '', ar: '' },
-    slug: '', // در فرم ورودی، اسلاگ را به عنوان رشته می‌گیریم
+    slug: '',
     excerpt: { fa: '', en: '', ar: '' },
     content: { fa: '', en: '', ar: '' },
     category: 'news',
@@ -34,7 +36,6 @@ function ArticleForm({ article, onSave, onCancel, isEditing }) {
 
   useEffect(() => {
     if (article) {
-      // هندل کردن اسلاگ اگر آبجکت باشد
       const slugValue = typeof article.slug === 'object' 
         ? (article.slug?.fa || article.slug?.en || '') 
         : (article.slug || '');
@@ -53,8 +54,10 @@ function ArticleForm({ article, onSave, onCancel, isEditing }) {
         author: article.author || '',
         publishedAt: article.publishedAt ? new Date(article.publishedAt).toISOString().split('T')[0] : new Date().toISOString().split('T')[0]
       });
-      setPreviewImages(article.images || []);
-      setPreviewVideo(article.video || null);
+      
+      // اصلاح آدرس عکس‌ها برای پیش‌نمایش
+      setPreviewImages((article.images || []).map(img => img.startsWith('http') ? img : `${API_URL}${img}`));
+      setPreviewVideo(article.video ? (article.video.startsWith('http') ? article.video : `${API_URL}${article.video}`) : null);
     }
   }, [article]);
 
@@ -91,12 +94,12 @@ function ArticleForm({ article, onSave, onCancel, isEditing }) {
         const formDataUpload = new FormData();
         formDataUpload.append('image', file);
         const token = localStorage.getItem('adminToken');
-        const response = await axios.post('http://localhost:5000/api/admin/upload/image', formDataUpload, {
+        const response = await axios.post(`${API_URL}/api/admin/upload/image`, formDataUpload, {
           headers: { 'Content-Type': 'multipart/form-data', Authorization: `Bearer ${token}` },
           onUploadProgress: (progressEvent) => setUploadProgress(Math.round((progressEvent.loaded * 100) / progressEvent.total))
         });
         uploadedImages.push(response.data.url);
-        setPreviewImages(prev => [...prev, response.data.url]);
+        setPreviewImages(prev => [...prev, `${API_URL}${response.data.url}`]);
       } catch (error) {
         console.error('خطا در آپلود عکس:', error);
       }
@@ -117,11 +120,11 @@ function ArticleForm({ article, onSave, onCancel, isEditing }) {
       const formDataUpload = new FormData();
       formDataUpload.append('video', file);
       const token = localStorage.getItem('adminToken');
-      const response = await axios.post('http://localhost:5000/api/admin/upload/video', formDataUpload, {
+      const response = await axios.post(`${API_URL}/api/admin/upload/video`, formDataUpload, {
         headers: { 'Content-Type': 'multipart/form-data', Authorization: `Bearer ${token}` },
         onUploadProgress: (progressEvent) => setUploadProgress(Math.round((progressEvent.loaded * 100) / progressEvent.total))
       });
-      setPreviewVideo(response.data.url);
+      setPreviewVideo(`${API_URL}${response.data.url}`);
       setFormData(prev => ({ ...prev, video: response.data.url }));
     } catch (error) {
       console.error('خطا در آپلود ویدیو:', error);
@@ -135,7 +138,10 @@ function ArticleForm({ article, onSave, onCancel, isEditing }) {
     const newImages = [...previewImages];
     newImages.splice(index, 1);
     setPreviewImages(newImages);
-    setFormData(prev => ({ ...prev, images: newImages }));
+    
+    const newFormImages = [...formData.images];
+    newFormImages.splice(index, 1);
+    setFormData(prev => ({ ...prev, images: newFormImages }));
   };
 
   const handleRemoveVideo = () => {
@@ -170,13 +176,22 @@ function ArticleForm({ article, onSave, onCancel, isEditing }) {
   ];
 
   const categoryOptions = [
-    { value: 'news', label: 'اخبار' }, { value: 'blog', label: 'وبلاگ' },
-    { value: 'recipes', label: 'دستور پخت' }, { value: 'events', label: 'رویدادها' },
-    { value: 'promotions', label: 'تخفیف‌ها و پیشنهادها' }
+    { value: 'news', label: 'اخبار' }, 
+    { value: 'blog', label: 'وبلاگ' },
+    { value: 'recipes', label: 'دستور پخت' }, 
+    { value: 'events', label: 'رویدادها' },
+    { value: 'promotions', label: 'تخفیف‌ها و پیشنهادها' },
+    { value: 'history', label: 'تاریخ و تمدن' },
+    { value: 'culture', label: 'فرهنگ و آداب' },
+    { value: 'food-stories', label: 'داستان‌های غذا' },
+    { value: 'city-stories', label: 'داستان شهرها' },
+    { value: 'fun-facts', label: 'سرگرمی و دانستنی‌ها' }
   ];
 
   const statusOptions = [
-    { value: 'draft', label: 'پیش‌نویس' }, { value: 'published', label: 'منتشر شده' }, { value: 'archived', label: 'بایگانی شده' }
+    { value: 'draft', label: 'پیش‌نویس' }, 
+    { value: 'published', label: 'منتشر شده' }, 
+    { value: 'archived', label: 'بایگانی شده' }
   ];
 
   return (
@@ -337,7 +352,7 @@ export default function ArticlesManagement() {
   const fetchArticles = async () => {
     try {
       setLoading(true);
-      const res = await axios.get('http://localhost:5000/api/admin/articles', { headers: { Authorization: `Bearer ${token}` } });
+      const res = await axios.get(`${API_URL}/api/admin/articles`, { headers: { Authorization: `Bearer ${token}` } });
       setArticles(res.data);
       setError('');
     } catch (err) {
@@ -353,9 +368,9 @@ export default function ArticlesManagement() {
   const handleSave = async (formData) => {
     try {
       if (editingArticle) {
-        await axios.put(`http://localhost:5000/api/admin/articles/${editingArticle._id}`, formData, { headers: { Authorization: `Bearer ${token}` } });
+        await axios.put(`${API_URL}/api/admin/articles/${editingArticle._id}`, formData, { headers: { Authorization: `Bearer ${token}` } });
       } else {
-        await axios.post('http://localhost:5000/api/admin/articles', formData, { headers: { Authorization: `Bearer ${token}` } });
+        await axios.post(`${API_URL}/api/admin/articles`, formData, { headers: { Authorization: `Bearer ${token}` } });
       }
       fetchArticles();
       setShowForm(false);
@@ -368,7 +383,7 @@ export default function ArticlesManagement() {
   const handleDelete = async (id) => {
     if (!window.confirm('آیا از حذف این مقاله مطمئن هستید؟')) return;
     try {
-      await axios.delete(`http://localhost:5000/api/admin/articles/${id}`, { headers: { Authorization: `Bearer ${token}` } });
+      await axios.delete(`${API_URL}/api/admin/articles/${id}`, { headers: { Authorization: `Bearer ${token}` } });
       fetchArticles();
     } catch (err) {
       alert('خطا در حذف مقاله');
@@ -408,15 +423,24 @@ export default function ArticlesManagement() {
     }
   };
 
-  // اصلاح شده برای هندل کردن آبجکت‌ها
   const getCategoryLabel = (category) => {
     if (!category) return 'بدون دسته';
     if (typeof category === 'object') return category.fa || category.en || 'بدون دسته';
-    const map = { news: 'اخبار', blog: 'وبلاگ', recipes: 'دستور پخت', events: 'رویدادها', promotions: 'تخفیف‌ها' };
+    const map = { 
+      news: 'اخبار', 
+      blog: 'وبلاگ', 
+      recipes: 'دستور پخت', 
+      events: 'رویدادها', 
+      promotions: 'تخفیف‌ها',
+      history: 'تاریخ و تمدن',
+      culture: 'فرهنگ و آداب',
+      'food-stories': 'داستان‌های غذا',
+      'city-stories': 'داستان شهرها',
+      'fun-facts': 'سرگرمی و دانستنی‌ها'
+    };
     return map[category] || category;
   };
 
-  // تابع کمکی برای استخراج اسلاگ
   const getSlugString = (slug) => {
     if (!slug) return '-';
     if (typeof slug === 'object') return slug.fa || slug.en || '-';
@@ -455,10 +479,20 @@ export default function ArticlesManagement() {
           <input type="text" placeholder="جستجو در عنوان مقاله..." value={search} onChange={(e) => setSearch(e.target.value)} className="flex-1 bg-transparent outline-none text-white" />
         </div>
         <select value={selectedCategory} onChange={(e) => setSelectedCategory(e.target.value)} className="bg-gray-700 text-white px-3 py-1 rounded-lg border border-gray-600 focus:outline-none focus:ring-2 focus:ring-[#FFD700]">
-          <option value="all">همه دسته‌ها</option><option value="news">اخبار</option><option value="blog">وبلاگ</option><option value="recipes">دستور پخت</option><option value="events">رویدادها</option><option value="promotions">تخفیف‌ها</option>
+          <option value="all">همه دسته‌ها</option>
+          <option value="news">اخبار</option>
+          <option value="blog">وبلاگ</option>
+          <option value="recipes">دستور پخت</option>
+          <option value="events">رویدادها</option>
+          <option value="promotions">تخفیف‌ها</option>
+          <option value="history">تاریخ و تمدن</option>
+          <option value="culture">فرهنگ و آداب</option>
         </select>
         <select value={selectedStatus} onChange={(e) => setSelectedStatus(e.target.value)} className="bg-gray-700 text-white px-3 py-1 rounded-lg border border-gray-600 focus:outline-none focus:ring-2 focus:ring-[#FFD700]">
-          <option value="all">همه وضعیت‌ها</option><option value="published">منتشر شده</option><option value="draft">پیش‌نویس</option><option value="archived">بایگانی</option>
+          <option value="all">همه وضعیت‌ها</option>
+          <option value="published">منتشر شده</option>
+          <option value="draft">پیش‌نویس</option>
+          <option value="archived">بایگانی</option>
         </select>
         <button onClick={fetchArticles} className="text-gray-400 hover:text-white p-2 hover:bg-gray-700 rounded-lg"><FiRefreshCw size={18} /></button>
       </div>
@@ -477,43 +511,50 @@ export default function ArticlesManagement() {
               {filteredArticles.length === 0 ? (
                 <tr><td colSpan="7" className="text-center text-gray-400 p-8">{search ? '🔍 هیچ مقاله‌ای با این نام پیدا نشد' : '📭 هنوز مقاله‌ای ثبت نشده است'}</td></tr>
               ) : (
-                filteredArticles.map((article) => (
-                  <tr key={article._id} className="border-t border-gray-700 hover:bg-gray-700/30 transition-colors">
-                    <td className="p-3">
-                      {article.images && article.images.length > 0 ? (
-                        <img src={article.images[0]} alt={article.title?.fa || 'article'} className="w-16 h-12 object-cover rounded-lg border border-gray-600 mx-auto" />
-                      ) : (
-                        <div className="w-16 h-12 bg-gray-700 rounded-lg flex items-center justify-center text-gray-500 mx-auto"><FiImage size={20} /></div>
-                      )}
-                    </td>
-                    <td className="p-3">
-                      <div>
-                        <p className="font-medium">{article.title?.fa || '-'}</p>
-                        <p className="text-xs text-gray-500 font-mono">{getSlugString(article.slug)}</p>
-                        {article.video && <span className="text-xs text-blue-400 flex items-center gap-1 mt-1"><FiVideo size={12} /> ویدیو</span>}
-                      </div>
-                    </td>
-                    <td className="p-3"><span className="px-2 py-1 bg-gray-700 rounded-full text-xs">{getCategoryLabel(article.category)}</span></td>
-                    <td className="p-3">
-                      <span className={`px-2 py-1 rounded-full text-xs flex items-center gap-1 ${getStatusColor(article.status)}`}>
-                        {article.status === 'published' ? <FiCheckCircle size={12} /> : <FiXCircle size={12} />}{getStatusLabel(article.status)}
-                      </span>
-                    </td>
-                    <td className="p-3 text-sm text-gray-400">
-                      <div className="flex flex-col items-center">
-                        <span>{article.publishedAt ? new Date(article.publishedAt).toLocaleDateString('fa-IR') : '-'}</span>
-                      </div>
-                    </td>
-                    <td className="p-3 text-center">{article.featured ? <span className="text-purple-400">⭐ ویژه</span> : <span className="text-gray-500">-</span>}</td>
-                    <td className="p-3">
-                      <div className="flex items-center justify-center gap-2">
-                        <button onClick={() => window.open(`/articles/${getSlugString(article.slug)}`, '_blank')} className="p-1.5 bg-green-500/20 text-green-400 rounded-lg hover:bg-green-500/30" title="مشاهده"><FiEye size={16} /></button>
-                        <button onClick={() => { setEditingArticle(article); setShowForm(true); }} className="p-1.5 bg-blue-500/20 text-blue-400 rounded-lg hover:bg-blue-500/30" title="ویرایش"><FiEdit2 size={16} /></button>
-                        <button onClick={() => handleDelete(article._id)} className="p-1.5 bg-red-500/20 text-red-400 rounded-lg hover:bg-red-500/30" title="حذف"><FiTrash2 size={16} /></button>
-                      </div>
-                    </td>
-                  </tr>
-                ))
+                filteredArticles.map((article) => {
+                  // اصلاح آدرس عکس برای نمایش در جدول
+                  const imageUrl = article.images && article.images.length > 0 
+                    ? (article.images[0].startsWith('http') ? article.images[0] : `${API_URL}${article.images[0]}`)
+                    : null;
+
+                  return (
+                    <tr key={article._id} className="border-t border-gray-700 hover:bg-gray-700/30 transition-colors">
+                      <td className="p-3">
+                        {imageUrl ? (
+                          <img src={imageUrl} alt={article.title?.fa || 'article'} className="w-16 h-12 object-cover rounded-lg border border-gray-600 mx-auto" />
+                        ) : (
+                          <div className="w-16 h-12 bg-gray-700 rounded-lg flex items-center justify-center text-gray-500 mx-auto"><FiImage size={20} /></div>
+                        )}
+                      </td>
+                      <td className="p-3">
+                        <div>
+                          <p className="font-medium">{article.title?.fa || '-'}</p>
+                          <p className="text-xs text-gray-500 font-mono">{getSlugString(article.slug)}</p>
+                          {article.video && <span className="text-xs text-blue-400 flex items-center gap-1 mt-1"><FiVideo size={12} /> ویدیو</span>}
+                        </div>
+                      </td>
+                      <td className="p-3"><span className="px-2 py-1 bg-gray-700 rounded-full text-xs">{getCategoryLabel(article.category)}</span></td>
+                      <td className="p-3">
+                        <span className={`px-2 py-1 rounded-full text-xs flex items-center gap-1 ${getStatusColor(article.status)}`}>
+                          {article.status === 'published' ? <FiCheckCircle size={12} /> : <FiXCircle size={12} />}{getStatusLabel(article.status)}
+                        </span>
+                      </td>
+                      <td className="p-3 text-sm text-gray-400">
+                        <div className="flex flex-col items-center">
+                          <span>{article.publishedAt ? new Date(article.publishedAt).toLocaleDateString('fa-IR') : '-'}</span>
+                        </div>
+                      </td>
+                      <td className="p-3 text-center">{article.featured ? <span className="text-purple-400">⭐ ویژه</span> : <span className="text-gray-500">-</span>}</td>
+                      <td className="p-3">
+                        <div className="flex items-center justify-center gap-2">
+                          <button onClick={() => window.open(`/articles/${getSlugString(article.slug)}`, '_blank')} className="p-1.5 bg-green-500/20 text-green-400 rounded-lg hover:bg-green-500/30" title="مشاهده"><FiEye size={16} /></button>
+                          <button onClick={() => { setEditingArticle(article); setShowForm(true); }} className="p-1.5 bg-blue-500/20 text-blue-400 rounded-lg hover:bg-blue-500/30" title="ویرایش"><FiEdit2 size={16} /></button>
+                          <button onClick={() => handleDelete(article._id)} className="p-1.5 bg-red-500/20 text-red-400 rounded-lg hover:bg-red-500/30" title="حذف"><FiTrash2 size={16} /></button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })
               )}
             </tbody>
           </table>

@@ -1,66 +1,52 @@
 import mongoose from 'mongoose';
 
 const articleSchema = new mongoose.Schema({
-  // ===== عنوان به ۳ زبان =====
   title: {
     fa: { type: String, required: true },
     en: { type: String, required: true },
     ar: { type: String, required: true }
   },
-  // ===== اسلاگ به ۳ زبان =====
+  // اسلاگ به صورت متن ساده ذخیره می‌شود
   slug: {
-    fa: { type: String, required: true, unique: true },
-    en: { type: String, required: true, unique: true },
-    ar: { type: String, required: true, unique: true }
-  },
-  // ===== دسته‌بندی به ۳ زبان =====
-  category: {
-    fa: { type: String, required: true },
-    en: { type: String, required: true },
-    ar: { type: String, required: true }
-  },
-  // ===== کلید دسته‌بندی (یکسان برای همه زبان‌ها) =====
-  categoryKey: {
     type: String,
-    enum: ['food-stories', 'history', 'culture', 'city-stories', 'fun-facts'],
-    required: true
+    unique: true,
+    sparse: true // اجازه می‌دهد اگر خالی بود ارور ندهد
   },
-  // ===== محتوای اصلی به ۳ زبان =====
-  content: {
-    fa: { type: String, required: true },
-    en: { type: String, required: true },
-    ar: { type: String, required: true }
-  },
-  // ===== خلاصه به ۳ زبان =====
   excerpt: {
-    fa: { type: String, maxlength: 200 },
-    en: { type: String, maxlength: 200 },
-    ar: { type: String, maxlength: 200 }
+    fa: String,
+    en: String,
+    ar: String
   },
-  // ===== تصویر شاخص (مشترک) =====
-  featuredImage: { type: String, default: '' },
-  gallery: [String],
-  // ===== آمار (مشترک) =====
-  views: { type: Number, default: 0 },
-  likes: { type: Number, default: 0 },
-  readTime: { type: Number, default: 5 },
-  // ===== وضعیت (مشترک) =====
-  isPublished: { type: Boolean, default: true },
-  isFeatured: { type: Boolean, default: false },
-  publishedAt: { type: Date, default: Date.now },
-  // ===== SEO به ۳ زبان =====
-  seo: {
-    title: { fa: String, en: String, ar: String },
-    description: { fa: String, en: String, ar: String },
-    keywords: { fa: [String], en: [String], ar: [String] }
+  content: {
+    fa: String,
+    en: String,
+    ar: String
   },
-  author: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User'
+  // دسته‌بندی به صورت متن ساده ذخیره می‌شود
+  category: {
+    type: String,
+    enum: ['news', 'blog', 'recipes', 'events', 'promotions', 'history', 'culture', 'food-stories', 'city-stories', 'fun-facts'],
+    default: 'blog'
   },
-  createdAt: { type: Date, default: Date.now },
-  updatedAt: { type: Date, default: Date.now }
-});
+  tags: [String],
+  // وضعیت به صورت متن ذخیره می‌شود
+  status: {
+    type: String,
+    enum: ['draft', 'published', 'archived'],
+    default: 'draft'
+  },
+  // مقاله ویژه
+  featured: {
+    type: Boolean,
+    default: false
+  },
+  images: [String],
+  video: String,
+  author: String,
+  publishedAt: {
+    type: Date,
+    default: Date.now
+  }
+}, { timestamps: true });
 
-const Article = mongoose.model('Article', articleSchema);
-export default Article;
+export default mongoose.model('Article', articleSchema);

@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+
 export function useArticles(category = 'all', search = '', page = 1, limit = 6) {
   const [articles, setArticles] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -17,9 +19,9 @@ export function useArticles(category = 'all', search = '', page = 1, limit = 6) 
         params.append('page', page);
         params.append('limit', limit);
 
-        const response = await axios.get(
-          `http://localhost:5000/api/articles?${params.toString()}`
-        );
+        // آدرس بک‌اند داینامیک شد
+        const response = await axios.get(`${API_URL}/api/articles?${params.toString()}`);
+        
         setArticles(response.data.articles || response.data);
         setTotal(response.data.total || response.data.length || 0);
         setError(null);
