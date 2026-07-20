@@ -2,12 +2,10 @@ import Article from '../models/Article.js';
 
 // ===== مسیرهای عمومی (برای سایت اصلی) =====
 
-// دریافت لیست مقالات (با فیلتر و صفحه‌بندی)
 export const getArticles = async (req, res) => {
   try {
     const { category, search, page = 1, limit = 6 } = req.query;
     
-    // فقط مقالات منتشر شده برای عموم نمایش داده می‌شوند
     const filter = { status: 'published' };
 
     if (category && category !== 'all') {
@@ -35,13 +33,10 @@ export const getArticles = async (req, res) => {
   }
 };
 
-// دریافت یک مقاله بر اساس اسلاگ (String ساده)
 export const getArticleBySlug = async (req, res) => {
   try {
     const { slug } = req.params;
-    
-    // چون اسلاگ الان یک متن ساده است، مستقیم آن را جستجو می‌کنیم
-    const article = await Article.findOne({ slug: slug, status: 'published' });
+    const article = await Article.findOne({ slug, status: 'published' });
     
     if (!article) {
       return res.status(404).json({ message: 'مقاله یافت نشد' });
@@ -49,7 +44,7 @@ export const getArticleBySlug = async (req, res) => {
     
     res.status(200).json(article);
   } catch (error) {
-    res.status(500).json({ message: 'خطا در دریافت مقاله', error });
+    res.status(500).json({ message: 'خطا در دریافت مقاله', error: error.message });
   }
 };
 
@@ -60,7 +55,7 @@ export const getAllAdminArticles = async (req, res) => {
     const articles = await Article.find().sort({ createdAt: -1 });
     res.status(200).json(articles);
   } catch (error) {
-    res.status(500).json({ message: 'خطا در دریافت لیست مقالات', error });
+    res.status(500).json({ message: 'خطا در دریافت لیست مقالات', error: error.message });
   }
 };
 
@@ -70,24 +65,53 @@ export const createArticle = async (req, res) => {
     const savedArticle = await newArticle.save();
     res.status(201).json(savedArticle);
   } catch (error) {
-    res.status(400).json({ message: 'خطا در ایجاد مقاله', error });
+    console.error('❌ Article Creation Error:', error);
+    
+    let errorMessage = 'خطا در ایجاد مقاله';
+    if (error.code === 11000) {
+      errorMessage = 'این اسلاگ (آدرس) قبلاً استفاده شده است. لطفاً اسلاگ دیگری انتخاب کنید.';
+    } else if (error.message) {
+      errorMessage = error.message;
+    }
+
+    res.status(400).json({ message: errorMessage, error: error.message });
   }
 };
 
 export const updateArticle = async (req, res) => {
   try {
-    const updatedArticle = await Article.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    const updatedArticle = await Article.findByIdAndUpdate(
+      req.params.id, 
+      req.body, 
+      { new: true, runValidators: true }
+    );
+    
+    if (!updatedArticle) {
+      return res.status(404).json({ message: 'مقاله یافت نشد' });
+    }
+    
     res.status(200).json(updatedArticle);
   } catch (error) {
-    res.status(400).json({ message: 'خطا در ویرایش مقاله', error });
+    console.error('❌ Article Update Error:', error);
+    
+    if (error.code === 11000) {
+      return res.status(400).json({ message: 'این اسلاگ قبلاً استفاده شده است.' });
+    }
+    
+    res.status(400).json({ message: 'خطا در ویرایش مقاله', error: error.message });
   }
 };
 
 export const deleteArticle = async (req, res) => {
   try {
-    await Article.findByIdAndDelete(req.params.id);
-    res.status(200).json({ message: 'مقاله حذف شد' });
+    const deletedArticle = await Article.findByIdAndDelete(req.params.id);
+    
+    if (!deletedArticle) {
+      return res.status(404).json({ message: 'مقاله یافت نشد' });
+    }
+    
+    res.status(200).json({ message: 'مقاله با موفقیت حذف شد' });
   } catch (error) {
-    res.status(500).json({ message: 'خطا در حذف مقاله', error });
+    res.status(500).json({ message: 'خطا در حذف مقاله', error: error.message });
   }
 };

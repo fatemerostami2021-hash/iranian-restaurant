@@ -130,12 +130,22 @@ export default function Contact() {
     },
   ];
 
+  // متغیرهای رنگی هماهنگ با صفحه About
+  const bgClass = isDark ? 'bg-[#0F0F0F]' : 'bg-[#FFFBF5]';
+  const textClass = isDark ? 'text-white' : 'text-[#1A1A1A]';
+  const mutedClass = isDark ? 'text-gray-400' : 'text-gray-700';
+  const accentText = isDark ? 'text-[#FFD700]' : 'text-[#D32F2F]';
+  const accentBorder = isDark ? 'border-[#FFD700]' : 'border-[#D32F2F]';
+  const accentBg = isDark ? 'bg-[#FFD700]/5' : 'bg-[#D32F2F]/5';
+  const btnClass = isDark ? 'bg-[#FFD700] text-black hover:bg-[#FFC700]' : 'bg-[#D32F2F] text-white hover:bg-[#B71C1C]';
+  const cardBorder = isDark ? 'border-white/10' : 'border-gray-200';
+
   const inputClass = `w-full p-3.5 rounded-xl bg-transparent border focus:outline-none focus:ring-2 font-['Vazirmatn'] transition-all ${
-    isDark ? 'border-white/20 text-white focus:border-[#FFD700] focus:ring-[#FFD700]/20 bg-white/5' : 'border-gray-300 text-gray-900 focus:border-[#D32F2F] focus:ring-[#D32F2F]/20 bg-gray-50'
+    isDark ? 'border-white/20 text-white focus:border-[#FFD700] focus:ring-[#FFD700]/20 bg-white/5' : 'border-gray-300 text-[#1A1A1A] focus:border-[#D32F2F] focus:ring-[#D32F2F]/20 bg-white'
   }`;
 
   return (
-    <div className={`min-h-screen pt-28 pb-20 overflow-hidden relative transition-colors duration-500 ${isDark ? 'bg-gray-950' : 'bg-gray-50'}`}>
+    <div className={`min-h-screen pt-28 pb-20 overflow-hidden relative transition-colors duration-500 ${bgClass} ${textClass}`}>
       
       <AnimatePresence>
         {notification && (
@@ -155,18 +165,19 @@ export default function Contact() {
         )}
       </AnimatePresence>
 
+      {/* افکت‌های نور پس‌زمینه */}
       <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-[#FFD700]/10 rounded-full blur-[150px] pointer-events-none animate-pulse" />
-      <div className="absolute bottom-0 right-1/4 w-[500px] h-[500px] bg-purple-600/10 rounded-full blur-[150px] pointer-events-none animate-pulse" style={{ animationDelay: '1s' }} />
+      <div className="absolute bottom-0 right-1/4 w-[500px] h-[500px] bg-[#D32F2F]/10 rounded-full blur-[150px] pointer-events-none animate-pulse" style={{ animationDelay: '1s' }} />
 
       <div className="max-w-7xl mx-auto px-4 relative z-10">
         <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }} className="text-center mb-16">
-          <motion.span initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ delay: 0.2 }} className={`inline-block px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-widest mb-4 ${isDark ? 'bg-[#FFD700]/10 text-[#FFD700] border border-[#FFD700]/20' : 'bg-[#D32F2F]/10 text-[#D32F2F] border border-[#D32F2F]/20'}`}>
+          <motion.span initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ delay: 0.2 }} className={`inline-block px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-widest mb-4 ${accentBg} ${accentText} border ${accentBorder}/30`}>
             {t('contact.badge', 'در خدمت شما هستیم')}
           </motion.span>
-          <h1 className={`font-['Vazirmatn'] text-4xl md:text-6xl lg:text-7xl font-black mb-4 tracking-tight ${isDark ? 'text-white' : 'text-gray-900'}`}>
-            {t('contact.title', 'ارتباط با')} <span className={isDark ? 'text-[#FFD700]' : 'text-[#D32F2F]'}>{t('contact.titleHighlight', 'ما')}</span>
+          <h1 className="font-['Vazirmatn'] text-4xl md:text-6xl lg:text-7xl font-black mb-4 tracking-tight">
+            {t('contact.title', 'ارتباط با')} <span className={accentText}>{t('contact.titleHighlight', 'ما')}</span>
           </h1>
-          <p className={`font-['Vazirmatn'] text-lg max-w-2xl mx-auto ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+          <p className={`font-['Vazirmatn'] text-lg max-w-2xl mx-auto ${mutedClass}`}>
             {t('contact.subtitle', 'اطلاعات خود را ثبت کنید تا سریعاً با شما تماس بگیریم.')}
           </p>
         </motion.div>
@@ -194,11 +205,11 @@ export default function Contact() {
                   <CardWrapper
                     {...wrapperProps}
                     className={`block p-6 rounded-3xl backdrop-blur-xl border transition-all duration-300 ${
-                      card.link ? 'hover:shadow-2xl hover:border-[#FFD700]/50 active:scale-95' : ''
+                      card.link ? 'hover:shadow-2xl active:scale-95' : ''
                     } ${
                       isDark 
-                        ? 'bg-white/5 border-white/10 hover:bg-white/[0.07] hover:border-[#FFD700]/30' 
-                        : 'bg-white border-gray-200 hover:shadow-2xl hover:border-[#D32F2F]/30'
+                        ? `bg-white/5 ${cardBorder} hover:bg-white/[0.07] hover:border-[#FFD700]/30` 
+                        : `bg-white ${cardBorder} hover:shadow-2xl hover:border-[#D32F2F]/30`
                     } shadow-lg group`}
                   >
                     <div className={`w-14 h-14 rounded-2xl flex items-center justify-center mb-5 transition-colors duration-300 ${
@@ -206,41 +217,21 @@ export default function Contact() {
                         ? 'bg-[#FFD700]/10 group-hover:bg-[#FFD700]/20' 
                         : 'bg-[#D32F2F]/10 group-hover:bg-[#D32F2F]/20'
                     }`}>
-                      <card.icon className={`text-2xl ${isDark ? 'text-[#FFD700]' : 'text-[#D32F2F]'}`} />
+                      <card.icon className={`text-2xl ${accentText}`} />
                     </div>
-                    <h3 className={`font-['Vazirmatn'] font-bold text-lg mb-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                    <h3 className="font-['Vazirmatn'] font-bold text-lg mb-2">
                       {card.title}
                     </h3>
                     
-                    {/* ===== محتوای کارت ===== */}
-                    <div className={`font-['Vazirmatn'] text-sm ${
-                      card.isLtr ? 'text-left' : 'text-center'
-                    } ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
-                      {card.type === 'phone' && (
-                        <span className="flex items-center gap-1">
-                          📞 {card.value}
-                        </span>
-                      )}
-                      {card.type === 'email' && (
-                        <span className="flex items-center gap-1 break-all">
-                          ✉️ {card.value}
-                        </span>
-                      )}
-                      {card.type === 'address' && (
-                        <span className="flex items-center gap-1">
-                          📍 {card.value}
-                        </span>
-                      )}
-                      {card.type === 'hours' && (
-                        <span className="flex items-center gap-1">
-                          🕐 {card.value}
-                        </span>
-                      )}
+                    <div className={`font-['Vazirmatn'] text-sm ${card.isLtr ? 'text-left' : 'text-center'} ${mutedClass}`}>
+                      {card.type === 'phone' && (<span className="flex items-center gap-1">📞 {card.value}</span>)}
+                      {card.type === 'email' && (<span className="flex items-center gap-1 break-all">✉️ {card.value}</span>)}
+                      {card.type === 'address' && (<span className="flex items-center gap-1">📍 {card.value}</span>)}
+                      {card.type === 'hours' && (<span className="flex items-center gap-1">🕐 {card.value}</span>)}
                     </div>
                     
-                    {/* ===== نشانگر کلیک (فقط برای کارت‌های دارای لینک) ===== */}
                     {card.link && (
-                      <div className="mt-3 text-xs font-medium opacity-50 flex items-center gap-1 text-[#FFD700]">
+                      <div className={`mt-3 text-xs font-medium opacity-50 flex items-center gap-1 ${accentText}`}>
                         <span>کلیک کنید</span>
                         <span>→</span>
                       </div>
@@ -251,15 +242,15 @@ export default function Contact() {
             })}
           </div>
 
-          {/* ===== فرم ===== */}
+          {/* فرم */}
           <motion.div initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.8 }} className={`lg:col-span-3 p-8 md:p-10 rounded-3xl backdrop-blur-xl border shadow-2xl relative overflow-hidden ${isDark ? 'bg-white/5 border-white/10' : 'bg-white border-gray-200'}`}>
             <div className={`absolute -top-20 -right-20 w-60 h-60 rounded-full blur-3xl opacity-20 ${isDark ? 'bg-[#FFD700]' : 'bg-[#D32F2F]'}`}></div>
             
             <div className="relative z-10">
-              <h2 className={`font-['Vazirmatn'] text-3xl font-black mb-2 flex items-center gap-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>
+              <h2 className="font-['Vazirmatn'] text-3xl font-black mb-2 flex items-center gap-2">
                 <FiUser /> {t('contact.formTitle', 'فرم اطلاعات کامل')}
               </h2>
-              <p className={`font-['Vazirmatn'] text-sm mb-8 ${isDark ? 'text-gray-500' : 'text-gray-500'}`}>
+              <p className={`font-['Vazirmatn'] text-sm mb-8 ${mutedClass}`}>
                 {t('contact.formDesc', 'لطفاً اطلاعات زیر را با دقت تکمیل کنید تا سفارش یا پیام شما سریعاً بررسی شود.')}
               </p>
 
@@ -284,12 +275,12 @@ export default function Contact() {
                 <div className={`border-t ${isDark ? 'border-white/10' : 'border-gray-200'}`}></div>
 
                 <div className="space-y-5">
-                  <h3 className={`font-['Vazirmatn'] font-bold flex items-center gap-2 ${isDark ? 'text-white' : 'text-gray-800'}`}>
+                  <h3 className="font-['Vazirmatn'] font-bold flex items-center gap-2">
                     <FiHome /> {t('contact.form.addressDetails', 'اطلاعات آدرس')}
                   </h3>
                   
                   <div className="mb-2">
-                    <button type="button" onClick={handleGetLocation} disabled={isLocLoading} className={`w-full flex items-center justify-center gap-2 py-3 rounded-xl font-['Vazirmatn'] font-bold transition-all border-2 border-dashed ${locationLink ? 'border-green-500 text-green-500' : 'border-[#FFD700] text-[#FFD700]'} hover:bg-[#FFD700]/10`}>
+                    <button type="button" onClick={handleGetLocation} disabled={isLocLoading} className={`w-full flex items-center justify-center gap-2 py-3 rounded-xl font-['Vazirmatn'] font-bold transition-all border-2 border-dashed ${locationLink ? 'border-green-500 text-green-500' : `${accentBorder} ${accentText}`} hover:bg-opacity-10`}>
                       {locationLink ? <FiCheckCircle /> : <FiNavigation />}
                       {isLocLoading ? t('contact.form.gettingLocation', 'در حال دریافت موقعیت...') : 
                         (locationLink ? t('contact.form.locationReceived', 'موقعیت مکانی دریافت شد!') : 
@@ -320,7 +311,7 @@ export default function Contact() {
                   <textarea name="description" rows="4" value={formData.description} onChange={handleChange} className={`${inputClass} resize-none`} required></textarea>
                 </div>
                 
-                <motion.button whileTap={{ scale: 0.98 }} type="submit" disabled={isSending} className={`w-full flex items-center justify-center gap-2 font-['Vazirmatn'] font-bold py-4 rounded-xl transition-all duration-300 shadow-lg disabled:opacity-70 ${isDark ? 'bg-[#FFD700] text-black hover:bg-[#FFC700] hover:shadow-[#FFD700]/30' : 'bg-[#D32F2F] text-white hover:bg-[#B71C1C] hover:shadow-[#D32F2F]/30'}`}>
+                <motion.button whileTap={{ scale: 0.98 }} type="submit" disabled={isSending} className={`w-full flex items-center justify-center gap-2 font-['Vazirmatn'] font-bold py-4 rounded-xl transition-all duration-300 shadow-lg disabled:opacity-70 ${btnClass}`}>
                   <FiSend className="text-lg" />
                   {isSending ? 'در حال ارسال...' : t('contact.form.submit', 'ارسال سریع اطلاعات در واتساپ و ایمیل')}
                 </motion.button>
@@ -330,7 +321,7 @@ export default function Contact() {
         </div>
 
         <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5, duration: 0.8 }} className="rounded-3xl overflow-hidden border shadow-2xl h-[450px] relative group">
-          <div className={`absolute inset-0 transition-opacity duration-300 ${isDark ? 'border-[#FFD700]/20' : 'border-[#D32F2F]/20'}`}>
+          <div className={`absolute inset-0 transition-opacity duration-300 ${accentBorder}/20`}>
             <iframe src={siteSettings.mapEmbedUrl} width="100%" height="100%" style={{ border: 0, filter: isDark ? 'invert(90%) hue-rotate(180deg) brightness(0.9) contrast(0.9)' : 'none' }} allowFullScreen="" loading="lazy" title="Google Map"></iframe>
           </div>
         </motion.div>
