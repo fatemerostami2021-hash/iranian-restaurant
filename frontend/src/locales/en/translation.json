@@ -126,9 +126,11 @@
     "invalidEmail": "Please enter a valid email",
     "invalidPhone": "Please enter a valid phone number"
   },
-  "footer": {
+    "footer": {
     "followUs": "Follow Us",
-    "rights": "All rights reserved"
+    "rights": "All rights reserved",
+    "designedBy": "Designed & Developed by: Fateme Rostami",
+    "map": "Map"
   },
   "articles": {
     "title": "Articles",
@@ -317,6 +319,49 @@
       "locationReceived": "Location received!",
       "getLocation": "Get my GPS Location",
       "gettingLocation": "Getting location..."
+    }
+  
+  },
+  "supportAgent": {
+    "title": "Support",
+    "subtitle": "Choose your question",
+    "backToCategories": "Back to categories",
+    "stillNeedHelp": "Still need help?",
+    "chatOnWhatsapp": "Chat on WhatsApp",
+    "actions": {
+      "support": "Support",
+      "whatsapp": "WhatsApp",
+      "call": "Call",
+      "telegram": "Telegram",
+      "instagram": "Instagram"
+    },
+    "categories": { 
+      "hours": "Hours & Location", 
+      "menu": "About the Menu", 
+      "order": "Ordering & Delivery", 
+      "reservation": "Table Reservation", 
+      "payment": "Payment" 
+    },
+    "questions": {
+      "hours1": { "q": "What are your opening hours?", "a": "We are open every day from 8 AM to 2 AM." },
+      "hours2": { "q": "Where is the restaurant located?", "a": "Salwa Road, Al Rayyan, Doha, Qatar." },
+      "hours3": { "q": "Are you open on holidays?", "a": "Yes, we are open on most public holidays." },
+      "menu1": { "q": "Do you have vegetarian options?", "a": "Yes, we offer vegetarian appetizers like hummus, Shirazi salad, and yogurt with cucumber." },
+      "menu2": { "q": "Is your food spicy?", "a": "Most dishes are mildly spiced. For spicy options, try our Spicy Kofta or Spicy Chicken." },
+      "menu3": { "q": "What languages is the menu in?", "a": "Our menu is available in Persian, Arabic, and English." },
+      "menu4": { "q": "Can I customize my order?", "a": "Yes, you can add special instructions in the notes field when ordering." },
+      "order1": { "q": "How do I place an order?", "a": "Add items to your cart from the menu page, then complete the checkout steps." },
+      "order2": { "q": "What is the delivery fee?", "a": "Delivery within Doha is 10 QR. Outside Doha, it is calculated based on distance." },
+      "order3": { "q": "How long does delivery take?", "a": "Usually between 30 to 60 minutes, depending on distance and demand." },
+      "order4": { "q": "Can I pick up my order?", "a": "Yes, select Pickup during checkout." },
+      "order5": { "q": "How do I track my order?", "a": "After ordering, you will receive a confirmation message on WhatsApp. You can also call us for updates." },
+      "reservation1": { "q": "How do I book a table?", "a": "Call the restaurant directly or send a reservation request via WhatsApp." },
+      "reservation2": { "q": "Is there a reservation fee?", "a": "No, table reservations are completely free." },
+      "reservation3": { "q": "How many people can I book for?", "a": "We accommodate small to large groups, up to 20 people." },
+      "payment1": { "q": "What payment methods do you accept?", "a": "Cash, in-person card payment, and online (card-to-card) are available." },
+      "payment2": { "q": "Can I pay online?", "a": "Yes, in addition to on-site payment, online payment (card-to-card) is also available." },
+      "payment3": { "q": "Is tax added to prices?", "a": "No, menu prices are final with no added tax." },
+      "payment4": { "q": "Is there a minimum order amount?", "a": "No minimum order, but orders above 50 QR qualify for free delivery." }
     }
   }
 }
