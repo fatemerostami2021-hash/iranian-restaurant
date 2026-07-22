@@ -19,6 +19,8 @@ import MenuManagement from './admin/MenuManagement';
 import ArticlesManagement from './admin/ArticlesManagement';
 import OrdersManagement from './admin/OrdersManagement';
 import ReservationsManagement from './admin/ReservationsManagement';
+import UsersManagement from './admin/UsersManagement';
+import JobApplications from './admin/JobApplications';
 
 // محافظت از روت‌های ادمین
 const ProtectedRoute = ({ children }) => {
@@ -52,6 +54,8 @@ function App() {
               <Route path="orders" element={<OrdersManagement />} />
               <Route path="reservations" element={<ReservationsManagement />} />
               <Route path="articles" element={<ArticlesManagement />} />
+              <Route path="users" element={<UsersManagement />} />
+               <Route path="jobs" element={<JobApplications />} />
             </Route>
           </Routes>
         </CartProvider>

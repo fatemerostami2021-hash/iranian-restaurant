@@ -3,8 +3,10 @@ import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import axios from 'axios';
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+
 export default function AdminLogin() {
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
@@ -12,11 +14,13 @@ export default function AdminLogin() {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post('http://localhost:5000/api/admin/login', { username, password });
+      // ✅ ارسال email به جای username
+      const res = await axios.post(`${API_URL}/api/admin/login`, { email, password });
       localStorage.setItem('adminToken', res.data.token);
       navigate('/admin/dashboard');
     } catch (err) {
-      setError('نام کاربری یا رمز عبور اشتباه است');
+      // ✅ نمایش پیام خطای دقیق از سمت سرور
+      setError(err.response?.data?.message || 'ایمیل یا رمز عبور اشتباه است');
     }
   };
 
@@ -34,13 +38,14 @@ export default function AdminLogin() {
         
         <form onSubmit={handleLogin} className="space-y-6">
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">نام کاربری</label>
+            <label className="block text-sm font-medium text-gray-300 mb-2">ایمیل</label>
             <input
-              type="text"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               className="w-full bg-gray-800 border border-gray-700 rounded-lg p-3 text-white focus:ring-2 focus:ring-[#FFD700] focus:outline-none transition"
-              placeholder="admin"
+              placeholder="admin@kabab.com"
+              required
             />
           </div>
           <div>
@@ -51,6 +56,7 @@ export default function AdminLogin() {
               onChange={(e) => setPassword(e.target.value)}
               className="w-full bg-gray-800 border border-gray-700 rounded-lg p-3 text-white focus:ring-2 focus:ring-[#FFD700] focus:outline-none transition"
               placeholder="••••••••"
+              required
             />
           </div>
           

@@ -12,6 +12,10 @@ import authRoutes from './routes/authRoutes.js';
 import articleRoutes from './routes/articleRoutes.js';
 import reservationRoutes from './routes/reservationRoutes.js';
 
+// ✅ روت‌های جدید اضافه شد
+import userRoutes from './routes/userRoutes.js';
+import jobApplicationRoutes from './routes/jobApplicationRoutes.js';
+
 // ===== پنل ادمین =====
 import { login, getDashboardStats, getOrders, updateOrderStatus } from './controllers/adminController.js';
 import { verifyAdminToken } from './middleware/authMiddleware.js';
@@ -77,6 +81,11 @@ app.delete('/api/admin/articles/:id', verifyAdminToken, deleteArticle);
 // ===== Routes ادمین - مدیریت رزروها =====
 app.use('/api/admin/reservations', reservationRoutes);
 
+// ✅ ===== Routes ادمین - مدیریت کاربران و درخواست‌های کاری =====
+app.use('/api/admin/users', verifyAdminToken, userRoutes);
+// مسیر /api/admin/jobs در خود فایل روت، محافظت شده است (چون مسیر عمومی برای ثبت هم دارد)
+app.use('/api/admin/jobs', jobApplicationRoutes); 
+
 // ===== Routes ادمین - آپلود فایل =====
 app.post('/api/admin/upload/image', verifyAdminToken, upload.single('image'), uploadFile);
 app.post('/api/admin/upload/video', verifyAdminToken, upload.single('video'), uploadFile);
@@ -85,6 +94,11 @@ app.post('/api/admin/upload/video', verifyAdminToken, upload.single('video'), up
 app.post('/api/contact/send-email', async (req, res) => {
   const { name, phone, email, message, locationLink } = req.body;
   
+  // ۱. اول پیام تلگرام را می‌فرستیم
+  const telegramText = `🔔 <b>پیام جدید از وب‌سایت</b>\n\n👤 <b>نام:</b> ${name}\n📞 <b>تلفن:</b> ${phone}\n✉️ <b>ایمیل:</b> ${email}\n🌍 <b>لوکیشن:</b> ${locationLink || 'ثبت نشده'}\n\n📝 <b>پیام:</b>\n${message}`;
+  sendTelegramMessage(telegramText);
+
+  // ۲. سپس سعی می‌کنیم ایمیل را بفرستیم
   try {
     const transporter = nodemailer.createTransport({
       service: 'gmail',
@@ -98,25 +112,13 @@ app.post('/api/contact/send-email', async (req, res) => {
       from: `"Website Contact" <${process.env.EMAIL_USER || 'rostamy141@gmail.com'}>`,
       to: 'rostamy141@gmail.com',
       subject: `پیام جدید از ${name}`,
-      text: `
-        نام: ${name}
-        تلفن: ${phone}
-        ایمیل: ${email}
-        لوکیشن: ${locationLink || 'ثبت نشده'}
-        
-        پیام:
-        ${message}
-      `,
+      text: `نام: ${name}\nتلفن: ${phone}\nایمیل: ${email}\nلوکیشن: ${locationLink || 'ثبت نشده'}\n\nپیام:\n${message}`,
     });
 
-    // ✅ ارسال پیام به تلگرام مدیر
-    const telegramText = `🔔 <b>پیام جدید از وب‌سایت</b>\n\n👤 <b>نام:</b> ${name}\n📞 <b>تلفن:</b> ${phone}\n✉️ <b>ایمیل:</b> ${email}\n🌍 <b>لوکیشن:</b> ${locationLink || 'ثبت نشده'}\n\n📝 <b>پیام:</b>\n${message}`;
-    sendTelegramMessage(telegramText);
-
-    res.status(200).json({ message: 'ایمیل با موفقیت ارسال شد' });
+    res.status(200).json({ message: 'ایمیل و تلگرام با موفقیت ارسال شد' });
   } catch (error) {
-    console.error('Email error:', error);
-    res.status(500).json({ message: 'خطا در ارسال ایمیل' });
+    console.error('Email error (ولی تلگرام فرستاده شده است):', error);
+    res.status(200).json({ message: 'تلگرام ارسال شد، ایمیل خطا داشت' }); 
   }
 });
 

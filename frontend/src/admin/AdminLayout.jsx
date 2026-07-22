@@ -1,5 +1,5 @@
 import { Outlet, NavLink, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, UtensilsCrossed, ShoppingBag, CalendarCheck, LogOut, Newspaper } from 'lucide-react';
+import { LayoutDashboard, UtensilsCrossed, ShoppingBag, CalendarCheck, LogOut, Newspaper, Users, Briefcase } from 'lucide-react';
 
 export default function AdminLayout() {
   const navigate = useNavigate();
@@ -15,6 +15,8 @@ export default function AdminLayout() {
     { to: '/admin/orders', icon: ShoppingBag, label: 'سفارشات' },
     { to: '/admin/reservations', icon: CalendarCheck, label: 'رزروها' },
     { to: '/admin/articles', icon: Newspaper, label: 'مدیریت مقالات' },
+    { to: '/admin/users', icon: Users, label: 'مدیریت کاربران' }, // ✅ اضافه شد
+    { to: '/admin/jobs', icon: Briefcase, label: 'درخواست‌های کاری' }, // ✅ اضافه شد
   ];
 
   return (

@@ -1,68 +1,92 @@
-import jwt from 'jsonwebtoken';
+import User from '../models/User.js';
+import Order from '../models/Order.js';
+import Dish from '../models/Dish.js';
+import Reservation from '../models/Reservation.js';
 import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
 
-// ===== اطلاعات ادمین (در دیتابیس ذخیره خواهد شد) =====
-const ADMIN_USERNAME = 'admin';
-const ADMIN_PASSWORD_HASH = bcrypt.hashSync('admin123', 8);
+// ===== لاگین ادمین (متصل به مدل User) =====
+export const login = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    const user = await User.findOne({ email: email?.toLowerCase().trim() });
+    
+    // فقط ادمین یا کارمندان (staff) اجازه ورود دارند
+    if (!user || !['admin', 'staff'].includes(user.role)) {
+      return res.status(401).json({ message: 'دسترسی به پنل مدیریت ندارید' });
+    }
+    
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) return res.status(401).json({ message: 'رمز عبور اشتباه است' });
 
-// ===== لاگین ادمین =====
-export const login = (req, res) => {
-  const { username, password } = req.body;
-
-  if (!username || !password) {
-    return res.status(400).json({ message: 'نام کاربری و رمز عبور الزامی است' });
+    const token = jwt.sign(
+      { id: user._id, role: user.role }, 
+      process.env.JWT_SECRET || 'your_super_secret_key', 
+      { expiresIn: '8h' }
+    );
+    
+    res.status(200).json({ 
+      token, 
+      user: { id: user._id, name: user.name, email: user.email, role: user.role } 
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'خطای سرور در زمان لاگین' });
   }
+};
 
-  if (username !== ADMIN_USERNAME || !bcrypt.compareSync(password, ADMIN_PASSWORD_HASH)) {
-    return res.status(401).json({ message: 'نام کاربری یا رمز عبور اشتباه است' });
+// ===== دریافت آمار داشبورد (متصل به دیتابیس واقعی) =====
+export const getDashboardStats = async (req, res) => {
+  try {
+    const totalOrders = await Order.countDocuments();
+    const pendingReservations = await Reservation.countDocuments({ status: 'pending' });
+    const totalMenuItems = await Dish.countDocuments();
+    
+    // محاسبه درآمد کل (فقط سفارشات تحویل شده)
+    const revenueData = await Order.aggregate([
+      { $match: { status: 'delivered' } }, 
+      { $group: { _id: null, total: { $sum: '$totalPrice' } } }
+    ]);
+    
+    const recentOrders = await Order.find()
+      .sort({ createdAt: -1 })
+      .limit(5)
+      .populate('items.dish', 'name.fa');
+
+    res.status(200).json({
+      totalOrders,
+      pendingReservations,
+      totalRevenue: revenueData[0]?.total || 0,
+      totalMenuItems,
+      recentOrders
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'خطا در دریافت آمار' });
   }
-
-  const token = jwt.sign(
-    { role: 'admin', username: ADMIN_USERNAME },
-    process.env.JWT_SECRET || 'your_super_secret_key',
-    { expiresIn: '8h' }
-  );
-
-  res.status(200).json({ 
-    token, 
-    message: 'ورود موفقیت‌آمیز بود',
-    user: { username: ADMIN_USERNAME, role: 'admin' }
-  });
 };
 
-// ===== دریافت آمار داشبورد =====
-export const getDashboardStats = (req, res) => {
-  res.status(200).json({
-    totalOrders: 152,
-    pendingReservations: 12,
-    totalRevenue: 48500000,
-    totalMenuItems: 78,
-    recentOrders: [
-      { id: 1, customer: 'محمد رضایی', total: 450000, status: 'در حال آماده‌سازی' },
-      { id: 2, customer: 'سارا حسینی', total: 320000, status: 'ارسال شده' },
-      { id: 3, customer: 'علی کریمی', total: 280000, status: 'در انتظار' },
-    ]
-  });
+// ===== دریافت لیست سفارشات (از دیتابیس واقعی) =====
+export const getOrders = async (req, res) => {
+  try {
+    const orders = await Order.find()
+      .populate('items.dish')
+      .sort({ createdAt: -1 });
+    res.status(200).json(orders);
+  } catch (error) {
+    res.status(500).json({ message: 'خطا در دریافت سفارشات' });
+  }
 };
 
-// ===== دریافت لیست سفارشات =====
-export const getOrders = (req, res) => {
-  res.status(200).json({
-    orders: [
-      { id: 1, customer: 'محمد رضایی', items: 3, total: 450000, status: 'در حال آماده‌سازی', date: '۱۴۰۴/۰۴/۲۸' },
-      { id: 2, customer: 'سارا حسینی', items: 2, total: 320000, status: 'ارسال شده', date: '۱۴۰۴/۰۴/۲۸' },
-      { id: 3, customer: 'علی کریمی', items: 4, total: 280000, status: 'در انتظار', date: '۱۴۰۴/۰۴/۲۷' },
-    ]
-  });
-};
-
-// ===== به‌روزرسانی وضعیت سفارش =====
-export const updateOrderStatus = (req, res) => {
-  const { id } = req.params;
-  const { status } = req.body;
-  
-  res.status(200).json({ 
-    message: `وضعیت سفارش ${id} به ${status} تغییر کرد`,
-    order: { id, status }
-  });
+// ===== به‌روزرسانی وضعیت سفارش (در دیتابیس واقعی) =====
+export const updateOrderStatus = async (req, res) => {
+  try {
+    const order = await Order.findByIdAndUpdate(
+      req.params.id, 
+      { status: req.body.status }, 
+      { new: true }
+    );
+    if (!order) return res.status(404).json({ message: 'سفارش یافت نشد' });
+    res.status(200).json(order);
+  } catch (error) {
+    res.status(400).json({ message: 'خطا در تغییر وضعیت سفارش' });
+  }
 };
