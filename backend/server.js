@@ -21,6 +21,9 @@ import { getDishes, createDish, updateDish, deleteDish } from './controllers/dis
 import { getAllAdminArticles, createArticle, updateArticle, deleteArticle } from './controllers/articleController.js';
 import { uploadFile } from './controllers/uploadController.js';
 
+// ✅ ایمپورت تابع تلگرام
+import { sendTelegramMessage } from './utils/telegramNotifier.js';
+
 dotenv.config();
 
 const app = express();
@@ -105,6 +108,10 @@ app.post('/api/contact/send-email', async (req, res) => {
         ${message}
       `,
     });
+
+    // ✅ ارسال پیام به تلگرام مدیر
+    const telegramText = `🔔 <b>پیام جدید از وب‌سایت</b>\n\n👤 <b>نام:</b> ${name}\n📞 <b>تلفن:</b> ${phone}\n✉️ <b>ایمیل:</b> ${email}\n🌍 <b>لوکیشن:</b> ${locationLink || 'ثبت نشده'}\n\n📝 <b>پیام:</b>\n${message}`;
+    sendTelegramMessage(telegramText);
 
     res.status(200).json({ message: 'ایمیل با موفقیت ارسال شد' });
   } catch (error) {
