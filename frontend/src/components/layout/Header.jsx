@@ -8,7 +8,8 @@ import {
   MdArticle,
   MdInfo,
   MdPhoneInTalk,
-  MdAdminPanelSettings
+  MdAdminPanelSettings,
+  MdWorkOutline
 } from 'react-icons/md';
 import { BiChevronDown } from 'react-icons/bi';
 
@@ -147,6 +148,19 @@ export default function Header() {
             <TabletNav />
 
             <div className="flex items-center gap-2 shrink-0">
+              {/* ✅ دکمه فرصت‌های شغلی */}
+              <Link 
+                to="/careers" 
+                className={`hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold transition-all duration-300 ${
+                  theme === 'dark' 
+                    ? 'bg-[#FFD700]/10 text-[#FFD700] border border-[#FFD700]/30 hover:bg-[#FFD700]/20' 
+                    : 'bg-[#D32F2F]/10 text-[#D32F2F] border border-[#D32F2F]/30 hover:bg-[#D32F2F]/20'
+                }`}
+              >
+                <MdWorkOutline size={16} />
+                {t('nav.careers', 'فرصت‌های شغلی')}
+              </Link>
+
               <Link
                 to={isLoggedIn ? '/admin/dashboard' : '/admin/login'}
                 className={`p-2 rounded-full hover:bg-white/10 transition-colors duration-300 group ${textClasses}`}

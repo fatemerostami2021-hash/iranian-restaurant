@@ -10,6 +10,7 @@ import ArticleDetail from './pages/ArticleDetail';
 import About from './pages/About';
 import Contact from './pages/Contact';
 import Checkout from './pages/Checkout';
+import Careers from './pages/Careers';
 
 // ===== پنل ادمین =====
 import AdminLayout from './admin/AdminLayout';
@@ -44,6 +45,7 @@ function App() {
             <Route path="/about" element={<Layout><About /></Layout>} />
             <Route path="/contact" element={<Layout><Contact /></Layout>} />
             <Route path="/checkout" element={<Layout><Checkout /></Layout>} />
+            <Route path="/careers" element={<Layout><Careers /></Layout>} />
 
             {/* ===== مسیرهای ادمین ===== */}
             <Route path="/admin/login" element={<AdminLogin />} />
