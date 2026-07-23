@@ -11,6 +11,7 @@ import About from './pages/About';
 import Contact from './pages/Contact';
 import Checkout from './pages/Checkout';
 import Careers from './pages/Careers';
+import Profile from './pages/Profile';
 
 // ===== پنل ادمین =====
 import AdminLayout from './admin/AdminLayout';
@@ -46,6 +47,7 @@ function App() {
             <Route path="/contact" element={<Layout><Contact /></Layout>} />
             <Route path="/checkout" element={<Layout><Checkout /></Layout>} />
             <Route path="/careers" element={<Layout><Careers /></Layout>} />
+            <Route path="/profile" element={<Layout><Profile /></Layout>} />
 
             {/* ===== مسیرهای ادمین ===== */}
             <Route path="/admin/login" element={<AdminLogin />} />

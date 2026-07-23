@@ -393,5 +393,43 @@
     "submitting": "Submitting...",
     "successTitle": "Application Submitted Successfully!",
     "successDesc": "Our team will contact you as soon as possible."
+  },
+  "authModal": {
+    "login": "Login",
+    "register": "Register",
+    "google": "Login with Google",
+    "email": "Email",
+    "phone": "Phone",
+    "emailPlaceholder": "Email",
+    "passwordPlaceholder": "Password",
+    "loginBtn": "Login",
+    "phonePlaceholder": "Phone Number",
+    "requestOtp": "Get Verification Code",
+    "otpPlaceholder": "Verification Code",
+    "otpDesc": "Enter the 6-digit code sent to you:",
+    "verifyOtp": "Verify & Login",
+    "namePlaceholder": "Full Name",
+    "registerBtn": "Register",
+    "hasAccount": "Have an account? Login",
+    "noAccount": "Don't have an account? Register",
+    "error": "Error",
+    "loading": "Processing..."
+  },
+  "profilePage": {
+    "logout": "Logout",
+    "myAddresses": "My Addresses",
+    "myCards": "Payment Cards",
+    "loginHistory": "Login History",
+    "add": "Add",
+    "noAddresses": "No addresses saved yet.",
+    "noCards": "No cards saved yet.",
+    "noHistory": "No history recorded.",
+    "titlePlaceholder": "Title (Home, Work)",
+    "addressPlaceholder": "Full Address",
+    "saveAddress": "Save Address",
+    "cardPlaceholder": "Card Number (16 digits)",
+    "visa": "Visa",
+    "mastercard": "Mastercard",
+    "saveCard": "Save Card"
   }
 }

@@ -15,6 +15,8 @@ import reservationRoutes from './routes/reservationRoutes.js';
 // ✅ روت‌های جدید اضافه شد
 import userRoutes from './routes/userRoutes.js';
 import jobApplicationRoutes from './routes/jobApplicationRoutes.js';
+import customerAuthRoutes from './routes/customerAuthRoutes.js';
+import userProfileRoutes from './routes/userProfileRoutes.js';
 
 // ===== پنل ادمین =====
 import { login, getDashboardStats, getOrders, updateOrderStatus } from './controllers/adminController.js';
@@ -59,6 +61,13 @@ app.use('/api/dishes', dishRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/articles', articleRoutes);
+
+// ===== Routes احراز هویت مشتریان =====
+app.use('/api/customer/auth', customerAuthRoutes);
+
+
+// ===== Routes حساب کاربری مشتریان =====
+app.use('/api/customer/profile', userProfileRoutes);
 
 // ===== Routes ادمین - هسته =====
 app.post('/api/admin/login', login);
