@@ -12,6 +12,7 @@ import Contact from './pages/Contact';
 import Checkout from './pages/Checkout';
 import Careers from './pages/Careers';
 import Profile from './pages/Profile';
+import NotFound from './pages/NotFound';
 
 // ===== پنل ادمین =====
 import AdminLayout from './admin/AdminLayout';
@@ -59,8 +60,11 @@ function App() {
               <Route path="reservations" element={<ReservationsManagement />} />
               <Route path="articles" element={<ArticlesManagement />} />
               <Route path="users" element={<UsersManagement />} />
-               <Route path="jobs" element={<JobApplications />} />
+              <Route path="jobs" element={<JobApplications />} />
             </Route>
+
+            {/* ✅ مسیر ۴۰۴ باید اینجا (بیرون از ادمین) و به عنوان آخرین روت باشد */}
+            <Route path="*" element={<Layout><NotFound /></Layout>} />
           </Routes>
         </CartProvider>
       </ThemeProvider>

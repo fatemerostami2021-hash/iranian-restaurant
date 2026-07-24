@@ -127,6 +127,14 @@
     "invalidEmail": "Please enter a valid email",
     "invalidPhone": "Please enter a valid phone number"
   },
+  "orderStatus": {
+    "pending": "Pending",
+    "confirmed": "Confirmed",
+    "preparing": "Preparing",
+    "ready": "Ready for Pickup",
+    "delivered": "Delivered",
+    "cancelled": "Cancelled"
+  },
   "footer": {
     "followUs": "Follow Us",
     "rights": "All rights reserved",
@@ -416,6 +424,23 @@
     "loading": "Processing..."
   },
   "profilePage": {
+    "overview": "Overview",
+    "myOrders": "My Orders",
+    "security": "Security & Login",
+    "welcomeBack": "Welcome back",
+    "bestOfWeek": "Special Picks This Week",
+    "recentLogins": "Recent Logins",
+    "noOrders": "You haven't placed any orders yet.",
+    "orderNow": "View Menu & Order",
+    "total": "Total Amount",
+    "quote1": "A delicious meal straight from the fire awaits you today 🔥",
+    "quote2": "The best moments of the day happen around a good table",
+    "quote3": "Good food can make your day — you deserve the best today",
+    "quote4": "Authentic Iranian flavor is always a good reason to smile",
+    "quote5": "Time to treat yourself to a delicious break",
+    "quote6": "Every order is a story cooked with love over charcoal",
+    "quote7": "Sometimes the best decision of the day is choosing good food",
+    "quote8": "Hot, fresh, and made with love — exactly what you need today",
     "logout": "Logout",
     "myAddresses": "My Addresses",
     "myCards": "Payment Cards",
@@ -431,5 +456,11 @@
     "visa": "Visa",
     "mastercard": "Mastercard",
     "saveCard": "Save Card"
+  },
+    "notFound": {
+    "title": "Oops! This page got burned on the grill!",
+    "desc": "It looks like the page you were looking for wasn't found or has been removed. Let's take you somewhere cozy.",
+    "homeBtn": "Back to Home",
+    "menuBtn": "View Menu"
   }
 }

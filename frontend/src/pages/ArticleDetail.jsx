@@ -5,6 +5,7 @@ import { useTheme } from '../context/ThemeContext';
 import axios from 'axios';
 import { MdArrowBack, MdVisibility, MdAccessTime, MdCalendarToday, MdShare, MdContentCopy, MdOutlineWhatsapp } from 'react-icons/md';
 import { FaFacebookF, FaTwitter } from 'react-icons/fa';
+import DOMPurify from 'dompurify';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
@@ -108,14 +109,15 @@ export default function ArticleDetail() {
                 {excerpt && <p className={`text-xl font-medium mb-8 leading-relaxed ${mutedColor} border-r-4 border-[#FFD700] pr-4`}>{excerpt}</p>}
                 
                 {/* رندر HTML با استایل‌های مجله‌ای */}
-                <div 
+                               <div 
                   className={`prose prose-lg max-w-none ${isDark ? 'prose-invert' : ''} 
                     prose-headings:font-black prose-headings:text-[#FFD700] 
                     prose-p:leading-loose prose-a:text-[#FFD700] 
                     prose-blockquote:border-[#FFD700] prose-blockquote:bg-[#FFD700]/5 prose-blockquote:py-4 prose-blockquote:px-6 prose-blockquote:rounded-xl
                     prose-strong:text-[#FFD700]
                   `}
-                  dangerouslySetInnerHTML={{ __html: content }} 
+                  // ✅ محتوا قبل از نمایش پاکسازی می‌شود تا کدهای مخرب اجرا نشوند
+                  dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(content) }} 
                 />
               </div>
             </article>

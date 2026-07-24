@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
-import { FiUser, FiPhone, FiBriefcase, FiSend, FiCheckCircle, FiZap, FiTrendingUp, FiUsers } from 'react-icons/fi';
+import { FiUser, FiPhone, FiBriefcase, FiSend, FiCheckCircle, FiZap, FiTrendingUp, FiUsers, FiVolume2, FiVolumeX } from 'react-icons/fi';
 import axios from 'axios';
 import { useTheme } from '../context/ThemeContext';
 
@@ -11,7 +11,10 @@ export default function Careers() {
   const { t } = useTranslation();
   const { theme } = useTheme();
   const isDark = theme === 'dark';
-  
+
+  const videoRef = useRef(null);
+  const [isMuted, setIsMuted] = useState(true);
+
   const [formData, setFormData] = useState({ name: '', phone: '', email: '', position: '', experience: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
@@ -23,6 +26,32 @@ export default function Careers() {
   const accentBorder = isDark ? 'border-[#FFD700]' : 'border-[#D32F2F]';
   const btnClass = isDark ? 'bg-[#FFD700] text-black hover:bg-[#FFC700]' : 'bg-[#D32F2F] text-white hover:bg-[#B71C1C]';
   const cardBg = isDark ? 'bg-white/5 border-white/10' : 'bg-white border-gray-200';
+
+  // تلاش برای پخش خودکار با صدا؛ اگر مرورگر بلاک کرد، به‌صورت خاموش پخش می‌شود
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    video.muted = false;
+    const playPromise = video.play();
+
+    if (playPromise !== undefined) {
+      playPromise
+        .then(() => setIsMuted(false))
+        .catch(() => {
+          video.muted = true;
+          setIsMuted(true);
+          video.play().catch(() => {});
+        });
+    }
+  }, []);
+
+  const toggleSound = () => {
+    const video = videoRef.current;
+    if (!video) return;
+    video.muted = !video.muted;
+    setIsMuted(video.muted);
+  };
 
   const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
 
@@ -55,19 +84,37 @@ export default function Careers() {
       <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-[#FFD700]/10 rounded-full blur-[150px] pointer-events-none animate-pulse" />
       <div className="absolute bottom-0 right-1/4 w-[500px] h-[500px] bg-purple-600/10 rounded-full blur-[150px] pointer-events-none animate-pulse" style={{ animationDelay: '1s' }} />
 
-      {/* ===== HERO SECTION ===== */}
-      <div className="relative z-10 mb-20">
-        <div className="absolute inset-0 bg-cover bg-center opacity-20" style={{ backgroundImage: "url('/images/about/hero.jpg')" }}></div>
-        <div className={`absolute inset-0 ${isDark ? 'bg-black/70' : 'bg-white/70'} backdrop-blur-sm`}></div>
-        
-        <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }} className="relative z-10 max-w-4xl mx-auto px-4 text-center py-20">
-          <span className={`inline-block px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-widest mb-6 border ${accentBorder} ${accentText}`}>
+      {/* ===== HERO SECTION با ویدیو (کشیده‌شده تا زیر هدر) ===== */}
+      <div className="relative z-10 -mt-24 mb-20 overflow-hidden h-[85vh] min-h-[600px] max-h-[900px]">
+        <video
+          ref={videoRef}
+          className="absolute inset-0 w-full h-full object-cover object-[center_20%]"
+          src="/videos/career.mp4"
+          autoPlay
+          loop
+          playsInline
+          poster="/images/about/hero.jpg"
+        />
+        <div className={`absolute inset-0 ${isDark ? 'bg-black/60' : 'bg-black/40'}`} />
+        <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-black/70 to-transparent pointer-events-none" />
+
+        {/* دکمه روشن/خاموش کردن صدا */}
+        <button
+          onClick={toggleSound}
+          className="absolute bottom-6 left-6 z-20 p-3 rounded-full bg-black/50 hover:bg-black/70 text-white backdrop-blur-sm transition-colors"
+          aria-label={isMuted ? 'روشن کردن صدا' : 'خاموش کردن صدا'}
+        >
+          {isMuted ? <FiVolumeX size={20} /> : <FiVolume2 size={20} />}
+        </button>
+
+        <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }} className="relative z-10 max-w-4xl mx-auto px-4 text-center h-full flex flex-col items-center justify-end pb-16 md:pb-20">
+          <span className={`inline-block px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-widest mb-6 border ${accentBorder} ${accentText} bg-black/30 backdrop-blur-sm`}>
             {t('careersPage.badge')}
           </span>
-          <h1 className="font-['Vazirmatn'] text-4xl md:text-6xl lg:text-7xl font-black mb-6 tracking-tight leading-tight">
+          <h1 className="font-['Vazirmatn'] text-4xl md:text-6xl lg:text-7xl font-black mb-6 tracking-tight leading-tight text-white">
             {t('careersPage.heroTitle')} <span className={accentText}>{t('careersPage.heroTitleHighlight')}</span>
           </h1>
-          <p className={`font-['Vazirmatn'] text-lg md:text-xl max-w-2xl mx-auto ${mutedClass}`}>
+          <p className="font-['Vazirmatn'] text-lg md:text-xl max-w-2xl mx-auto text-gray-200">
             {t('careersPage.heroSubtitle')}
           </p>
         </motion.div>

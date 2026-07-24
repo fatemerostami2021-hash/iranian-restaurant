@@ -14,12 +14,12 @@ i18n
   .use(initReactI18next)
   .init({
     resources: {
+      ar: { translation: ar }, // ✅ عربی اول قرار گرفت
       en: { translation: en },
       fa: { translation: fa },
-      ar: { translation: ar },
     },
-    fallbackLng: 'fa',
-    supportedLngs: ['en', 'fa', 'ar'],
+    fallbackLng: 'ar', // ✅ زبان پیش‌فرض عربی شد
+    supportedLngs: ['ar', 'en', 'fa'],
     interpolation: {
       escapeValue: false,
     },
@@ -36,7 +36,7 @@ const applyDirection = (lng) => {
   document.documentElement.lang = lng;
 };
 
-applyDirection(i18n.resolvedLanguage || i18n.language || 'fa');
+applyDirection(i18n.resolvedLanguage || i18n.language || 'ar'); // ✅ پیش‌فرض ar
 
 i18n.on('languageChanged', (lng) => {
   applyDirection(lng);

@@ -1,3 +1,5 @@
+import helmet from 'helmet';
+import rateLimit from 'express-rate-limit';
 import express from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors';
@@ -30,15 +32,36 @@ import { uploadFile } from './controllers/uploadController.js';
 // ✅ ایمپورت تابع تلگرام
 import { sendTelegramMessage } from './utils/telegramNotifier.js';
 
+
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
 // ===== Middleware =====
+
+// ===== Middleware =====
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// ✅ کدهای امنیتی را اینجا زیر آن ۳ خط اضافه کنید:
+app.use(helmet());
+
+const apiLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+  message: { message: 'تعداد درخواست‌های شما بیش از حد مجاز است. لطفاً ۱۵ دقیقه بعد دوباره تلاش کنید.' }
+});
+app.use('/api/', apiLimiter);
+
+const authLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000,
+  max: 10,
+  message: { message: 'تعداد درخواست‌های ناموفق زیاد بود. حساب شما برای ۱ ساعت مسدود شد.' }
+});
+app.use('/api/admin/login', authLimiter);
+app.use('/api/customer/auth/request-otp', authLimiter);
 
 // ===== تنظیمات آپلود فایل (Multer) =====
 const storage = multer.diskStorage({
