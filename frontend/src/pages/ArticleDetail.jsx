@@ -74,9 +74,20 @@ export default function ArticleDetail() {
   const content = article.content?.[lang] || article.content?.fa || '';
   const excerpt = article.excerpt?.[lang] || article.excerpt?.fa || '';
   const category = typeof article.category === 'object' ? (article.category?.[lang] || article.category?.fa || '') : (article.category || '');
-  const image = article.images && article.images.length > 0
-    ? (article.images[0].startsWith('http') ? article.images[0] : `${API_URL}${article.images[0]}`)
-    : '/images/articles/placeholder.jpg';
+  
+  // ✅ ساخت آدرس عکس به صورت بسیار امن
+  const rawImage = article.images && article.images.length > 0 ? article.images[0] : null;
+  let image = '/images/articles/placeholder.svg'; // عکس پیش‌فرض
+  if (rawImage) {
+    if (rawImage.startsWith('http')) {
+      image = rawImage;
+    } else {
+      // اطمینان از اینکه حتماً یک اسلش قبل از آدرس وجود دارد
+      const path = rawImage.startsWith('/') ? rawImage : `/${rawImage}`;
+      image = `${API_URL}${path}`;
+    }
+  }
+
   const date = article.publishedAt ? new Date(article.publishedAt) : new Date();
   const shareUrl = encodeURIComponent(window.location.href);
   const shareText = encodeURIComponent(title);
@@ -93,7 +104,16 @@ export default function ArticleDetail() {
           <div className="lg:col-span-2">
             <article className={`${cardBg} rounded-2xl overflow-hidden shadow-lg border ${borderColor}`}>
               <div className="relative h-96 overflow-hidden bg-gray-100 dark:bg-gray-800">
-                <img src={image} alt={title} className="w-full h-full object-cover" />
+                {/* ✅ اضافه شدن onError برای جلوگیری از عکس شکسته */}
+                <img 
+                  src={image} 
+                  alt={title} 
+                  className="w-full h-full object-cover" 
+                  onError={(e) => { 
+                    e.currentTarget.onerror = null; 
+                    e.currentTarget.src = '/images/articles/placeholder.svg'; 
+                  }} 
+                />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
                 <div className="absolute bottom-0 left-0 right-0 p-8">
                   <span className="inline-block text-white text-xs font-bold bg-[#FFD700] px-3 py-1 rounded-full mb-4">
@@ -109,14 +129,13 @@ export default function ArticleDetail() {
                 {excerpt && <p className={`text-xl font-medium mb-8 leading-relaxed ${mutedColor} border-r-4 border-[#FFD700] pr-4`}>{excerpt}</p>}
                 
                 {/* رندر HTML با استایل‌های مجله‌ای */}
-                               <div 
+                <div 
                   className={`prose prose-lg max-w-none ${isDark ? 'prose-invert' : ''} 
                     prose-headings:font-black prose-headings:text-[#FFD700] 
                     prose-p:leading-loose prose-a:text-[#FFD700] 
                     prose-blockquote:border-[#FFD700] prose-blockquote:bg-[#FFD700]/5 prose-blockquote:py-4 prose-blockquote:px-6 prose-blockquote:rounded-xl
                     prose-strong:text-[#FFD700]
                   `}
-                  // ✅ محتوا قبل از نمایش پاکسازی می‌شود تا کدهای مخرب اجرا نشوند
                   dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(content) }} 
                 />
               </div>

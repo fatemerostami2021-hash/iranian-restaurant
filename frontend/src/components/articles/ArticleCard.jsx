@@ -74,7 +74,7 @@ export default function ArticleCard({ article }) {
             </span>
             <span className="flex items-center gap-1">
               <MdFavorite size={14} />
-              {article.likes || 0}
+              {article.likes || 0}a
             </span>
           </div>
           <span className="flex items-center gap-1">

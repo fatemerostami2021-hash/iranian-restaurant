@@ -21,26 +21,24 @@
 
   .dark {
     /* ===== رنگ‌های تم تاریک ===== */
-    --bg-primary: #1C1C1C;
-    --bg-secondary: #2D2D2D;
-    --bg-card: #2D2D2D;
-    --bg-surface: #2D2D2D;
+    --bg-primary: #0F0F0F; /* کمی تیره‌تر شد تا شبکه‌ها بهتر دیده شوند */
+    --bg-secondary: #1C1C1C;
+    --bg-card: #1C1C1C;
+    --bg-surface: #1C1C1C;
     --text-primary: #F7F0E6;
-    --text-secondary: #F4B41A;
+    --text-secondary: #FFD700; /* به طلایی اصلی تغییر یافت */
     --text-muted: #BDBDBD;
     --border-color: #3E2723;
-    --shadow-color: rgba(244, 180, 26, 0.08);
+    --shadow-color: rgba(255, 215, 0, 0.08);
   }
 
-  html {
-    scroll-behavior: smooth;
-  }
-
-  body {
-    background-color: var(--bg-primary);
-    color: var(--text-primary);
-    font-family: 'Vazirmatn', system-ui, sans-serif;
-    transition: background-color 0.3s ease, color 0.3s ease;
+  /* ✅ اعمال افکت شبکه‌ای (Grid) فقط در تم تاریک روی کل صفحه */
+  html.dark body {
+    background-image: 
+      linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+    background-size: 32px 32px; /* اندازه خانه‌های شبکه */
+    background-position: center center;
   }
 }
 

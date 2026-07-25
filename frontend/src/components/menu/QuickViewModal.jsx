@@ -4,16 +4,25 @@ import { useState, useEffect } from 'react';
 import { useCart } from '../../context/CartContext';
 import { useTheme } from '../../context/ThemeContext';
 import { getDishImageUrl, PLACEHOLDER_IMAGE } from '../../services/dishService';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useMotionValue, useSpring, useTransform } from 'framer-motion';
 
 export default function QuickViewModal({ dish, onClose }) {
   const { t, i18n } = useTranslation();
   const { theme } = useTheme();
   const { addItem } = useCart();
   const isDark = theme === 'dark';
+  
   const [quantity, setQuantity] = useState(1);
   const [isFavorite, setIsFavorite] = useState(false);
   const [imgSrc, setImgSrc] = useState(PLACEHOLDER_IMAGE);
+
+  // ===== منطق افکت سه‌بعدی (3D Tilt) - حتما باید قبل از return باشد =====
+  const x = useMotionValue(0);
+  const y = useMotionValue(0);
+  const mouseXSpring = useSpring(x, { stiffness: 300, damping: 30 });
+  const mouseYSpring = useSpring(y, { stiffness: 300, damping: 30 });
+  const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], ['7deg', '-7deg']);
+  const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ['-7deg', '7deg']);
 
   useEffect(() => {
     if (dish) {
@@ -21,6 +30,7 @@ export default function QuickViewModal({ dish, onClose }) {
     }
   }, [dish]);
 
+  // ✅ شرط return حالا بعد از تمام hookها قرار گرفته است
   if (!dish) return null;
 
   const lang = i18n.language;
@@ -47,6 +57,23 @@ export default function QuickViewModal({ dish, onClose }) {
   const primaryColor = isDark ? '#FFD700' : '#D32F2F';
   const primaryHover = isDark ? '#F9A825' : '#B71C1C';
   const shadowColor = isDark ? 'shadow-[#FFD700]/30' : 'shadow-[#D32F2F]/30';
+
+  const handleMouseMove = (e) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const width = rect.width;
+    const height = rect.height;
+    const mouseX = e.clientX - rect.left - width / 2;
+    const mouseY = e.clientY - rect.top - height / 2;
+    const xPct = mouseX / width;
+    const yPct = mouseY / height;
+    x.set(xPct);
+    y.set(yPct);
+  };
+
+  const handleMouseLeave = () => {
+    x.set(0);
+    y.set(0);
+  };
 
   return (
     <AnimatePresence>
@@ -99,10 +126,16 @@ export default function QuickViewModal({ dish, onClose }) {
             </motion.button>
           </div>
 
-          {/* ===== تصویر ===== */}
-          <div className="relative aspect-[4/3] overflow-hidden bg-gray-900">
+          {/* ===== تصویر با افکت سه‌بعدی ===== */}
+          <div 
+            className="relative aspect-[4/3] overflow-hidden bg-gray-900"
+            style={{ perspective: 1000 }}
+            onMouseMove={handleMouseMove}
+            onMouseLeave={handleMouseLeave}
+          >
             <motion.img
-              initial={{ scale: 1.1 }}
+              style={{ rotateX, rotateY, transformStyle: 'preserve-3d' }}
+              initial={{ scale: 1.3 }}
               animate={{ scale: 1 }}
               transition={{ duration: 0.6 }}
               src={imgSrc}
@@ -110,14 +143,14 @@ export default function QuickViewModal({ dish, onClose }) {
               className="w-full h-full object-cover"
               onError={() => setImgSrc(PLACEHOLDER_IMAGE)}
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent pointer-events-none" />
             
             {/* ===== قیمت روی تصویر ===== */}
             <motion.div
               initial={{ x: -20, opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
               transition={{ delay: 0.2, duration: 0.5 }}
-              className="absolute bottom-4 left-4 bg-[#FFD700] text-[#1A1A1A] font-black text-2xl px-5 py-2.5 rounded-full shadow-2xl shadow-[#FFD700]/40"
+              className="absolute bottom-4 left-4 bg-[#FFD700] text-[#1A1A1A] font-black text-2xl px-5 py-2.5 rounded-full shadow-2xl shadow-[#FFD700]/40 z-10"
             >
               {dish.price} QR
             </motion.div>
@@ -127,7 +160,7 @@ export default function QuickViewModal({ dish, onClose }) {
               initial={{ x: 20, opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
               transition={{ delay: 0.3, duration: 0.5 }}
-              className={`absolute top-4 left-1/2 transform -translate-x-1/2 px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider ${
+              className={`absolute top-4 left-1/2 transform -translate-x-1/2 px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider z-10 ${
                 dish.inStock 
                   ? 'bg-green-500/90 text-white' 
                   : 'bg-red-500/90 text-white'
@@ -144,7 +177,6 @@ export default function QuickViewModal({ dish, onClose }) {
                 <h2 className={`text-2xl md:text-3xl font-black ${textColor} tracking-tight leading-tight`}>
                   {name}
                 </h2>
-                {/* ===== امتیاز ===== */}
                 <div className="flex items-center gap-2 mt-2">
                   <div className="flex text-[#FFD700]">
                     {[1, 2, 3, 4, 5].map((i) => (
@@ -170,7 +202,6 @@ export default function QuickViewModal({ dish, onClose }) {
               </motion.p>
             )}
 
-            {/* ===== مشخصات اضافی ===== */}
             <div className="flex flex-wrap items-center gap-3 mb-6">
               <span className={`text-xs ${mutedColor} bg-white/5 px-3 py-1 rounded-full border border-white/5`}>
                 🍽️ {dish.category || 'غذای اصلی'}
@@ -180,7 +211,6 @@ export default function QuickViewModal({ dish, onClose }) {
               </span>
             </div>
 
-            {/* ===== انتخاب تعداد ===== */}
             <div className="flex items-center gap-4 mb-6 p-4 bg-white/5 rounded-2xl border border-white/5">
               <span className={`text-sm font-medium ${textColor}`}>تعداد:</span>
               <div className="flex items-center gap-3">
@@ -209,7 +239,6 @@ export default function QuickViewModal({ dish, onClose }) {
               </span>
             </div>
 
-            {/* ===== دکمه افزودن ===== */}
             <motion.button
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
@@ -221,7 +250,6 @@ export default function QuickViewModal({ dish, onClose }) {
               <span className="text-sm opacity-70">• {quantity * dish.price} QR</span>
             </motion.button>
 
-            {/* ===== اطلاعات اضافی ===== */}
             <p className={`text-center text-[10px] ${mutedColor} mt-4 opacity-50 tracking-wider uppercase`}>
               {t('cart.freeDelivery') || 'تحویل رایگان برای سفارش‌های بالای ۵۰ QR'}
             </p>

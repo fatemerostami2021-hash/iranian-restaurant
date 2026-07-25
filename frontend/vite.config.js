@@ -8,13 +8,11 @@ export default defineConfig({
     VitePWA({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.ico', 'robots.txt', 'images/application/pwa-192x192.png'],
-      
-      // ✅ تنظیمات کش آفلاین برای منو و API
       workbox: {
+        maximumFileSizeToCacheInBytes: 8 * 1024 * 1024,
         globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
         runtimeCaching: [
           {
-            // کش کردن عکس‌های آپلود شده و استاتیک
             urlPattern: /^https:\/\/.*\/uploads\/.*/,
             handler: 'CacheFirst',
             options: {
@@ -23,17 +21,15 @@ export default defineConfig({
             }
           },
           {
-            // کش کردن داده‌های منو (آفلاین لود شدن منو)
             urlPattern: /^https?:\/\/.*\/api\/dishes/,
             handler: 'NetworkFirst',
             options: {
               cacheName: 'menu-api-cache',
-              expiration: { maxEntries: 50, maxAgeSeconds: 60 * 60 * 24 } // 24 ساعت
+              expiration: { maxEntries: 50, maxAgeSeconds: 60 * 60 * 24 }
             }
           }
         ]
       },
-
       manifest: {
         name: 'Kabab Dagh Nan Dagh',
         short_name: 'Kabab Dagh',
@@ -42,7 +38,7 @@ export default defineConfig({
         background_color: '#0F0F0F',
         display: 'standalone',
         dir: 'rtl',
-        lang: 'fa', // ✅ زبان پیش‌فرض اضافه شد
+        lang: 'fa',
         start_url: '/',
         icons: [
           {
@@ -56,7 +52,7 @@ export default defineConfig({
             type: 'image/png'
           },
           {
-            src: 'images/application/pwa-512x512.png', // نکته: بعداً یک نسخه maskable با پدینگ بسازید
+            src: 'images/application/pwa-512x512.png',
             sizes: '512x512',
             type: 'image/png',
             purpose: 'any maskable'
