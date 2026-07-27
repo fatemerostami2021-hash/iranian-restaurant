@@ -24,11 +24,12 @@ const navItems = [
   { key: 'contact', icon: MdPhoneInTalk, href: '/contact' },
 ];
 
+// ✅ لیبل‌ها دیگه هاردکد نیستن؛ از همون کلیدهای menu.categories.* که توی Menu.jsx هم استفاده می‌شه می‌خونیم
 const menuCategories = [
-  { key: 'breakfast', label: 'صبحانه', icon: MdBreakfastDining },
-  { key: 'main', label: 'غذای اصلی', icon: MdLunchDining },
-  { key: 'combo', label: 'سینی‌ها', icon: MdDinnerDining },
-  { key: 'drinks', label: 'نوشیدنی‌ها', icon: MdLocalDrink },
+  { key: 'breakfast', icon: MdBreakfastDining },
+  { key: 'main', icon: MdLunchDining },
+  { key: 'combo', icon: MdDinnerDining },
+  { key: 'drinks', icon: MdLocalDrink },
 ];
 
 export default function MobileNav({ open, onClose }) {
@@ -91,16 +92,16 @@ export default function MobileNav({ open, onClose }) {
                 >
                   <MdAdminPanelSettings size={22} className="text-gray-500 dark:text-gray-400 group-hover:text-primary transition" />
                   <span className="font-medium">
-                    {isLoggedIn ? 'پنل مدیریت' : 'ورود به پنل'}
+                    {isLoggedIn ? t('admin.dashboard', 'پنل مدیریت') : t('admin.login', 'ورود به پنل')}
                   </span>
                 </Link>
 
                 {/* دسته‌بندی‌های منو در موبایل */}
                 <div className="mt-4 pt-4 border-t border-gray-100 dark:border-gray-700">
                   <p className="text-xs font-medium text-gray-400 dark:text-gray-500 px-4 mb-2">
-                    دسته‌بندی منو
+                    {t('menu.categoriesTitle')}
                   </p>
-                  {menuCategories.map(({ key, label, icon: Icon }) => (
+                  {menuCategories.map(({ key, icon: Icon }) => (
                     <Link
                       key={key}
                       to={`/menu/category/${key}`}
@@ -108,7 +109,7 @@ export default function MobileNav({ open, onClose }) {
                       className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-600 dark:text-gray-300 hover:bg-primary/10 dark:hover:bg-primary/20 rounded-xl transition-all group"
                     >
                       <Icon size={18} className="text-gray-400 group-hover:text-primary transition" />
-                      <span>{label}</span>
+                      <span>{t(`menu.categories.${key}`)}</span>
                     </Link>
                   ))}
                 </div>

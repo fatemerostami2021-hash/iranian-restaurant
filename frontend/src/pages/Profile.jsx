@@ -10,7 +10,7 @@ import {
 import axios from 'axios';
 import { useTheme } from '../context/ThemeContext';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+const API_URL = import.meta.env.VITE_API_URL || '';
 
 export default function Profile() {
   // ✅ اضافه شدن i18n برای تشخیص زبان فعلی

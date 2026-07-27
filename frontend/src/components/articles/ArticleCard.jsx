@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useTheme } from '../../context/ThemeContext';
 import { MdVisibility, MdFavorite, MdAccessTime } from 'react-icons/md';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+const API_URL = import.meta.env.VITE_API_URL || '';
 
 export default function ArticleCard({ article }) {
   const { i18n, t } = useTranslation();

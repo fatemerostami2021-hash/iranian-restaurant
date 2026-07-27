@@ -80,7 +80,7 @@ function DishForm({ dish, onSave, onCancel, isEditing }) {
 
         const token = localStorage.getItem('adminToken');
         const response = await axios.post(
-          'http://localhost:5000/api/admin/upload/image',
+          '/api/admin/upload/image',
           formDataUpload,
           {
             headers: {
@@ -130,7 +130,7 @@ function DishForm({ dish, onSave, onCancel, isEditing }) {
 
       const token = localStorage.getItem('adminToken');
       const response = await axios.post(
-        'http://localhost:5000/api/admin/upload/video',
+        '/api/admin/upload/video',
         formDataUpload,
         {
           headers: {
@@ -444,7 +444,7 @@ export default function MenuManagement() {
   const fetchDishes = async () => {
     try {
       setLoading(true);
-      const res = await axios.get('http://localhost:5000/api/admin/dishes', {
+      const res = await axios.get('/api/admin/dishes', {
         headers: { Authorization: `Bearer ${token}` }
       });
       setDishes(res.data);
@@ -463,11 +463,11 @@ export default function MenuManagement() {
   const handleSave = async (formData) => {
     try {
       if (editingDish) {
-        await axios.put(`http://localhost:5000/api/admin/dishes/${editingDish._id}`, formData, {
+        await axios.put(`/api/admin/dishes/${editingDish._id}`, formData, {
           headers: { Authorization: `Bearer ${token}` }
         });
       } else {
-        await axios.post('http://localhost:5000/api/admin/dishes', formData, {
+        await axios.post('/api/admin/dishes', formData, {
           headers: { Authorization: `Bearer ${token}` }
         });
       }
@@ -482,7 +482,7 @@ export default function MenuManagement() {
   const handleDelete = async (id) => {
     if (!window.confirm('آیا از حذف این غذا مطمئن هستید؟')) return;
     try {
-      await axios.delete(`http://localhost:5000/api/admin/dishes/${id}`, {
+      await axios.delete(`/api/admin/dishes/${id}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       fetchDishes();

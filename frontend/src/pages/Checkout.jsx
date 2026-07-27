@@ -9,7 +9,7 @@ import {
 import axios from 'axios';
 import AuthModal from '../components/ui/AuthModal'; // ✅ ایمپورت پنجره لاگین
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+const API_URL = import.meta.env.VITE_API_URL || '';
 
 export default function Checkout() {
   const { t, i18n } = useTranslation();

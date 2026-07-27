@@ -6,8 +6,6 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import multer from 'multer';
 import fs from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
 import nodemailer from 'nodemailer';
 
 import dishRoutes from './routes/dishRoutes.js';
@@ -34,47 +32,57 @@ import { uploadFile } from './controllers/uploadController.js';
 // ✅ ایمپورت تابع تلگرام
 import { sendTelegramMessage } from './utils/telegramNotifier.js';
 
-// ✅ تنظیمات __dirname برای ES Modules
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+// ✅ چون پشت پروکسی nginx هستی، این باید قبل از هر rate limiter بیاد
+app.set('trust proxy', 1);
+
 // ===== Middleware =====
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// ✅ ۱. فعال کردن هدرهای امنیتی (Helmet)
+// ===== امنیت: هدرهای HTTP امن =====
 app.use(helmet({
-  crossOriginResourcePolicy: { policy: 'cross-origin' },
+  crossOriginResourcePolicy: { policy: 'cross-origin' }, // برای اینکه عکس/ویدیوی /uploads بلاک نشه
 }));
 
-// ✅ ۲. محدود کردن درخواست‌ها برای جلوگیری از اسپم و DDoS
+// ===== امنیت: محدودیت درخواست عمومی روی کل API =====
 const apiLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 100,
-  message: { message: 'تعداد درخواست‌های شما بیش از حد مجاز است. لطفاً ۱۵ دقیقه بعد دوباره تلاش کنید.' }
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { message: 'تعداد درخواست‌های شما بیش از حد مجاز است. لطفاً ۱۵ دقیقه بعد دوباره تلاش کنید.' },
 });
 app.use('/api/', apiLimiter);
 
-// ✅ ۳. محدود کردن شدیدتر برای درخواست لاگین و OTP (ضد بروت‌فورس)
+// ===== امنیت: محدودیت سخت‌گیرانه‌تر روی مسیرهای لاگین/احراز هویت =====
 const authLimiter = rateLimit({
   windowMs: 60 * 60 * 1000,
   max: 10,
-  message: { message: 'تعداد درخواست‌های ناموفق زیاد بود. حساب شما برای ۱ ساعت مسدود شد.' }
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { message: 'تعداد تلاش‌های ناموفق زیاد بود. لطفاً ۱ ساعت دیگر دوباره تلاش کنید.' },
 });
 app.use('/api/admin/login', authLimiter);
-app.use('/api/customer/auth/request-otp', authLimiter);
+app.use('/api/customer/auth', authLimiter);
+app.use('/api/auth', authLimiter);
+
+// ===== جلوگیری از کش شدن پاسخ‌های API توسط مرورگر =====
+app.use('/api', (req, res, next) => {
+  res.set('Cache-Control', 'no-store');
+  next();
+});
 
 // ===== تنظیمات آپلود فایل (Multer) =====
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    // ✅ استفاده از مسیر مطلق برای ذخیره سازی
-    const dir = path.join(__dirname, 'public/uploads/');
+    const dir = 'public/uploads/';
     if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
     cb(null, dir);
   },
@@ -84,8 +92,8 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage });
 
-// ✅ دسترسی عمومی به فایل‌های آپلود شده (با مسیر مطلق)
-app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
+// دسترسی عمومی به فایل‌های آپلود شده
+app.use('/uploads', express.static('public/uploads'));
 
 // ===== Routes عمومی =====
 app.use('/api/dishes', dishRoutes);
@@ -95,6 +103,7 @@ app.use('/api/articles', articleRoutes);
 
 // ===== Routes احراز هویت مشتریان =====
 app.use('/api/customer/auth', customerAuthRoutes);
+
 
 // ===== Routes حساب کاربری مشتریان =====
 app.use('/api/customer/profile', userProfileRoutes);
@@ -122,6 +131,7 @@ app.use('/api/admin/reservations', reservationRoutes);
 
 // ✅ ===== Routes ادمین - مدیریت کاربران و درخواست‌های کاری =====
 app.use('/api/admin/users', verifyAdminToken, userRoutes);
+// مسیر /api/admin/jobs در خود فایل روت، محافظت شده است (چون مسیر عمومی برای ثبت هم دارد)
 app.use('/api/admin/jobs', jobApplicationRoutes); 
 
 // ===== Routes ادمین - آپلود فایل =====

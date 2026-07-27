@@ -52,6 +52,13 @@
   "leben": "Leben",
   "menu": {
     "title": "Our Menu",
+    "subtitle": "The finest authentic Persian & Arabic flavors are waiting for you",
+    "searchPlaceholder": "Search menu...",
+    "categoriesTitle": "Categories",
+    "specialOffers": "Special Offers",
+    "bestSellers": "Best Sellers",
+    "bestSellersDesc": "Includes: Baja Dagh, Mahyaveh, Mixed Grill, and Ash Sabzi",
+    "noResults": "No dishes found matching your criteria",
     "addToCart": "Add to Cart",
     "ingredients": "Ingredients",
     "prepTime": "min prep time",
@@ -67,6 +74,7 @@
   "cart": {
     "title": "Your Cart",
     "empty": "Your cart is empty",
+    "clear": "Clear cart",
     "total": "Total",
     "checkout": "Checkout",
     "quantity": "Quantity",
@@ -457,10 +465,20 @@
     "mastercard": "Mastercard",
     "saveCard": "Save Card"
   },
-    "notFound": {
+  "notFound": {
     "title": "Oops! This page got burned on the grill!",
     "desc": "It looks like the page you were looking for wasn't found or has been removed. Let's take you somewhere cozy.",
     "homeBtn": "Back to Home",
     "menuBtn": "View Menu"
-  }
+  },
+  "floatingBar": {
+    "careers": "Careers",
+    "language": "Language",
+    "lightMode": "Light mode",
+    "darkMode": "Dark mode"
+  },
+  "admin": {
+  "dashboard": "Admin Panel",
+  "login": "Admin Login"
+}
 }

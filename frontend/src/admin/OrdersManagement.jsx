@@ -11,7 +11,7 @@ export default function OrdersManagement() {
   const fetchOrders = async () => {
     try {
       setLoading(true);
-      const res = await axios.get('http://localhost:5000/api/admin/orders', {
+      const res = await axios.get('/api/admin/orders', {
         headers: { Authorization: `Bearer ${token}` }
       });
       setOrders(res.data.orders || []);
@@ -34,7 +34,7 @@ export default function OrdersManagement() {
 
   const handleStatusChange = async (id, newStatus) => {
     try {
-      await axios.put(`http://localhost:5000/api/admin/orders/${id}`, 
+      await axios.put(`/api/admin/orders/${id}`, 
         { status: newStatus },
         { headers: { Authorization: `Bearer ${token}` } }
       );

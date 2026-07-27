@@ -6,7 +6,7 @@ import { FaGoogle } from 'react-icons/fa';
 import axios from 'axios';
 import { useTheme } from '../../context/ThemeContext';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+const API_URL = import.meta.env.VITE_API_URL || '';
 
 export default function AuthModal({ isOpen, onClose, onLoginSuccess }) {
   const { t } = useTranslation();

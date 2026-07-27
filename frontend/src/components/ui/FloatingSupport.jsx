@@ -18,8 +18,10 @@ export default function FloatingSupport() {
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [activeCategory, setActiveCategory] = useState(null);
   const [openQuestion, setOpenQuestion] = useState(null);
+  const [isHovered, setIsHovered] = useState(false); // ✅ برای تولتیپ "Keep in Touch"
 
   const accentBg = isDark ? 'bg-[#FFD700] text-black' : 'bg-[#D32F2F] text-white';
+  const accentRing = isDark ? 'bg-[#FFD700]' : 'bg-[#D32F2F]';
   const cardBg = isDark ? 'bg-[#1C1C1C] border-white/10' : 'bg-white border-gray-200';
   const textClass = isDark ? 'text-white' : 'text-[#1A1A1A]';
   const mutedClass = isDark ? 'text-gray-400' : 'text-gray-600';
@@ -84,23 +86,54 @@ export default function FloatingSupport() {
           )}
         </AnimatePresence>
 
-        <motion.button
-          whileTap={{ scale: 0.9 }}
-          onClick={() => setIsMenuOpen(!isMenuOpen)}
-          className={`w-14 h-14 md:w-16 md:h-16 rounded-full flex items-center justify-center shadow-2xl text-white ${isMenuOpen ? 'bg-gray-700' : accentBg}`}
+        {/* دکمه اصلی + افکت نور چشمک‌زن + تولتیپ Keep in Touch */}
+        <div
+          className="relative flex items-center gap-3"
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
         >
-          <AnimatePresence mode="wait">
-            {isMenuOpen ? (
-              <motion.div key="x" initial={{ rotate: -90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: 90, opacity: 0 }}>
-                <FiX size={24} />
-              </motion.div>
-            ) : (
-              <motion.div key="agent" initial={{ rotate: 90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: -90, opacity: 0 }}>
-                <MdSupportAgent size={28} />
+          {/* ✅ تولتیپ Keep in Touch - فقط موقع هاور */}
+          <AnimatePresence>
+            {isHovered && !isMenuOpen && (
+              <motion.div
+                initial={{ opacity: 0, x: isRtl ? 10 : -10, scale: 0.9 }}
+                animate={{ opacity: 1, x: 0, scale: 1 }}
+                exit={{ opacity: 0, x: isRtl ? 10 : -10, scale: 0.9 }}
+                transition={{ duration: 0.2 }}
+                className={`${isRtl ? 'order-first' : 'order-last'} px-3 py-2 rounded-xl text-xs font-bold whitespace-nowrap shadow-xl border ${cardBg} ${textClass}`}
+              >
+                {t('supportAgent.keepInTouch', 'Keep in Touch')}
               </motion.div>
             )}
           </AnimatePresence>
-        </motion.button>
+
+          <motion.button
+            whileTap={{ scale: 0.9 }}
+            whileHover={{ scale: 1.08 }}
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+            className={`relative w-14 h-14 md:w-16 md:h-16 rounded-full flex items-center justify-center shadow-2xl text-white transition-colors duration-300 ${isMenuOpen ? 'bg-gray-700' : accentBg}`}
+          >
+            {/* ✅ حلقه‌ی نور چشمک‌زن دائمی - چراغ همیشه روشن */}
+            {!isMenuOpen && (
+              <>
+                <span className={`absolute inset-0 rounded-full ${accentRing} opacity-30 animate-ping pointer-events-none`} />
+                <span className={`absolute -inset-1 rounded-full ${accentRing} opacity-20 blur-md pointer-events-none ${isHovered ? 'opacity-40' : ''} transition-opacity duration-300`} />
+              </>
+            )}
+
+            <AnimatePresence mode="wait">
+              {isMenuOpen ? (
+                <motion.div key="x" initial={{ rotate: -90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: 90, opacity: 0 }} className="relative z-10">
+                  <FiX size={24} />
+                </motion.div>
+              ) : (
+                <motion.div key="agent" initial={{ rotate: 90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: -90, opacity: 0 }} className="relative z-10">
+                  <MdSupportAgent size={28} />
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </motion.button>
+        </div>
       </div>
 
       {/* پنجره چت پشتیبانی */}

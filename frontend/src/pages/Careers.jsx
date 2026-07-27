@@ -5,7 +5,7 @@ import { FiUser, FiPhone, FiBriefcase, FiSend, FiCheckCircle, FiZap, FiTrendingU
 import axios from 'axios';
 import { useTheme } from '../context/ThemeContext';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+const API_URL = import.meta.env.VITE_API_URL || '';
 
 export default function Careers() {
   const { t } = useTranslation();

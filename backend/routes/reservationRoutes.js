@@ -1,11 +1,19 @@
 import express from 'express';
-import { getReservations, updateReservationStatus } from '../controllers/reservationController.js';
+import {
+  getReservations,
+  getReservationStats,
+  updateReservationStatus,
+  deleteReservation,
+} from '../controllers/reservationController.js';
 import { verifyAdminToken } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
-// مسیرهای مدیریت رزروها (فقط برای ادمین)
-router.get('/', verifyAdminToken, getReservations);
-router.put('/:id', verifyAdminToken, updateReservationStatus);
+router.use(verifyAdminToken);
+
+router.get('/', getReservations);
+router.get('/stats', getReservationStats);
+router.patch('/:id/status', updateReservationStatus);
+router.delete('/:id', deleteReservation);
 
 export default router;

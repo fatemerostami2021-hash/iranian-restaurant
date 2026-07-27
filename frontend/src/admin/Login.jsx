@@ -3,24 +3,38 @@ import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import axios from 'axios';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+const API_URL = import.meta.env.VITE_API_URL || '';
 
 export default function AdminLogin() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    if (isSubmitting) return; // جلوگیری از دوبار کلیک سریع
+    setError('');
+    setIsSubmitting(true);
+
     try {
-      // ✅ ارسال email به جای username
       const res = await axios.post(`${API_URL}/api/admin/login`, { email, password });
       localStorage.setItem('adminToken', res.data.token);
       navigate('/admin/dashboard');
     } catch (err) {
-      // ✅ نمایش پیام خطای دقیق از سمت سرور
-      setError(err.response?.data?.message || 'ایمیل یا رمز عبور اشتباه است');
+      if (!err.response) {
+        // درخواست اصلاً به سرور نرسیده (قطعی شبکه، سرور در حال ری‌استارت، و...)
+        setError('ارتباط با سرور برقرار نشد. چند لحظه صبر کن و دوباره امتحان کن.');
+      } else if (err.response.status === 429) {
+        // rate limit خورده
+        setError(err.response.data?.message || 'تعداد تلاش‌ها زیاد بود. کمی صبر کن.');
+      } else {
+        // خطای واقعی از سرور (مثلا واقعاً ایمیل/رمز اشتباهه)
+        setError(err.response.data?.message || 'ایمیل یا رمز عبور اشتباه است');
+      }
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -45,6 +59,7 @@ export default function AdminLogin() {
               onChange={(e) => setEmail(e.target.value)}
               className="w-full bg-gray-800 border border-gray-700 rounded-lg p-3 text-white focus:ring-2 focus:ring-[#FFD700] focus:outline-none transition"
               placeholder="admin@kabab.com"
+              dir="ltr"
               required
             />
           </div>
@@ -56,6 +71,7 @@ export default function AdminLogin() {
               onChange={(e) => setPassword(e.target.value)}
               className="w-full bg-gray-800 border border-gray-700 rounded-lg p-3 text-white focus:ring-2 focus:ring-[#FFD700] focus:outline-none transition"
               placeholder="••••••••"
+              dir="ltr"
               required
             />
           </div>
@@ -64,9 +80,10 @@ export default function AdminLogin() {
 
           <button
             type="submit"
-            className="w-full bg-[#FFD700] text-black font-bold p-3 rounded-lg hover:bg-[#FFC700] transition-colors"
+            disabled={isSubmitting}
+            className="w-full bg-[#FFD700] text-black font-bold p-3 rounded-lg hover:bg-[#FFC700] transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
           >
-            ورود به پنل
+            {isSubmitting ? 'در حال ورود...' : 'ورود به پنل'}
           </button>
         </form>
       </motion.div>
