@@ -151,21 +151,56 @@
   },
   "articles": {
     "title": "Articles",
+    "subtitle": "Stories behind the food, cooking secrets, and unique experiences from the world of kebab and tradition",
+    "heroBadge": "Restaurant Magazine",
     "search": "Search articles...",
+    "searchPlaceholder": "Search articles...",
     "categories": {
       "all": "All",
       "food-stories": "Food Stories",
       "history": "History & Civilization",
       "culture": "Culture & Traditions",
       "city-stories": "City Stories",
-      "fun-facts": "Fun Facts"
+      "fun-facts": "Fun Facts",
+      "news": "News",
+      "blog": "Blog",
+      "recipes": "Recipes",
+      "events": "Events",
+      "promotions": "Promotions"
     },
     "readMore": "Read More",
     "views": "Views",
     "likes": "Likes",
     "readTime": "min read",
     "noArticles": "No articles found",
-    "featured": "Featured"
+    "noResults": "No results found",
+    "noResultsDesc": "Please try a different search term or change the filter.",
+    "resetFilters": "Reset Filters",
+    "featured": "Featured",
+    "statArticles": "Articles",
+    "statCategories": "Categories",
+    "statAuthors": "Authors",
+    "error": "Error loading articles",
+    "newsletterTitle": "Stay Updated with Latest Articles",
+    "newsletterDesc": "Receive the best stories and recipes in your inbox every week.",
+    "emailPlaceholder": "Your email address",
+    "subscribe": "Subscribe",
+    "tableOfContents": "Table of Contents",
+    "shareArticle": "Share Article",
+    "relatedTags": "Related Tags",
+    "foundHelpful": "Was this article helpful?",
+    "copyLink": "Copy Link",
+    "copied": "Copied",
+    "backToList": "Back to Articles",
+    "untitled": "Untitled",
+    "defaultAuthor": "Management",
+    "authorRole": "Author & Culinary Expert",
+    "authorBio": "With over 15 years of experience in traditional Persian and Arabic cuisine, sharing authentic recipes and flavor secrets.",
+    "rate": "Your Rating:",
+    "averageRating": "out of 5 stars",
+    "comments": "Comments",
+    "showLess": "Show Less",
+    "showAll": "Show All"
   },
   "aboutPage": {
     "heroTitle": "A Story That Began with Fire",
@@ -302,6 +337,45 @@
           "desc": "Whether your party is at home, garden or cinema, we deliver and serve royal hot kebabs with VIP service."
         }
       }
+    },
+    "vip": {
+      "eyebrow": "An Experience Beyond a Dinner",
+      "title": "VIP Table for Your Special Moments",
+      "subtitle": "A private and exclusive space for family gatherings, business meetings, or special occasions with personal service and a customized menu.",
+      "features": {
+        "privateRoom": "Private Room",
+        "personalService": "Personal Service",
+        "liveGrill": "Live Grill",
+        "groupEvents": "Group Events"
+      },
+      "cta": "Book VIP Table"
+    },
+    "whyUs": {
+      "eyebrow": "Always Looking for the Best",
+      "title": "Why Kabab Dagh Nan Dagh?",
+      "subtitle": "Every day, with the same love as day one, we prepare the best for you.",
+      "reasons": {
+        "freshDaily": {
+          "title": "Daily Freshness",
+          "desc": "Fresh meat and vegetables daily from the best local suppliers"
+        },
+        "traditionalRecipe": {
+          "title": "Authentic Recipe",
+          "desc": "Faithful to traditional Persian flavors, no shortcuts"
+        },
+        "awardWinning": {
+          "title": "Award-Winning Quality",
+          "desc": "Guaranteed best quality with international standards"
+        },
+        "fastDelivery": {
+          "title": "Fast & Hot Delivery",
+          "desc": "Your food arrives hot and fresh in the shortest possible time"
+        }
+      }
+    },
+    "menuSlider": {
+      "title": "Authentic Flavors, Just One Click Away",
+      "subtitle": "Waiting for You in Our Menu"
     }
   },
   "contact": {
@@ -478,7 +552,18 @@
     "darkMode": "Dark mode"
   },
   "admin": {
-  "dashboard": "Admin Panel",
-  "login": "Admin Login"
-}
+    "dashboard": "Admin Panel",
+    "login": "Admin Login"
+  },
+  "comments": {
+    "yourRating": "Your Rating",
+    "yourName": "Your Name (Optional)",
+    "writeComment": "Write your comment...",
+    "noComments": "No comments yet. Be the first!",
+    "anonymous": "Anonymous",
+    "verified": "Verified",
+    "submit": "Submit Comment",
+    "likes": "Likes",
+    "report": "Report"
+  }
 }

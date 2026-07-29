@@ -7,6 +7,9 @@ export default {
   darkMode: 'class',
   theme: {
     extend: {
+      screens: {
+        xs: '400px', // ✅ اضافه شد — برای رسپانسیو دقیق‌تر روی گوشی‌های خیلی کوچیک
+      },
       colors: {
         // ===== رنگ‌های اصلی =====
         primary: {

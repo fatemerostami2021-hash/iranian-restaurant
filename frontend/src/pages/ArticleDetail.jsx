@@ -15,12 +15,137 @@ import {
   MdBookmarkBorder,
   MdCheckCircle,
   MdOutlineAccessTimeFilled,
+  MdStar,
+  MdStarBorder,
+  MdThumbUp,
+  MdThumbUpOffAlt,
+  MdComment,
+  MdSend,
+  MdPerson,
+  MdVerified,
+  MdOutlineReportProblem,
 } from 'react-icons/md';
 import { FaFacebookF, FaTwitter, FaLinkedinIn } from 'react-icons/fa';
 import DOMPurify from 'dompurify';
 
 const API_URL = import.meta.env.VITE_API_URL || '';
 
+// ============================================================
+// 🎯 کامپوننت ستاره‌ها (امتیازدهی)
+// ============================================================
+function StarRating({ rating, onRating, readonly = false, size = 'md', isDark = false }) {
+  const [hovered, setHovered] = useState(0);
+  const { t } = useTranslation();
+
+  const sizes = {
+    sm: 'text-sm',
+    md: 'text-xl',
+    lg: 'text-3xl',
+  };
+
+  return (
+    <div className="flex items-center gap-1">
+      {[1, 2, 3, 4, 5].map((star) => (
+        <button
+          key={star}
+          type="button"
+          onClick={() => !readonly && onRating?.(star)}
+          onMouseEnter={() => !readonly && setHovered(star)}
+          onMouseLeave={() => !readonly && setHovered(0)}
+          disabled={readonly}
+          className={`transition-all duration-200 ${!readonly && 'hover:scale-125'} ${readonly ? 'cursor-default' : 'cursor-pointer'}`}
+        >
+          {star <= (hovered || rating) ? (
+            <MdStar className={`${sizes[size]} text-[#F4B41A] drop-shadow-[0_0_8px_rgba(244,180,26,0.3)]`} />
+          ) : (
+            <MdStarBorder className={`${sizes[size]} ${isDark ? 'text-gray-500' : 'text-gray-300'}`} />
+          )}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+// ============================================================
+// 🎯 کامپوننت نظر
+// ============================================================
+function CommentItem({ comment, isDark, onLike, onReport }) {
+  const [liked, setLiked] = useState(false);
+  const { t } = useTranslation();
+
+  const handleLike = () => {
+    setLiked(!liked);
+    onLike?.(comment.id);
+  };
+
+  return (
+    <div className={`p-4 rounded-xl border ${isDark ? 'border-white/5 bg-white/5' : 'border-black/5 bg-gray-50'}`}>
+      <div className="flex items-start gap-3">
+        {/* آواتار */}
+        <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 text-sm font-black ${
+          isDark ? 'bg-[#F4B41A]/20 text-[#F4B41A]' : 'bg-[#D32F2F]/10 text-[#D32F2F]'
+        }`}>
+          {comment.userName?.charAt(0) || 'U'}
+        </div>
+        
+        <div className="flex-1 min-w-0">
+          {/* نام کاربر و تاریخ */}
+          <div className="flex flex-wrap items-center gap-2 mb-1">
+            <span className={`font-bold text-sm ${isDark ? 'text-white' : 'text-[#1A1A1A]'}`}>
+              {comment.userName || t('comments.anonymous', 'ناشناس')}
+            </span>
+            {comment.isVerified && (
+              <MdVerified className="text-blue-500 text-sm" title={t('comments.verified', 'تایید شده')} />
+            )}
+            <span className={`text-xs ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>
+              {new Date(comment.createdAt).toLocaleDateString('fa-IR')}
+            </span>
+          </div>
+          
+          {/* امتیاز */}
+          <div className="mb-1">
+            <StarRating 
+              rating={comment.rating} 
+              readonly 
+              size="sm"
+              isDark={isDark}
+            />
+          </div>
+          
+          {/* متن نظر */}
+          <p className={`text-sm leading-relaxed ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+            {comment.text}
+          </p>
+          
+          {/* دکمه‌های تعامل */}
+          <div className="flex items-center gap-4 mt-2">
+            <button
+              onClick={handleLike}
+              className={`flex items-center gap-1.5 text-xs transition-colors ${
+                liked 
+                  ? 'text-blue-500' 
+                  : isDark ? 'text-gray-500 hover:text-white' : 'text-gray-400 hover:text-gray-700'
+              }`}
+            >
+              {liked ? <MdThumbUp size={14} /> : <MdThumbUpOffAlt size={14} />}
+              <span>{comment.likes || 0}</span>
+            </button>
+            <button
+              onClick={() => onReport?.(comment.id)}
+              className={`text-xs ${isDark ? 'text-gray-500 hover:text-red-400' : 'text-gray-400 hover:text-red-500'}`}
+            >
+              <MdOutlineReportProblem size={14} />
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ============================================================
+// 🎯 کامپوننت اصلی مقاله با نظرات
+// ============================================================
 export default function ArticleDetail() {
   const { slug } = useParams();
   const { t, i18n } = useTranslation();
@@ -29,6 +154,7 @@ export default function ArticleDetail() {
   const lang = i18n.language;
   const isRtl = lang === 'fa' || lang === 'ar';
 
+  // ===== State های مقاله =====
   const [article, setArticle] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -39,12 +165,27 @@ export default function ArticleDetail() {
   const [showBackTop, setShowBackTop] = useState(false);
   const contentRef = useRef(null);
 
+  // ===== State های کامنت و لایک =====
+  const [comments, setComments] = useState([]);
+  const [newComment, setNewComment] = useState('');
+  const [commentRating, setCommentRating] = useState(0);
+  const [commentUserName, setCommentUserName] = useState('');
+  const [isSubmittingComment, setIsSubmittingComment] = useState(false);
+  const [articleLiked, setArticleLiked] = useState(false);
+  const [articleLikes, setArticleLikes] = useState(0);
+  const [userRating, setUserRating] = useState(0);
+  const [showAllComments, setShowAllComments] = useState(false);
+  const commentsRef = useRef(null);
+
+  // ===== دریافت مقاله =====
   useEffect(() => {
     const fetchArticle = async () => {
       try {
         setLoading(true);
         const res = await axios.get(`${API_URL}/api/articles/${slug}`);
         setArticle(res.data);
+        setArticleLikes(res.data.likes || 0);
+        setComments(res.data.comments || []);
         setError(null);
       } catch (err) {
         setError(err.message);
@@ -56,6 +197,7 @@ export default function ArticleDetail() {
     window.scrollTo(0, 0);
   }, [slug]);
 
+  // ===== استخراج سرفصل‌ها =====
   useEffect(() => {
     if (!article?.content) return;
     const parser = new DOMParser();
@@ -70,6 +212,7 @@ export default function ArticleDetail() {
     );
   }, [article]);
 
+  // ===== اسکرول =====
   useEffect(() => {
     const onScroll = () => {
       const scrollTop = window.scrollY;
@@ -90,16 +233,99 @@ export default function ArticleDetail() {
     return () => window.removeEventListener('scroll', onScroll);
   }, [article]);
 
+  // ===== کپی لینک =====
   const handleCopyLink = () => {
     navigator.clipboard.writeText(window.location.href);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
 
+  // ===== اسکرول به سرفصل =====
   const scrollToHeading = (id) => {
     const el = document.getElementById(id);
     if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
+
+  // ===== ارسال نظر =====
+  const handleSubmitComment = async (e) => {
+    e.preventDefault();
+    if (!newComment.trim()) return;
+
+    setIsSubmittingComment(true);
+    try {
+      const token = localStorage.getItem('customerToken');
+      const response = await axios.post(
+        `${API_URL}/api/articles/${article._id}/comments`,
+        {
+          text: newComment,
+          rating: commentRating,
+          userName: commentUserName || 'ناشناس',
+        },
+        { headers: token ? { Authorization: `Bearer ${token}` } : {} }
+      );
+
+      setComments([response.data, ...comments]);
+      setNewComment('');
+      setCommentRating(0);
+      setCommentUserName('');
+      
+      // اسکرول به بخش نظرات
+      commentsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    } catch (err) {
+      alert('خطا در ارسال نظر: ' + err.response?.data?.message);
+    } finally {
+      setIsSubmittingComment(false);
+    }
+  };
+
+  // ===== لایک مقاله =====
+  const handleLikeArticle = async () => {
+    try {
+      const token = localStorage.getItem('customerToken');
+      await axios.post(
+        `${API_URL}/api/articles/${article._id}/like`,
+        {},
+        { headers: token ? { Authorization: `Bearer ${token}` } : {} }
+      );
+      setArticleLiked(!articleLiked);
+      setArticleLikes(prev => articleLiked ? prev - 1 : prev + 1);
+    } catch (err) {
+      alert('خطا در ثبت لایک');
+    }
+  };
+
+  // ===== امتیازدهی به مقاله =====
+  const handleRateArticle = async (rating) => {
+    try {
+      const token = localStorage.getItem('customerToken');
+      await axios.post(
+        `${API_URL}/api/articles/${article._id}/rate`,
+        { rating },
+        { headers: token ? { Authorization: `Bearer ${token}` } : {} }
+      );
+      setUserRating(rating);
+    } catch (err) {
+      alert('خطا در ثبت امتیاز');
+    }
+  };
+
+  // ===== حذف نظر =====
+  const handleDeleteComment = async (commentId) => {
+    if (!window.confirm('آیا از حذف این نظر مطمئن هستید؟')) return;
+    try {
+      const token = localStorage.getItem('adminToken') || localStorage.getItem('customerToken');
+      await axios.delete(`${API_URL}/api/articles/comments/${commentId}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setComments(comments.filter(c => c.id !== commentId));
+    } catch (err) {
+      alert('خطا در حذف نظر');
+    }
+  };
+
+  // ============================================================
+  // ===== رندر =====
+  // ============================================================
 
   if (loading) {
     return (
@@ -135,10 +361,9 @@ export default function ArticleDetail() {
   const title = article.title?.[lang] || article.title?.fa || t('articles.untitled', 'بدون عنوان');
   const content = article.content?.[lang] || article.content?.fa || '';
   const excerpt = article.excerpt?.[lang] || article.excerpt?.fa || '';
-  const category =
-    typeof article.category === 'object'
-      ? article.category?.[lang] || article.category?.fa || ''
-      : article.category || '';
+  const category = typeof article.category === 'object'
+    ? article.category?.[lang] || article.category?.fa || ''
+    : article.category || '';
 
   const rawImage = article.images?.[0];
   let image = '/images/articles/placeholder.svg';
@@ -151,6 +376,14 @@ export default function ArticleDetail() {
   const date = article.publishedAt ? new Date(article.publishedAt) : new Date();
   const shareUrl = encodeURIComponent(window.location.href);
   const shareText = encodeURIComponent(title);
+
+  const averageRating = comments.length > 0
+    ? (comments.reduce((acc, c) => acc + (c.rating || 0), 0) / comments.length).toFixed(1)
+    : 0;
+
+  // ============================================================
+  // ===== بازگشت رندر اصلی =====
+  // ============================================================
 
   return (
     <div className={`min-h-screen ${isDark ? 'bg-[#0A0A0A]' : 'bg-[#F7F0E6]'} transition-colors duration-500`}>
@@ -212,6 +445,10 @@ export default function ArticleDetail() {
               <span className="flex items-center gap-1.5">
                 <MdVisibility size={14} className="text-[#F4B41A]" />
                 {(article.views || 0).toLocaleString()}
+              </span>
+              <span className="flex items-center gap-1.5">
+                <MdThumbUp size={14} className="text-[#F4B41A]" />
+                {articleLikes}
               </span>
             </div>
           </div>
@@ -326,7 +563,7 @@ export default function ArticleDetail() {
               </div>
             )}
 
-            {/* Content — با رنگ‌های صریح و مشخص */}
+            {/* Content */}
             <article
               ref={contentRef}
               className={`article-content ${isDark ? 'text-gray-200' : 'text-[#3E2723]'}`}
@@ -334,6 +571,151 @@ export default function ArticleDetail() {
                 __html: DOMPurify.sanitize(content, { ADD_ATTR: ['id'] }),
               }}
             />
+
+            {/* ============================================================
+                🎯 بخش تعامل با مقاله (لایک + امتیاز)
+                ============================================================ */}
+            <div className={`mt-10 p-6 rounded-2xl border ${isDark ? 'border-white/10 bg-white/5' : 'border-black/5 bg-gray-50'}`}>
+              <div className="flex flex-wrap items-center justify-between gap-4">
+                <div className="flex items-center gap-6">
+                  {/* لایک */}
+                  <button
+                    onClick={handleLikeArticle}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-xl font-bold text-sm transition-all hover:scale-105 ${
+                      articleLiked
+                        ? 'bg-blue-500/20 text-blue-500 border border-blue-500/30'
+                        : isDark
+                        ? 'bg-white/10 text-gray-300 hover:bg-white/20'
+                        : 'bg-black/5 text-gray-600 hover:bg-black/10'
+                    }`}
+                  >
+                    {articleLiked ? <MdThumbUp size={18} /> : <MdThumbUpOffAlt size={18} />}
+                    <span>{articleLikes}</span>
+                  </button>
+
+                  {/* امتیازدهی */}
+                  <div className="flex items-center gap-3">
+                    <span className={`text-sm font-medium ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+                      {t('articles.rate', 'امتیاز شما:')}
+                    </span>
+                    <StarRating 
+                      rating={userRating} 
+                      onRating={handleRateArticle} 
+                      size="md"
+                      isDark={isDark}
+                    />
+                  </div>
+                </div>
+
+                {/* میانگین امتیاز */}
+                {comments.length > 0 && (
+                  <div className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+                    <span className="font-bold text-[#F4B41A]">{averageRating}</span>
+                    {t('articles.averageRating', 'از ۵ ستاره')}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* ============================================================
+                🎯 بخش نظرات
+                ============================================================ */}
+            <div ref={commentsRef} className="mt-12">
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center gap-3">
+                  <MdComment size={24} className={isDark ? 'text-[#F4B41A]' : 'text-[#D32F2F]'} />
+                  <h3 className={`text-xl font-black ${isDark ? 'text-white' : 'text-[#1A1A1A]'}`}>
+                    {t('articles.comments', 'نظرات')}
+                    <span className={`text-sm font-normal ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+                      ({comments.length})
+                    </span>
+                  </h3>
+                </div>
+                {comments.length > 3 && (
+                  <button
+                    onClick={() => setShowAllComments(!showAllComments)}
+                    className={`text-sm font-bold ${isDark ? 'text-[#F4B41A] hover:text-[#FFD700]' : 'text-[#D32F2F] hover:text-[#B71C1C]'}`}
+                  >
+                    {showAllComments ? t('articles.showLess', 'نمایش کمتر') : t('articles.showAll', 'نمایش همه')}
+                  </button>
+                )}
+              </div>
+
+              {/* فرم نظر جدید */}
+              <form onSubmit={handleSubmitComment} className={`p-6 rounded-2xl border mb-6 ${isDark ? 'border-white/10 bg-white/5' : 'border-black/5 bg-gray-50'}`}>
+                <div className="mb-4">
+                  <label className={`block text-sm font-medium mb-2 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+                    {t('comments.yourRating', 'امتیاز شما')}
+                  </label>
+                  <StarRating 
+                    rating={commentRating} 
+                    onRating={setCommentRating} 
+                    size="md"
+                    isDark={isDark}
+                  />
+                </div>
+
+                <div className="mb-4">
+                  <input
+                    type="text"
+                    placeholder={t('comments.yourName', 'نام شما (اختیاری)')}
+                    value={commentUserName}
+                    onChange={(e) => setCommentUserName(e.target.value)}
+                    className={`w-full px-4 py-2.5 rounded-xl text-sm outline-none border transition-all ${
+                      isDark
+                        ? 'bg-[#0A0A0A] border-white/10 text-white placeholder-gray-500 focus:border-[#F4B41A]/50'
+                        : 'bg-white border-black/5 text-[#1A1A1A] placeholder-gray-400 focus:border-[#D32F2F]/30'
+                    }`}
+                  />
+                </div>
+
+                <div className="flex gap-3">
+                  <textarea
+                    value={newComment}
+                    onChange={(e) => setNewComment(e.target.value)}
+                    placeholder={t('comments.writeComment', 'نظر خود را بنویسید...')}
+                    rows="2"
+                    className={`flex-1 px-4 py-2.5 rounded-xl text-sm outline-none border transition-all resize-none ${
+                      isDark
+                        ? 'bg-[#0A0A0A] border-white/10 text-white placeholder-gray-500 focus:border-[#F4B41A]/50'
+                        : 'bg-white border-black/5 text-[#1A1A1A] placeholder-gray-400 focus:border-[#D32F2F]/30'
+                    }`}
+                    required
+                  />
+                  <button
+                    type="submit"
+                    disabled={isSubmittingComment || !newComment.trim()}
+                    className="px-6 py-2.5 rounded-xl font-bold text-sm text-black transition-all hover:scale-105 disabled:opacity-50 shrink-0"
+                    style={{ background: isDark ? '#F4B41A' : '#D32F2F' }}
+                  >
+                    {isSubmittingComment ? (
+                      <div className="w-5 h-5 border-2 border-black border-t-transparent rounded-full animate-spin" />
+                    ) : (
+                      <MdSend size={18} />
+                    )}
+                  </button>
+                </div>
+              </form>
+
+              {/* لیست نظرات */}
+              <div className="space-y-3">
+                {(showAllComments ? comments : comments.slice(0, 3)).map((comment) => (
+                  <CommentItem
+                    key={comment.id}
+                    comment={comment}
+                    isDark={isDark}
+                    onLike={() => {}}
+                    onReport={() => {}}
+                  />
+                ))}
+              </div>
+
+              {comments.length === 0 && (
+                <div className={`text-center py-8 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+                  <p>{t('comments.noComments', 'هنوز نظری ثبت نشده است. اولین نفر باشید!')}</p>
+                </div>
+              )}
+            </div>
 
             {/* Bottom */}
             <div className={`mt-10 pt-6 border-t ${isDark ? 'border-white/10' : 'border-black/10'}`}>
@@ -370,7 +752,7 @@ export default function ArticleDetail() {
         <MdArrowUpward size={18} />
       </button>
 
-      {/* ── Global Styles for Article Content ── */}
+      {/* ── Styles ── */}
       <style>{`
         .article-content h2 {
           font-size: 1.5rem;

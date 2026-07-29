@@ -2,15 +2,46 @@ import { useState, useEffect, useRef } from 'react';
 import { 
   FiPlus, FiEdit2, FiTrash2, FiSearch, 
   FiX, FiRefreshCw, FiImage, FiVideo, 
-  FiUpload, FiTrash, FiEye, FiClock,
-  FiCalendar, FiTag, FiUser, FiSave,
+  FiUpload, FiTrash, FiEye, 
+  FiTag, FiSave,
   FiCheckCircle, FiXCircle
 } from 'react-icons/fi';
 import axios from 'axios';
 
 const API_URL = import.meta.env.VITE_API_URL || '';
 
-// ===== کامپوننت فرم افزودن/ویرایش مقاله =====
+// ============================================================
+// 🎯 لیست کامل دسته‌بندی‌های مقالات (هماهنگ با صفحه اصلی)
+// ============================================================
+const CATEGORY_OPTIONS = [
+  { value: 'news', label: 'اخبار' },
+  { value: 'blog', label: 'وبلاگ' },
+  { value: 'recipes', label: 'دستور پخت' },
+  { value: 'events', label: 'رویدادها' },
+  { value: 'promotions', label: 'تخفیف‌ها و پیشنهادها' },
+  { value: 'history', label: 'تاریخ و تمدن' },
+  { value: 'culture', label: 'فرهنگ و آداب' },
+  { value: 'food-stories', label: 'داستان‌های غذا' },
+  { value: 'city-stories', label: 'داستان شهرها' },
+  { value: 'fun-facts', label: 'سرگرمی و دانستنی‌ها' }
+];
+
+const CATEGORY_MAP = {
+  news: 'اخبار',
+  blog: 'وبلاگ',
+  recipes: 'دستور پخت',
+  events: 'رویدادها',
+  promotions: 'تخفیف‌ها و پیشنهادها',
+  history: 'تاریخ و تمدن',
+  culture: 'فرهنگ و آداب',
+  'food-stories': 'داستان‌های غذا',
+  'city-stories': 'داستان شهرها',
+  'fun-facts': 'سرگرمی و دانستنی‌ها'
+};
+
+// ============================================================
+// 🎯 کامپوننت فرم افزودن/ویرایش مقاله
+// ============================================================
 function ArticleForm({ article, onSave, onCancel, isEditing }) {
   const [formData, setFormData] = useState({
     title: { fa: '', en: '', ar: '' },
@@ -36,16 +67,27 @@ function ArticleForm({ article, onSave, onCancel, isEditing }) {
 
   useEffect(() => {
     if (article) {
+      // ✅ استخراج slug به صورت رشته
       const slugValue = typeof article.slug === 'object' 
         ? (article.slug?.fa || article.slug?.en || '') 
         : (article.slug || '');
+
+      // ✅ استخراج category به صورت کلید انگلیسی (برای تطابق با select)
+      let categoryValue = 'news';
+      if (article.category) {
+        if (typeof article.category === 'object') {
+          categoryValue = article.category.en || article.category.fa || 'news';
+        } else {
+          categoryValue = article.category;
+        }
+      }
 
       setFormData({
         title: article.title || { fa: '', en: '', ar: '' },
         slug: slugValue,
         excerpt: article.excerpt || { fa: '', en: '', ar: '' },
         content: article.content || { fa: '', en: '', ar: '' },
-        category: typeof article.category === 'object' ? article.category?.fa : (article.category || 'news'),
+        category: categoryValue,
         tags: article.tags || [],
         status: article.status || 'draft',
         featured: article.featured || false,
@@ -55,7 +97,6 @@ function ArticleForm({ article, onSave, onCancel, isEditing }) {
         publishedAt: article.publishedAt ? new Date(article.publishedAt).toISOString().split('T')[0] : new Date().toISOString().split('T')[0]
       });
       
-      // اصلاح آدرس عکس‌ها برای پیش‌نمایش
       setPreviewImages((article.images || []).map(img => img.startsWith('http') ? img : `${API_URL}${img}`));
       setPreviewVideo(article.video ? (article.video.startsWith('http') ? article.video : `${API_URL}${article.video}`) : null);
     }
@@ -175,19 +216,6 @@ function ArticleForm({ article, onSave, onCancel, isEditing }) {
     { key: 'ar', label: 'العربية', dir: 'rtl' }
   ];
 
-  const categoryOptions = [
-    { value: 'news', label: 'اخبار' }, 
-    { value: 'blog', label: 'وبلاگ' },
-    { value: 'recipes', label: 'دستور پخت' }, 
-    { value: 'events', label: 'رویدادها' },
-    { value: 'promotions', label: 'تخفیف‌ها و پیشنهادها' },
-    { value: 'history', label: 'تاریخ و تمدن' },
-    { value: 'culture', label: 'فرهنگ و آداب' },
-    { value: 'food-stories', label: 'داستان‌های غذا' },
-    { value: 'city-stories', label: 'داستان شهرها' },
-    { value: 'fun-facts', label: 'سرگرمی و دانستنی‌ها' }
-  ];
-
   const statusOptions = [
     { value: 'draft', label: 'پیش‌نویس' }, 
     { value: 'published', label: 'منتشر شده' }, 
@@ -203,6 +231,7 @@ function ArticleForm({ article, onSave, onCancel, isEditing }) {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
+          {/* ===== اطلاعات پایه ===== */}
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-300 mb-1">اسلاگ (آدرس)</label>
@@ -214,11 +243,12 @@ function ArticleForm({ article, onSave, onCancel, isEditing }) {
             </div>
           </div>
 
+          {/* ===== دسته‌بندی، وضعیت، تاریخ ===== */}
           <div className="grid grid-cols-3 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-300 mb-1">دسته‌بندی</label>
               <select name="category" value={formData.category} onChange={handleChange} className="w-full bg-gray-800 border border-gray-700 rounded-lg p-2 text-white focus:ring-2 focus:ring-[#FFD700] focus:outline-none">
-                {categoryOptions.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
+                {CATEGORY_OPTIONS.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
               </select>
             </div>
             <div>
@@ -233,6 +263,7 @@ function ArticleForm({ article, onSave, onCancel, isEditing }) {
             </div>
           </div>
 
+          {/* ===== عنوان ۳ زبانه ===== */}
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-2">عنوان (۳ زبان)</label>
             {languages.map(({ key, label, dir }) => (
@@ -243,6 +274,7 @@ function ArticleForm({ article, onSave, onCancel, isEditing }) {
             ))}
           </div>
 
+          {/* ===== خلاصه ۳ زبانه ===== */}
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-2">خلاصه (۳ زبان)</label>
             {languages.map(({ key, label, dir }) => (
@@ -253,6 +285,7 @@ function ArticleForm({ article, onSave, onCancel, isEditing }) {
             ))}
           </div>
 
+          {/* ===== محتوا ۳ زبانه ===== */}
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-2">محتوا (۳ زبان)</label>
             {languages.map(({ key, label, dir }) => (
@@ -263,6 +296,7 @@ function ArticleForm({ article, onSave, onCancel, isEditing }) {
             ))}
           </div>
 
+          {/* ===== تگ‌ها ===== */}
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-2"><FiTag className="inline mr-1" /> تگ‌ها</label>
             <div className="flex items-center gap-2">
@@ -279,6 +313,7 @@ function ArticleForm({ article, onSave, onCancel, isEditing }) {
             </div>
           </div>
 
+          {/* ===== مقاله ویژه ===== */}
           <div className="flex items-center gap-6 p-3 bg-gray-800 rounded-lg">
             <label className="flex items-center gap-2 text-gray-300 cursor-pointer">
               <input type="checkbox" name="featured" checked={formData.featured} onChange={handleChange} className="w-4 h-4 accent-[#FFD700]" />
@@ -286,6 +321,7 @@ function ArticleForm({ article, onSave, onCancel, isEditing }) {
             </label>
           </div>
 
+          {/* ===== آپلود عکس ===== */}
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-2"><FiImage className="inline mr-1" /> عکس شاخص</label>
             <div className="flex items-center gap-4">
@@ -307,6 +343,7 @@ function ArticleForm({ article, onSave, onCancel, isEditing }) {
             )}
           </div>
 
+          {/* ===== آپلود ویدیو ===== */}
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-2"><FiVideo className="inline mr-1" /> ویدیو</label>
             <div className="flex items-center gap-4">
@@ -324,6 +361,7 @@ function ArticleForm({ article, onSave, onCancel, isEditing }) {
             )}
           </div>
 
+          {/* ===== دکمه‌ها ===== */}
           <div className="flex gap-3 pt-4 border-t border-gray-700">
             <button type="submit" className="flex-1 bg-[#FFD700] text-black font-bold p-2 rounded-lg hover:bg-[#FFC700] disabled:opacity-50" disabled={uploading}>
               <FiSave className="inline mr-2" />{isEditing ? 'ذخیره تغییرات' : 'افزودن مقاله'}
@@ -336,7 +374,9 @@ function ArticleForm({ article, onSave, onCancel, isEditing }) {
   );
 }
 
-// ===== صفحه اصلی مدیریت مقالات =====
+// ============================================================
+// 🎯 صفحه اصلی مدیریت مقالات
+// ============================================================
 export default function ArticlesManagement() {
   const [articles, setArticles] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -347,15 +387,21 @@ export default function ArticlesManagement() {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedStatus, setSelectedStatus] = useState('all');
 
-  const token = localStorage.getItem('adminToken');
+  // ✅ توکن داخل تابع خوانده می‌شود تا همیشه تازه باشد
+  const getToken = () => localStorage.getItem('adminToken');
 
+  // ===== دریافت مقالات =====
   const fetchArticles = async () => {
     try {
       setLoading(true);
-      const res = await axios.get(`${API_URL}/api/admin/articles`, { headers: { Authorization: `Bearer ${token}` } });
+      const token = getToken();
+      const res = await axios.get(`${API_URL}/api/admin/articles`, { 
+        headers: { Authorization: `Bearer ${token}` } 
+      });
       setArticles(res.data);
       setError('');
     } catch (err) {
+      // ✅ پیام خطای بهتر
       setError(err.response?.data?.message || 'خطا در دریافت لیست مقالات');
       setArticles([]);
     } finally {
@@ -365,38 +411,61 @@ export default function ArticlesManagement() {
 
   useEffect(() => { fetchArticles(); }, []);
 
+  // ===== ذخیره مقاله =====
   const handleSave = async (formData) => {
     try {
+      const token = getToken();
       if (editingArticle) {
-        await axios.put(`${API_URL}/api/admin/articles/${editingArticle._id}`, formData, { headers: { Authorization: `Bearer ${token}` } });
+        await axios.put(`${API_URL}/api/admin/articles/${editingArticle._id}`, formData, { 
+          headers: { Authorization: `Bearer ${token}` } 
+        });
       } else {
-        await axios.post(`${API_URL}/api/admin/articles`, formData, { headers: { Authorization: `Bearer ${token}` } });
+        await axios.post(`${API_URL}/api/admin/articles`, formData, { 
+          headers: { Authorization: `Bearer ${token}` } 
+        });
       }
       fetchArticles();
       setShowForm(false);
       setEditingArticle(null);
     } catch (err) {
-      alert('خطا در ذخیره مقاله: ' + err.response?.data?.message);
+      // ✅ مدیریت خطای شبکه
+      const errorMsg = err.response?.data?.message || (err.message ? `خطای شبکه: ${err.message}` : 'خطای ناشناخته');
+      alert('خطا در ذخیره مقاله: ' + errorMsg);
     }
   };
 
+  // ===== حذف مقاله =====
   const handleDelete = async (id) => {
     if (!window.confirm('آیا از حذف این مقاله مطمئن هستید؟')) return;
     try {
-      await axios.delete(`${API_URL}/api/admin/articles/${id}`, { headers: { Authorization: `Bearer ${token}` } });
+      const token = getToken();
+      await axios.delete(`${API_URL}/api/admin/articles/${id}`, { 
+        headers: { Authorization: `Bearer ${token}` } 
+      });
       fetchArticles();
     } catch (err) {
-      alert('خطا در حذف مقاله');
+      alert('خطا در حذف مقاله: ' + (err.response?.data?.message || 'خطای شبکه'));
     }
   };
 
+  // ===== فیلتر مقالات =====
   const filteredArticles = articles.filter(a => {
-    const matchesSearch = a.title?.fa?.includes(search) || a.title?.en?.includes(search);
+    // ✅ جستجوی امن (مقالات بدون عنوان فیلتر نمی‌شوند)
+    const titleFa = a.title?.fa || '';
+    const titleEn = a.title?.en || '';
+    const titleAr = a.title?.ar || '';
+    
+    const matchesSearch = !search || 
+      titleFa.includes(search) || 
+      titleEn.includes(search) ||
+      titleAr.includes(search);
+      
     const matchesCategory = selectedCategory === 'all' || a.category === selectedCategory;
     const matchesStatus = selectedStatus === 'all' || a.status === selectedStatus;
     return matchesSearch && matchesCategory && matchesStatus;
   });
 
+  // ===== آمار =====
   const stats = {
     total: articles.length,
     published: articles.filter(a => a.status === 'published').length,
@@ -405,6 +474,7 @@ export default function ArticlesManagement() {
     featured: articles.filter(a => a.featured).length
   };
 
+  // ===== توابع کمکی =====
   const getStatusColor = (status) => {
     switch(status) {
       case 'published': return 'bg-green-500/30 text-green-400';
@@ -426,19 +496,7 @@ export default function ArticlesManagement() {
   const getCategoryLabel = (category) => {
     if (!category) return 'بدون دسته';
     if (typeof category === 'object') return category.fa || category.en || 'بدون دسته';
-    const map = { 
-      news: 'اخبار', 
-      blog: 'وبلاگ', 
-      recipes: 'دستور پخت', 
-      events: 'رویدادها', 
-      promotions: 'تخفیف‌ها',
-      history: 'تاریخ و تمدن',
-      culture: 'فرهنگ و آداب',
-      'food-stories': 'داستان‌های غذا',
-      'city-stories': 'داستان شهرها',
-      'fun-facts': 'سرگرمی و دانستنی‌ها'
-    };
-    return map[category] || category;
+    return CATEGORY_MAP[category] || category;
   };
 
   const getSlugString = (slug) => {
@@ -447,72 +505,128 @@ export default function ArticlesManagement() {
     return slug;
   };
 
+  // ===== نمایش لودینگ =====
   if (loading) return (
     <div className="flex items-center justify-center h-64 text-white">
       <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#FFD700]"></div>
     </div>
   );
 
+  // ===== رندر اصلی =====
   return (
     <div className="text-white">
+      {/* ===== هدر ===== */}
       <div className="flex items-center justify-between mb-6">
         <div>
           <h2 className="text-2xl font-bold">📝 مدیریت مقالات</h2>
           <p className="text-gray-400 text-sm">مدیریت مقالات به ۳ زبان (فارسی، انگلیسی، عربی)</p>
         </div>
-        <button onClick={() => { setShowForm(true); setEditingArticle(null); }} className="flex items-center gap-2 bg-[#FFD700] text-black font-bold px-4 py-2 rounded-lg hover:bg-[#FFC700]">
+        <button 
+          onClick={() => { setShowForm(true); setEditingArticle(null); }} 
+          className="flex items-center gap-2 bg-[#FFD700] text-black font-bold px-4 py-2 rounded-lg hover:bg-[#FFC700]"
+        >
           <FiPlus size={18} /> افزودن مقاله جدید
         </button>
       </div>
 
+      {/* ===== آمار ===== */}
       <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mb-6">
-        <div className="bg-gray-800 px-4 py-3 rounded-lg text-center"><p className="text-gray-400 text-sm">کل مقالات</p><p className="text-2xl font-bold text-[#FFD700]">{stats.total}</p></div>
-        <div className="bg-gray-800 px-4 py-3 rounded-lg text-center"><p className="text-gray-400 text-sm">منتشر شده</p><p className="text-2xl font-bold text-green-400">{stats.published}</p></div>
-        <div className="bg-gray-800 px-4 py-3 rounded-lg text-center"><p className="text-gray-400 text-sm">پیش‌نویس</p><p className="text-2xl font-bold text-yellow-400">{stats.draft}</p></div>
-        <div className="bg-gray-800 px-4 py-3 rounded-lg text-center"><p className="text-gray-400 text-sm">بایگانی</p><p className="text-2xl font-bold text-gray-400">{stats.archived}</p></div>
-        <div className="bg-gray-800 px-4 py-3 rounded-lg text-center"><p className="text-gray-400 text-sm">ویژه</p><p className="text-2xl font-bold text-purple-400">{stats.featured}</p></div>
+        <div className="bg-gray-800 px-4 py-3 rounded-lg text-center">
+          <p className="text-gray-400 text-sm">کل مقالات</p>
+          <p className="text-2xl font-bold text-[#FFD700]">{stats.total}</p>
+        </div>
+        <div className="bg-gray-800 px-4 py-3 rounded-lg text-center">
+          <p className="text-gray-400 text-sm">منتشر شده</p>
+          <p className="text-2xl font-bold text-green-400">{stats.published}</p>
+        </div>
+        <div className="bg-gray-800 px-4 py-3 rounded-lg text-center">
+          <p className="text-gray-400 text-sm">پیش‌نویس</p>
+          <p className="text-2xl font-bold text-yellow-400">{stats.draft}</p>
+        </div>
+        <div className="bg-gray-800 px-4 py-3 rounded-lg text-center">
+          <p className="text-gray-400 text-sm">بایگانی</p>
+          <p className="text-2xl font-bold text-gray-400">{stats.archived}</p>
+        </div>
+        <div className="bg-gray-800 px-4 py-3 rounded-lg text-center">
+          <p className="text-gray-400 text-sm">ویژه</p>
+          <p className="text-2xl font-bold text-purple-400">{stats.featured}</p>
+        </div>
       </div>
 
+      {/* ===== فیلترها ===== */}
       <div className="flex flex-wrap items-center gap-4 mb-6 bg-gray-800 rounded-lg p-3">
         <div className="flex-1 min-w-[200px] flex items-center gap-2">
           <FiSearch className="text-gray-400" size={20} />
-          <input type="text" placeholder="جستجو در عنوان مقاله..." value={search} onChange={(e) => setSearch(e.target.value)} className="flex-1 bg-transparent outline-none text-white" />
+          <input 
+            type="text" 
+            placeholder="جستجو در عنوان مقاله..." 
+            value={search} 
+            onChange={(e) => setSearch(e.target.value)} 
+            className="flex-1 bg-transparent outline-none text-white" 
+          />
         </div>
-        <select value={selectedCategory} onChange={(e) => setSelectedCategory(e.target.value)} className="bg-gray-700 text-white px-3 py-1 rounded-lg border border-gray-600 focus:outline-none focus:ring-2 focus:ring-[#FFD700]">
+        
+        <select 
+          value={selectedCategory} 
+          onChange={(e) => setSelectedCategory(e.target.value)} 
+          className="bg-gray-700 text-white px-3 py-1 rounded-lg border border-gray-600 focus:outline-none focus:ring-2 focus:ring-[#FFD700]"
+        >
           <option value="all">همه دسته‌ها</option>
-          <option value="news">اخبار</option>
-          <option value="blog">وبلاگ</option>
-          <option value="recipes">دستور پخت</option>
-          <option value="events">رویدادها</option>
-          <option value="promotions">تخفیف‌ها</option>
-          <option value="history">تاریخ و تمدن</option>
-          <option value="culture">فرهنگ و آداب</option>
+          {CATEGORY_OPTIONS.map(opt => (
+            <option key={opt.value} value={opt.value}>{opt.label}</option>
+          ))}
         </select>
-        <select value={selectedStatus} onChange={(e) => setSelectedStatus(e.target.value)} className="bg-gray-700 text-white px-3 py-1 rounded-lg border border-gray-600 focus:outline-none focus:ring-2 focus:ring-[#FFD700]">
+
+        <select 
+          value={selectedStatus} 
+          onChange={(e) => setSelectedStatus(e.target.value)} 
+          className="bg-gray-700 text-white px-3 py-1 rounded-lg border border-gray-600 focus:outline-none focus:ring-2 focus:ring-[#FFD700]"
+        >
           <option value="all">همه وضعیت‌ها</option>
           <option value="published">منتشر شده</option>
           <option value="draft">پیش‌نویس</option>
           <option value="archived">بایگانی</option>
         </select>
-        <button onClick={fetchArticles} className="text-gray-400 hover:text-white p-2 hover:bg-gray-700 rounded-lg"><FiRefreshCw size={18} /></button>
+        
+        <button 
+          onClick={fetchArticles} 
+          className="text-gray-400 hover:text-white p-2 hover:bg-gray-700 rounded-lg"
+        >
+          <FiRefreshCw size={18} />
+        </button>
       </div>
 
-      {error && <div className="bg-red-500/20 border border-red-500 text-red-400 p-3 rounded-lg mb-4">⚠️ {error}</div>}
+      {/* ===== خطا ===== */}
+      {error && (
+        <div className="bg-red-500/20 border border-red-500 text-red-400 p-3 rounded-lg mb-4">
+          ⚠️ {error}
+        </div>
+      )}
 
+      {/* ===== جدول مقالات ===== */}
       <div className="bg-gray-800 rounded-xl overflow-hidden border border-gray-700">
         <div className="overflow-x-auto">
           <table className="w-full min-w-[900px]">
             <thead className="bg-gray-700/50">
               <tr className="text-right text-gray-400 text-sm">
-                <th className="p-3 text-center">عکس</th><th className="p-3">عنوان</th><th className="p-3">دسته‌بندی</th><th className="p-3">وضعیت</th><th className="p-3">تاریخ</th><th className="p-3 text-center">ویژه</th><th className="p-3 text-center">عملیات</th>
+                <th className="p-3 text-center">عکس</th>
+                <th className="p-3">عنوان</th>
+                <th className="p-3">دسته‌بندی</th>
+                <th className="p-3">وضعیت</th>
+                <th className="p-3">تاریخ</th>
+                <th className="p-3 text-center">ویژه</th>
+                <th className="p-3 text-center">عملیات</th>
               </tr>
             </thead>
             <tbody>
               {filteredArticles.length === 0 ? (
-                <tr><td colSpan="7" className="text-center text-gray-400 p-8">{search ? '🔍 هیچ مقاله‌ای با این نام پیدا نشد' : '📭 هنوز مقاله‌ای ثبت نشده است'}</td></tr>
+                <tr>
+                  <td colSpan="7" className="text-center text-gray-400 p-8">
+                    {search ? '🔍 هیچ مقاله‌ای با این نام پیدا نشد' : '📭 هنوز مقاله‌ای ثبت نشده است'}
+                  </td>
+                </tr>
               ) : (
                 filteredArticles.map((article) => {
-                  // اصلاح آدرس عکس برای نمایش در جدول
                   const imageUrl = article.images && article.images.length > 0 
                     ? (article.images[0].startsWith('http') ? article.images[0] : `${API_URL}${article.images[0]}`)
                     : null;
@@ -521,35 +635,79 @@ export default function ArticlesManagement() {
                     <tr key={article._id} className="border-t border-gray-700 hover:bg-gray-700/30 transition-colors">
                       <td className="p-3">
                         {imageUrl ? (
-                          <img src={imageUrl} alt={article.title?.fa || 'article'} className="w-16 h-12 object-cover rounded-lg border border-gray-600 mx-auto" />
+                          <img 
+                            src={imageUrl} 
+                            alt={article.title?.fa || 'article'} 
+                            className="w-16 h-12 object-cover rounded-lg border border-gray-600 mx-auto" 
+                          />
                         ) : (
-                          <div className="w-16 h-12 bg-gray-700 rounded-lg flex items-center justify-center text-gray-500 mx-auto"><FiImage size={20} /></div>
+                          <div className="w-16 h-12 bg-gray-700 rounded-lg flex items-center justify-center text-gray-500 mx-auto">
+                            <FiImage size={20} />
+                          </div>
                         )}
                       </td>
                       <td className="p-3">
                         <div>
                           <p className="font-medium">{article.title?.fa || '-'}</p>
                           <p className="text-xs text-gray-500 font-mono">{getSlugString(article.slug)}</p>
-                          {article.video && <span className="text-xs text-blue-400 flex items-center gap-1 mt-1"><FiVideo size={12} /> ویدیو</span>}
+                          {article.video && (
+                            <span className="text-xs text-blue-400 flex items-center gap-1 mt-1">
+                              <FiVideo size={12} /> ویدیو
+                            </span>
+                          )}
                         </div>
                       </td>
-                      <td className="p-3"><span className="px-2 py-1 bg-gray-700 rounded-full text-xs">{getCategoryLabel(article.category)}</span></td>
+                      <td className="p-3">
+                        <span className="px-2 py-1 bg-gray-700 rounded-full text-xs">
+                          {getCategoryLabel(article.category)}
+                        </span>
+                      </td>
                       <td className="p-3">
                         <span className={`px-2 py-1 rounded-full text-xs flex items-center gap-1 ${getStatusColor(article.status)}`}>
-                          {article.status === 'published' ? <FiCheckCircle size={12} /> : <FiXCircle size={12} />}{getStatusLabel(article.status)}
+                          {article.status === 'published' ? <FiCheckCircle size={12} /> : <FiXCircle size={12} />}
+                          {getStatusLabel(article.status)}
                         </span>
                       </td>
                       <td className="p-3 text-sm text-gray-400">
                         <div className="flex flex-col items-center">
-                          <span>{article.publishedAt ? new Date(article.publishedAt).toLocaleDateString('fa-IR') : '-'}</span>
+                          <span>
+                            {article.publishedAt ? new Date(article.publishedAt).toLocaleDateString('fa-IR') : '-'}
+                          </span>
+                          <span className="text-xs text-gray-500">
+                            {article.publishedAt ? new Date(article.publishedAt).toLocaleTimeString('fa-IR') : ''}
+                          </span>
                         </div>
                       </td>
-                      <td className="p-3 text-center">{article.featured ? <span className="text-purple-400">⭐ ویژه</span> : <span className="text-gray-500">-</span>}</td>
+                      <td className="p-3 text-center">
+                        {article.featured ? (
+                          <span className="text-purple-400">⭐ ویژه</span>
+                        ) : (
+                          <span className="text-gray-500">-</span>
+                        )}
+                      </td>
                       <td className="p-3">
                         <div className="flex items-center justify-center gap-2">
-                          <button onClick={() => window.open(`/articles/${getSlugString(article.slug)}`, '_blank')} className="p-1.5 bg-green-500/20 text-green-400 rounded-lg hover:bg-green-500/30" title="مشاهده"><FiEye size={16} /></button>
-                          <button onClick={() => { setEditingArticle(article); setShowForm(true); }} className="p-1.5 bg-blue-500/20 text-blue-400 rounded-lg hover:bg-blue-500/30" title="ویرایش"><FiEdit2 size={16} /></button>
-                          <button onClick={() => handleDelete(article._id)} className="p-1.5 bg-red-500/20 text-red-400 rounded-lg hover:bg-red-500/30" title="حذف"><FiTrash2 size={16} /></button>
+                          <button 
+                            onClick={() => window.open(`/articles/${getSlugString(article.slug)}`, '_blank')} 
+                            className="p-1.5 bg-green-500/20 text-green-400 rounded-lg hover:bg-green-500/30"
+                            title="مشاهده"
+                          >
+                            <FiEye size={16} />
+                          </button>
+                          <button 
+                            onClick={() => { setEditingArticle(article); setShowForm(true); }} 
+                            className="p-1.5 bg-blue-500/20 text-blue-400 rounded-lg hover:bg-blue-500/30"
+                            title="ویرایش"
+                          >
+                            <FiEdit2 size={16} />
+                          </button>
+                          <button 
+                            onClick={() => handleDelete(article._id)} 
+                            className="p-1.5 bg-red-500/20 text-red-400 rounded-lg hover:bg-red-500/30"
+                            title="حذف"
+                          >
+                            <FiTrash2 size={16} />
+                          </button>
                         </div>
                       </td>
                     </tr>
@@ -561,8 +719,22 @@ export default function ArticlesManagement() {
         </div>
       </div>
 
+      {/* ===== تعداد کل ===== */}
+      <div className="mt-4 text-gray-400 text-sm flex justify-between items-center">
+        <span>نمایش {filteredArticles.length} مقاله از {articles.length} عدد</span>
+        <span className="text-xs text-gray-500">
+          آخرین بروزرسانی: {new Date().toLocaleTimeString('fa-IR')}
+        </span>
+      </div>
+
+      {/* ===== فرم افزودن/ویرایش ===== */}
       {showForm && (
-        <ArticleForm article={editingArticle} onSave={handleSave} onCancel={() => { setShowForm(false); setEditingArticle(null); }} isEditing={!!editingArticle} />
+        <ArticleForm
+          article={editingArticle}
+          onSave={handleSave}
+          onCancel={() => { setShowForm(false); setEditingArticle(null); }}
+          isEditing={!!editingArticle}
+        />
       )}
     </div>
   );

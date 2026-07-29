@@ -18,15 +18,19 @@ import {
   MdMailOutline,
 } from 'react-icons/md';
 
-/* ── کامپوننت‌های کمکی (اگر ArticleCard, ArticleFilter, ArticlePagination 
-     خارجی نباشن یا خواستی جایگزین کنی) ── */
-
+// ===== دسته‌بندی‌های کامل مقالات (هماهنگ با پنل ادمین) =====
 const CATEGORIES = [
   { key: 'all', label: 'all' },
   { key: 'news', label: 'news' },
-  { key: 'recipe', label: 'recipe' },
-  { key: 'tips', label: 'tips' },
-  { key: 'interview', label: 'interview' },
+  { key: 'blog', label: 'blog' },
+  { key: 'recipes', label: 'recipes' },
+  { key: 'events', label: 'events' },
+  { key: 'promotions', label: 'promotions' },
+  { key: 'history', label: 'history' },
+  { key: 'culture', label: 'culture' },
+  { key: 'food-stories', label: 'food-stories' },
+  { key: 'city-stories', label: 'city-stories' },
+  { key: 'fun-facts', label: 'fun-facts' },
 ];
 
 export default function Articles() {
@@ -42,7 +46,6 @@ export default function Articles() {
   const isDark = theme === 'dark';
   const isRtl = i18n.language === 'fa' || i18n.language === 'ar';
 
-  /* رنگ‌های تم */
   const bg = isDark ? 'bg-[#0F0F0F]' : 'bg-[#F7F0E6]';
   const surface = isDark ? 'bg-[#1C1C1C]' : 'bg-white';
   const surfaceHover = isDark ? 'hover:bg-[#252525]' : 'hover:bg-gray-50';
@@ -56,7 +59,6 @@ export default function Articles() {
   const featured = articles?.[0];
   const rest = articles?.slice(1) || [];
 
-  /* اسکرول به بالا هنگام تغییر صفحه */
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [page]);
@@ -64,7 +66,6 @@ export default function Articles() {
   /* ── Hero ── */
   const Hero = () => (
     <section className="relative overflow-hidden pt-24 pb-16">
-      {/* پس‌زمینه گرادیان */}
       <div
         className="absolute inset-0 opacity-30"
         style={{
@@ -104,7 +105,6 @@ export default function Articles() {
           </p>
         </motion.div>
 
-        {/* Stats Row */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -113,7 +113,7 @@ export default function Articles() {
         >
           {[
             { icon: MdArticle, value: total || 0, label: t('articles.statArticles', 'مقاله') },
-            { icon: MdCategory, value: 12, label: t('articles.statCategories', 'دسته‌بندی') },
+            { icon: MdCategory, value: 11, label: t('articles.statCategories', 'دسته‌بندی') },
             { icon: MdPerson, value: 8, label: t('articles.statAuthors', 'نویسنده') },
           ].map((s, i) => (
             <div key={i} className="flex items-center gap-3">
@@ -143,7 +143,6 @@ export default function Articles() {
       className="max-w-6xl mx-auto px-4 mb-10"
     >
       <div className="flex flex-col md:flex-row gap-4 items-stretch md:items-center">
-        {/* Search */}
         <div className="relative flex-1 max-w-lg">
           <MdSearch
             size={20}
@@ -180,7 +179,6 @@ export default function Articles() {
           )}
         </div>
 
-        {/* Category Pills */}
         <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
           {CATEGORIES.map((cat) => {
             const active = category === cat.key;

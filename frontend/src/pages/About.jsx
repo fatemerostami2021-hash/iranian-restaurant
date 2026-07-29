@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { useTheme } from '../context/ThemeContext';
+import DestinationSection from '../components/home/DestinationSection'; // ✅ اضافه شد
 
 const fadeUp = {
   hidden: { opacity: 0, y: 30 },
@@ -15,7 +16,7 @@ export default function About() {
   const { t, i18n } = useTranslation();
   const { theme } = useTheme();
   const isDark = theme === 'dark';
-  const lang = i18n.language; // تشخیص زبان فعلی
+  const lang = i18n.language;
 
   const stats = [
     { key: 'statsYears', value: '8+' },
@@ -24,7 +25,6 @@ export default function About() {
     { key: 'statsRating', value: '4.8' },
   ];
 
-  // متن‌های ۳ زبانه مستقیم در کد
   const storyP3Text = lang === 'fa' 
     ? 'امروز، در قلب دوحه، کباب داغ نان داغ نه فقط یک رستوران، بلکه پلی است میان فرهنگ غنی ایران و مهمان‌نوازی گرم قطر. جایی که هر لقمه، داستانی از عشق به غذا، احترام به سنت و لذت لحظه را روایت می‌کند. اینجا هر غذایی، بیش از یک وعده؛ یک خاطرهٔ ماندگار است.'
     : lang === 'ar' 
@@ -37,7 +37,6 @@ export default function About() {
     ? 'انضم إلينا وتذوق النكهة الإيرانية الأصيلة، ساخنة ومليئة بالشغف. كباب داغ، نان داغ — حيث لا تنطفئ نار الحب أبداً.'
     : 'Join us and experience the authentic taste of Iran, hot and passionate. Kabab Dagh, Nan Dagh — where the fire of love never goes out.';
 
-  // متغیرهای رنگی پویا
   const bgClass = isDark ? 'bg-[#0F0F0F]' : 'bg-[#FFFBF5]';
   const textClass = isDark ? 'text-white' : 'text-[#1A1A1A]';
   const mutedClass = isDark ? 'text-gray-400' : 'text-gray-700';
@@ -96,12 +95,10 @@ export default function About() {
             {t('aboutPage.storyP2', 'دستورها، رازهایی هستند که از نسلی به نسل دیگر، در خانواده‌های ایرانی منتقل شده‌اند؛ از سفره‌های سنتی مادربزرگ‌ها تا آشپزخانه‌های مدرن امروز. ما این میراث گران‌بها را با افتخار به دوحه آوردیم و با بالاترین استانداردهای کیفی و بهداشت، به شما تقدیم می‌کنیم.')}
           </p>
           
-          {/* پاراگراف سوم (۳ زبانه مستقیم در کد) */}
           <p className={`text-base md:text-lg leading-relaxed ${mutedClass}`}>
             {storyP3Text}
           </p>
           
-          {/* جمله طلایی (۳ زبانه مستقیم در کد) */}
           <div className={`mt-8 p-6 border-r-4 ${accentBorder} ${accentBg} rounded-l-2xl`}>
             <p className={`text-lg md:text-xl font-bold ${accentText} leading-relaxed`}>
               {highlightQuoteText}
@@ -109,18 +106,15 @@ export default function About() {
           </div>
         </motion.div>
 
-        {/* عکس مدیر با افکت ۳ بعدی و هایلایت */}
         <motion.div
           variants={fadeUp} custom={1} initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.3 }}
           className="relative flex justify-center group"
         >
-          {/* لایه درخشش پشت عکس */}
           <div 
             className="absolute inset-0 rounded-3xl blur-2xl opacity-70 group-hover:opacity-100 transition-opacity duration-500 scale-105" 
             style={{ background: `radial-gradient(circle, ${accentGlow}, transparent 70%)` }}
           ></div>
           
-          {/* قاب ۳ بعدی عکس */}
           <div className={`relative w-full max-w-xl aspect-[4/5] rounded-3xl overflow-hidden border-4 ${accentBorder} transition-transform duration-500 group-hover:scale-105`}
                style={{ boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 0 8px rgba(255, 255, 255, 0.05)' }}
           >
@@ -140,7 +134,7 @@ export default function About() {
         </motion.div>
       </section>
 
-      {/* ===== STATS SECTION (Glassmorphism Cards) ===== */}
+      {/* ===== STATS SECTION ===== */}
       <section className="py-16">
         <div className="max-w-5xl mx-auto px-4 grid grid-cols-2 md:grid-cols-4 gap-6">
           {stats.map((s, i) => (
@@ -175,6 +169,10 @@ export default function About() {
           </Link>
         </motion.div>
       </section>
+
+      {/* ===== DESTINATION SECTIONS (منتقل‌شده از Home) ===== */}
+      <DestinationSection namespace="shiraz" dark />
+      <DestinationSection namespace="doha" />
     </div>
   );
 }
