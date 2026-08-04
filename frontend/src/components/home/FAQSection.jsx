@@ -2,42 +2,93 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FiChevronDown, FiHelpCircle } from 'react-icons/fi';
+import { useTheme } from '../../context/ThemeContext';
 
 export default function FAQSection() {
   const { t } = useTranslation();
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
   const [openIndex, setOpenIndex] = useState(null);
 
-  // ===== سوالات متداول واقعی رستوران =====
-  const faqs = [
-    {
-      q: 'آیا غذاها کاملاً حلال هستند؟',
-      a: 'بله، تمام غذاهای ما با رعایت کامل اصول حلال و با گوشت‌های باکیفیت تهیه می‌شوند. ما به سلامت و اعتقادات مشتریان خود احترام می‌گذاریم.'
-    },
-    {
-      q: 'آیا امکان سفارش اینترنتی و تحویل در محل وجود دارد؟',
-      a: 'بله، شما می‌توانید از طریق وب‌سایت، اپلیکیشن‌های سفارش غذا یا تماس تلفنی سفارش خود را ثبت کنید. تحویل در محل نیز با رعایت پروتکل‌های بهداشتی انجام می‌شود.'
-    },
-    {
-      q: 'آیا منوی رستوران برای کودکان و رژیم‌های خاص مناسب است؟',
-      a: 'ما منوی مخصوص کودکان و گزینه‌های گیاهی و رژیمی را نیز ارائه می‌دهیم. لطفاً هنگام سفارش، نیازهای خاص خود را به کارشناسان ما اطلاع دهید.'
-    },
-    {
-      q: 'آیا رستوران فضای خصوصی برای جشن‌ها و دورهمی‌ها دارد؟',
-      a: 'بله، ما سالن‌های خصوصی و نیمه‌خصوصی با ظرفیت‌های مختلف برای برگزاری جشن‌های خانوادگی، دورهمی‌های دوستانه و رویدادهای کاری داریم.'
-    },
-    {
-      q: 'ساعت کاری رستوران چگونه است؟',
-      a: 'رستوران همه روزه از ساعت8 صبح تا 2 شب باز است. در ایام تعطیلات و مناسبت‌های خاص، ساعت کاری ممکن است تغییر کند که از طریق شبکه‌های اجتماعی اعلام می‌شود.'
-    }
+  // ===== دریافت سوالات از فایل ترجمه (homePage.faq) =====
+  const faqKeys = [
+    { q: 'q1', a: 'a1' },
+    { q: 'q2', a: 'a2' },
+    { q: 'q3', a: 'a3' },
+    { q: 'q4', a: 'a4' },
+    { q: 'q5', a: 'a5' },
   ];
 
+  // ===== ساخت لیست سوالات از ترجمه =====
+  const faqs = faqKeys.map(({ q, a }) => ({
+    q: t(`homePage.faq.${q}`, ''),
+    a: t(`homePage.faq.${a}`, '')
+  }));
+
+  // ===== فیلتر کردن سوالات خالی =====
+  const validFaqs = faqs.filter(f => f.q && f.q !== 'homePage.faq.q1' && f.q !== '');
+
+  // ===== اگر سوالی وجود نداشت، چیزی نمایش نده =====
+  if (validFaqs.length === 0) {
+    return null;
+  }
+
+  // ===== کلاس‌های پویا بر اساس تم =====
+  const bgGradient = isDark
+    ? 'bg-gradient-to-br from-[#1A1A1A] via-[#2D2D2D] to-[#1A1A1A]'
+    : 'bg-[#FFFBF5]';
+
+  const titleColor = isDark ? 'text-white' : 'text-[#1A1A1A]';
+  const subtitleColor = isDark ? 'text-gray-400' : 'text-[#666666]';
+  const descriptionColor = isDark ? 'text-gray-400' : 'text-[#666666]';
+  
+  const cardBgClosed = isDark 
+    ? 'bg-white/5 border border-white/5 hover:bg-white/10' 
+    : 'bg-white/80 border border-gray-200/50 hover:bg-white/95 shadow-sm';
+  
+  const cardBgOpen = isDark
+    ? 'bg-white/15 border border-white/20 shadow-2xl shadow-[#FFD700]/5'
+    : 'bg-white border border-[#D32F2F]/20 shadow-2xl shadow-[#D32F2F]/10';
+
+  const questionColor = isDark 
+    ? 'text-white hover:text-[#FFD700]' 
+    : 'text-[#1A1A1A] hover:text-[#D32F2F]';
+  
+  const questionActiveColor = isDark ? 'text-[#FFD700]' : 'text-[#D32F2F]';
+  const answerColor = isDark ? 'text-gray-300' : 'text-[#4A4A4A]';
+  
+  const iconBg = isDark 
+    ? 'bg-white/10 text-white' 
+    : 'bg-gray-100 text-[#1A1A1A]';
+  
+  const iconActiveBg = isDark 
+    ? 'bg-[#FFD700] text-[#1A1A1A]' 
+    : 'bg-[#D32F2F] text-white';
+  
+  const borderColor = isDark ? 'border-white/10' : 'border-gray-200/50';
+  const badgeBg = isDark 
+    ? 'bg-white/10 backdrop-blur-md border border-white/10' 
+    : 'bg-[#D32F2F]/10 backdrop-blur-md border border-[#D32F2F]/20';
+  const badgeText = isDark ? 'text-[#FFD700]' : 'text-[#D32F2F]';
+
+  // ===== افکت‌های پس‌زمینه بر اساس تم =====
+  const effect1 = isDark 
+    ? 'bg-[#D32F2F]/10' 
+    : 'bg-[#D32F2F]/5';
+  const effect2 = isDark 
+    ? 'bg-[#FFD700]/10' 
+    : 'bg-[#FFD700]/5';
+  const effect3 = isDark 
+    ? 'bg-white/5' 
+    : 'bg-white/30';
+
   return (
-    <section className="relative py-16 md:py-24 overflow-hidden bg-gradient-to-br from-[#1A1A1A] via-[#2D2D2D] to-[#1A1A1A]">
+    <section className={`relative py-16 md:py-24 overflow-hidden ${bgGradient} transition-colors duration-300`}>
       {/* ===== افکت شیشه‌ای پس‌زمینه ===== */}
       <div className="absolute inset-0">
-        <div className="absolute top-[-20%] left-[-10%] w-[40%] h-[40%] bg-[#D32F2F]/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-[-30%] right-[-10%] w-[50%] h-[50%] bg-[#FFD700]/10 rounded-full blur-3xl" />
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[60%] h-[60%] bg-white/5 rounded-full blur-3xl" />
+        <div className={`absolute top-[-20%] left-[-10%] w-[40%] h-[40%] ${effect1} rounded-full blur-3xl`} />
+        <div className={`absolute bottom-[-30%] right-[-10%] w-[50%] h-[50%] ${effect2} rounded-full blur-3xl`} />
+        <div className={`absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[60%] h-[60%] ${effect3} rounded-full blur-3xl`} />
       </div>
 
       <div className="relative z-10 max-w-4xl mx-auto px-4">
@@ -49,23 +100,23 @@ export default function FAQSection() {
           transition={{ duration: 0.6 }}
           className="text-center mb-12"
         >
-          <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md rounded-full px-4 py-1.5 border border-white/10 mb-4">
-            <FiHelpCircle className="text-[#FFD700] text-sm" />
-            <span className="text-[#FFD700] text-xs font-medium tracking-wider uppercase">
-              {t('homePage.faq.subtitle') || 'پاسخ به سوالات شما'}
+          <div className={`inline-flex items-center gap-2 ${badgeBg} rounded-full px-4 py-1.5 border mb-4`}>
+            <FiHelpCircle className={`${badgeText} text-sm`} />
+            <span className={`${badgeText} text-xs font-medium tracking-wider uppercase`}>
+              {t('homePage.faq.subtitle', 'پاسخ به سوالات شما')}
             </span>
           </div>
-          <h2 className="text-4xl md:text-5xl font-black text-white tracking-tight leading-[1.1]">
-            {t('homePage.faq.title') || 'سوالات متداول'}
+          <h2 className={`text-4xl md:text-5xl font-black ${titleColor} tracking-tight leading-[1.1] transition-colors duration-300`}>
+            {t('homePage.faq.title', 'سوالات متداول')}
           </h2>
-          <p className="text-gray-400 text-base md:text-lg mt-4 max-w-2xl mx-auto font-light">
-            {t('homePage.faq.description') || 'پاسخ سوالات رایج درباره رستوران، منو و خدمات ما را اینجا پیدا کنید.'}
+          <p className={`${descriptionColor} text-base md:text-lg mt-4 max-w-2xl mx-auto font-light transition-colors duration-300`}>
+            {t('homePage.faq.description', 'پاسخ سوالات رایج درباره رستوران، منو و خدمات ما را اینجا پیدا کنید.')}
           </p>
         </motion.div>
 
         {/* ===== لیست سوالات ===== */}
         <div className="flex flex-col gap-4">
-          {faqs.map((item, i) => {
+          {validFaqs.map((item, i) => {
             const isOpen = openIndex === i;
             return (
               <motion.div
@@ -76,10 +127,7 @@ export default function FAQSection() {
                 transition={{ delay: i * 0.05, duration: 0.4 }}
                 className={`
                   relative rounded-2xl backdrop-blur-md transition-all duration-300
-                  ${isOpen 
-                    ? 'bg-white/15 border border-white/20 shadow-2xl shadow-[#FFD700]/5' 
-                    : 'bg-white/5 border border-white/5 hover:bg-white/10'
-                  }
+                  ${isOpen ? cardBgOpen : cardBgClosed}
                 `}
               >
                 {/* ===== دکمه سوال ===== */}
@@ -90,7 +138,7 @@ export default function FAQSection() {
                 >
                   <span className={`
                     font-semibold text-sm md:text-base transition-colors duration-300
-                    ${isOpen ? 'text-[#FFD700]' : 'text-white'}
+                    ${isOpen ? questionActiveColor : questionColor}
                   `}>
                     {item.q}
                   </span>
@@ -98,11 +146,8 @@ export default function FAQSection() {
                     animate={{ rotate: isOpen ? 180 : 0 }}
                     transition={{ duration: 0.3 }}
                     className={`
-                      shrink-0 w-8 h-8 rounded-full flex items-center justify-center
-                      ${isOpen 
-                        ? 'bg-[#FFD700] text-[#1A1A1A]' 
-                        : 'bg-white/10 text-white'
-                      }
+                      shrink-0 w-8 h-8 rounded-full flex items-center justify-center transition-all duration-300
+                      ${isOpen ? iconActiveBg : iconBg}
                     `}
                   >
                     <FiChevronDown size={18} />
@@ -119,8 +164,8 @@ export default function FAQSection() {
                       transition={{ duration: 0.3, ease: 'easeInOut' }}
                       className="overflow-hidden"
                     >
-                      <div className="px-6 pb-6 pt-2 border-t border-white/10">
-                        <p className="text-gray-300 text-sm md:text-base leading-relaxed max-w-2xl">
+                      <div className={`px-6 pb-6 pt-2 border-t ${borderColor}`}>
+                        <p className={`${answerColor} text-sm md:text-base leading-relaxed max-w-2xl transition-colors duration-300`}>
                           {item.a}
                         </p>
                       </div>

@@ -46,7 +46,7 @@ export default function MegaMenu({ isOpen, onClose }) {
   useEffect(() => {
     if (isOpen && !hasFetched.current) {
       hasFetched.current = true;
-      api.get('/dishes/categories')
+        api.get('/api/dishes/categories')  // ✅
         .then((res) => setCategories(res.data))
         .catch((err) => console.error('Error fetching categories:', err))
         .finally(() => setLoading(false));

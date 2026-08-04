@@ -16,7 +16,6 @@ export default function DishCard({ dish, highlight, onQuickView }) {
   const name = dish.name?.[lang] || dish.name?.en || '';
   const description = dish.description?.[lang] || dish.description?.en || '';
 
-  // ===== کلاس‌های پویا بر اساس تم =====
   const cardBg = isDark ? 'bg-[#2D2D2D]' : 'bg-white';
   const textColor = isDark ? 'text-[#F7F0E6]' : 'text-[#1A1A1A]';
   const mutedColor = isDark ? 'text-gray-400' : 'text-[#666666]';
@@ -35,6 +34,8 @@ export default function DishCard({ dish, highlight, onQuickView }) {
       code: dish.code,
       name: dish.name,
       price: dish.price,
+      images: dish.images,        // ← عکس‌ها
+      category: dish.category,    // ← دسته‌بندی
     });
   };
 
@@ -54,7 +55,6 @@ export default function DishCard({ dish, highlight, onQuickView }) {
       `}
       onClick={handleCardClick}
     >
-      {/* ===== تصویر ===== */}
       <div className="aspect-square bg-gray-50 dark:bg-[#1C1C1C] overflow-hidden">
         <img
           src={imgSrc}
@@ -65,7 +65,6 @@ export default function DishCard({ dish, highlight, onQuickView }) {
         />
       </div>
 
-      {/* ===== محتوا ===== */}
       <div className="p-4">
         <div className="flex items-start justify-between gap-2 mb-1">
           <h3 className={`font-bold ${textColor} text-sm leading-tight line-clamp-1`}>

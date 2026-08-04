@@ -143,3 +143,95 @@
   transform: scale(1.02);
   transition: all 0.3s ease;
 }
+
+/* ============================================================
+   🖼️ استایل‌های PWA (Standalone Mode)
+   ============================================================ */
+
+/* وقتی اپ به صورت PWA نصب شده و standalone باز می‌شه */
+@media (display-mode: standalone) {
+  html {
+    background-color: #0a0a0a !important;
+  }
+
+  body {
+    background-color: #0a0a0a !important;
+    /* padding برای ایجاد فضای اطراف اپ (border effect) */
+    padding: 8px !important;
+    min-height: 100vh;
+    min-height: 100dvh;
+  }
+
+  /* wrapper اصلی اپ - گوشه‌های گرد + سایه ملایم */
+  #root {
+    border-radius: 28px !important;
+    overflow: hidden !important;
+    background-color: var(--bg-primary) !important;
+    box-shadow: 
+      0 0 0 1px rgba(255, 255, 255, 0.06),
+      0 8px 32px rgba(0, 0, 0, 0.4) !important;
+    min-height: calc(100vh - 16px) !important;
+    min-height: calc(100dvh - 16px) !important;
+    position: relative;
+  }
+}
+
+/* ============================================================
+   🌑 بک‌گراند تیره همیشگی (جلوگیری از فلش سفید)
+   ============================================================ */
+
+html {
+  background-color: #0a0a0a;
+}
+
+body {
+  background-color: var(--bg-primary);
+  min-height: 100vh;
+  min-height: 100dvh;
+  /* جلوگیری از bounce/elastic scroll سفید روی iOS */
+  overscroll-behavior-y: none;
+}
+
+/* ============================================================
+   🎨 تم تاریک - یکدست‌سازی بک‌گراند
+   ============================================================ */
+
+/* وقتی تم تاریک فعاله، html هم تیره باشه */
+html.dark {
+  background-color: #0a0a0a;
+  color-scheme: dark;
+}
+
+/* ============================================================
+   📱 Safe Area برای گوشی‌های notch دار (iPhone X به بعد)
+   ============================================================ */
+
+@supports (padding: max(0px)) {
+  @media (display-mode: standalone) {
+    body {
+      padding-top: max(8px, env(safe-area-inset-top));
+      padding-bottom: max(8px, env(safe-area-inset-bottom));
+      padding-left: max(8px, env(safe-area-inset-left));
+      padding-right: max(8px, env(safe-area-inset-right));
+    }
+
+    #root {
+      min-height: calc(100dvh - max(16px, env(safe-area-inset-top)) - max(16px, env(safe-area-inset-bottom))) !important;
+    }
+  }
+}
+
+/* ============================================================
+   ✨ فیکس GalaxyFireBurst - اطمینان از لود Canvas
+   ============================================================ */
+
+/* مطمئن شو parent Modal position:relative داره */
+[data-modal-content] {
+  position: relative;
+  overflow: hidden;
+}
+
+/* canvas داخل modal حتماً باید بک‌گراند شفاف باشه */
+canvas.galaxy-burst {
+  background: transparent !important;
+}

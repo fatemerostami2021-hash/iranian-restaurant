@@ -54,9 +54,56 @@ export const register = async (req, res) => {
   }
 };
 
+export const googleAuth = async (req, res) => {
+  try {
+    const { email, name, googleId, avatar } = req.body;
+
+    if (!email || !googleId) {
+      return res.status(400).json({ error: 'Email and Google ID are required' });
+    }
+
+    const normalizedEmail = email.toLowerCase().trim();
+
+    let user = await User.findOne({ email: normalizedEmail });
+
+    if (!user) {
+      // کاربر جدید با گوگل
+      user = await User.create({
+        name: name || 'Google User',
+        email: normalizedEmail,
+        googleId,
+        avatar: avatar || '',
+        role: 'customer',
+      });
+    } else {
+      // کاربر قبلاً وجود داشت
+      if (!user.googleId) {
+        user.googleId = googleId;
+        if (avatar && !user.avatar) user.avatar = avatar;
+        await user.save();
+      }
+    }
+
+    const token = signToken(user);
+    res.status(200).json({
+      token,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        phone: user.phone,
+        role: user.role,
+        avatar: user.avatar,
+      },
+    });
+  } catch (error) {
+    console.error('Google auth error:', error);
+    res.status(500).json({ error: 'Server error during Google authentication' });
+  }
+};
+
 export const getMe = async (req, res) => {
   try {
-    // req.user از middleware protect می‌آید
     const user = await User.findById(req.user.id).select('-password');
     if (!user) return res.status(404).json({ error: 'User not found' });
     

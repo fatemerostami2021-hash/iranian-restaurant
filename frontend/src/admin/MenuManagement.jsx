@@ -6,6 +6,26 @@ import {
 } from 'react-icons/fi';
 import axios from 'axios';
 
+// ===== کمک‌کننده: گرفتن عکس غذا (مشابه useDishes.js) =====
+const CATEGORY_IMAGE_MAP = {
+  breakfast: 'breakfast',
+  main: 'main',
+  combo: 'combo',
+  appetizer: 'appetizer',
+  drinks: 'drinks',
+};
+
+function getDishImageUrl(dish) {
+  if (dish.images && dish.images.length > 0 && dish.images[0]) {
+    const img = dish.images[0];
+    if (img.startsWith('http')) return img;
+    return img.startsWith('/') ? img : `/${img}`;
+  }
+  const folder = CATEGORY_IMAGE_MAP[dish.category] || 'main';
+  const key = dish.code || dish._id;
+  return `/images/dishes/${folder}/${key}.png`;
+}
+
 // ===== کامپوننت فرم افزودن/ویرایش با آپلود عکس و ویدیو =====
 function DishForm({ dish, onSave, onCancel, isEditing }) {
   const [formData, setFormData] = useState({
@@ -609,19 +629,14 @@ export default function MenuManagement() {
               ) : (
                 filteredDishes.map((dish) => (
                   <tr key={dish._id} className="border-t border-gray-700 hover:bg-gray-700/30 transition-colors">
-                    <td className="p-3">
-                      {dish.images && dish.images.length > 0 ? (
-                        <img
-                          src={dish.images[0]}
-                          alt={dish.name.fa}
-                          className="w-12 h-12 object-cover rounded-lg border border-gray-600 mx-auto"
-                        />
-                      ) : (
-                        <div className="w-12 h-12 bg-gray-700 rounded-lg flex items-center justify-center text-gray-500 mx-auto">
-                          <FiImage size={20} />
-                        </div>
-                      )}
-                    </td>
+                   <td className="p-3">
+  <img
+    src={getDishImageUrl(dish)}
+    alt={dish.name?.fa || ''}
+    className="w-12 h-12 object-cover rounded-lg border border-gray-600 mx-auto"
+    onError={(e) => { e.target.src = '/images/dishes/placeholder.svg'; }}
+  />
+</td>
                     <td className="p-3 font-mono text-sm text-[#FFD700]">{dish.code}</td>
                     <td className="p-3">{dish.name.fa || '-'}</td>
                     <td className="p-3 text-gray-400">{dish.name.en || '-'}</td>

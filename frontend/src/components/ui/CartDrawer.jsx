@@ -5,6 +5,26 @@ import { useCart } from '../../context/CartContext';
 import { useTheme } from '../../context/ThemeContext';
 import { Link } from 'react-router-dom';
 
+// ===== کمک‌کننده: گرفتن عکس غذا (مشابه dishService.js) =====
+const CATEGORY_IMAGE_MAP = {
+  breakfast: 'breakfast',
+  main: 'main',
+  combo: 'combo',
+  appetizer: 'appetizer',
+  drinks: 'drinks',
+};
+
+function getDishImageUrl(item) {
+  if (item.images && item.images.length > 0 && item.images[0]) {
+    const img = item.images[0];
+    if (img.startsWith('http')) return img;
+    return img.startsWith('/') ? img : `/${img}`;
+  }
+  const folder = CATEGORY_IMAGE_MAP[item.category] || 'main';
+  const key = item.code || item._id;
+  return `/images/dishes/${folder}/${key}.png`;
+}
+
 export default function CartDrawer({ isOpen, onClose }) {
   const { t, i18n } = useTranslation();
   const { theme } = useTheme();
@@ -46,7 +66,7 @@ export default function CartDrawer({ isOpen, onClose }) {
             <div className={`flex items-center justify-between p-4 border-b ${borderColor}`}>
               <div>
                 <h2 className={`text-xl font-bold ${textColor}`}>{t('cart.title')}</h2>
-                <p className={`text-xs ${mutedColor}`}>{totalItems} {t('cart.items') || 'آیتم'}</p>
+                <p className={`text-xs ${mutedColor}`}>{totalItems} {t('cart.items')}</p>
               </div>
               <button onClick={onClose} className="p-2 rounded-full hover:bg-white/10 transition-colors duration-300">
                 <FiX size={24} className={textColor} />
@@ -71,7 +91,7 @@ export default function CartDrawer({ isOpen, onClose }) {
                     <motion.div key={item._id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className={`${itemBg} rounded-2xl p-4 border ${borderColor} transition-all duration-300 hover:shadow-lg`}>
                       <div className="flex items-center gap-4">
                         <div className="w-16 h-16 rounded-xl overflow-hidden bg-gray-100 dark:bg-gray-800 flex-shrink-0">
-                          <img src={item.images?.[0] || '/images/dishes/placeholder.svg'} alt={itemName} className="w-full h-full object-cover" loading="lazy" />
+                          <img src={getDishImageUrl(item)} alt={itemName} className="w-full h-full object-cover" loading="lazy" onError={(e) => { e.target.src = '/images/dishes/placeholder.svg'; }} />
                         </div>
                         <div className="flex-1 min-w-0">
                           <h4 className={`text-sm font-bold ${textColor} truncate`}>{itemName}</h4>
@@ -102,23 +122,23 @@ export default function CartDrawer({ isOpen, onClose }) {
                 <div className="flex gap-2">
                   <input
                     type="text"
-                    placeholder={t('cart.discountCode') || 'کد تخفیف'}
+                    placeholder={t('cart.discountCode')}
                     className={`flex-1 px-4 py-2 text-sm rounded-xl border ${borderColor} ${bgDrawer} ${textColor} placeholder:${mutedColor} focus:outline-none focus:ring-2 focus:ring-[${primaryColor}]/30 transition-all duration-300`}
                   />
                   <button className="px-4 py-2 bg-[#FFD700] text-[#1A1A1A] font-bold text-sm rounded-xl hover:bg-[#F9A825] transition-colors duration-300">
-                    {t('cart.apply') || 'اعمال'}
+                    {t('cart.apply')}
                   </button>
                 </div>
 
                 {/* ===== قیمت‌ها (بدون مالیات) ===== */}
                 <div className="space-y-1.5 text-sm">
                   <div className="flex justify-between">
-                    <span className={mutedColor}>{t('cart.subtotal') || 'جمع کل'}</span>
+                    <span className={mutedColor}>{t('cart.subtotal')}</span>
                     <span className={textColor}>{totalPrice.toFixed(1)} QR</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className={mutedColor}>{t('cart.delivery') || 'هزینه ارسال'}</span>
-                    <span className={textColor}>{deliveryFee === 0 ? 'رایگان' : `${deliveryFee} QR`}</span>
+                    <span className={mutedColor}>{t('cart.delivery')}</span>
+                    <span className={textColor}>{deliveryFee === 0 ? t('cart.freeDelivery') : `${deliveryFee} QR`}</span>
                   </div>
                   <div className="flex justify-between pt-2 border-t border-white/10">
                     <span className={`text-base font-bold ${textColor}`}>{t('cart.total')}</span>
@@ -128,7 +148,7 @@ export default function CartDrawer({ isOpen, onClose }) {
                   </div>
                   {/* ===== توضیح بدون مالیات ===== */}
                   <p className={`text-[10px] ${mutedColor} text-center opacity-50`}>
-                    {t('cart.noTax') || 'بدون مالیات - مطابق قوانین قطر'}
+                    {t('cart.noTax')}
                   </p>
                 </div>
 

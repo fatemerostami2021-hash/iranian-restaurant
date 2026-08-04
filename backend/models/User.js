@@ -21,6 +21,7 @@ const userSchema = new mongoose.Schema({
   phone: { type: String, unique: true, sparse: true },
   password: { type: String }, // برای ورود با ایمیل
   googleId: { type: String, unique: true, sparse: true }, // برای ورود با گوگل
+  avatar: { type: String, default: '' }, // عکس پروفایل از گوگل
   role: { type: String, enum: ['admin', 'staff', 'customer'], default: 'customer' },
   isPhoneVerified: { type: Boolean, default: false },
   

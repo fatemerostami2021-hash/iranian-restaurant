@@ -171,8 +171,8 @@ export default function About() {
       </section>
 
       {/* ===== DESTINATION SECTIONS (منتقل‌شده از Home) ===== */}
-      <DestinationSection namespace="shiraz" dark />
-      <DestinationSection namespace="doha" />
+      {/* <DestinationSection namespace="shiraz" dark />
+      <DestinationSection namespace="doha" /> */}
     </div>
   );
 }

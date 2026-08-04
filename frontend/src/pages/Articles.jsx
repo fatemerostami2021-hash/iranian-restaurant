@@ -18,6 +18,16 @@ import {
   MdMailOutline,
 } from 'react-icons/md';
 
+const API_URL = import.meta.env.VITE_API_URL || '';
+
+// ===== کمک‌کننده: ساخت URL درست عکس مقاله =====
+function getArticleImageUrl(article) {
+  const raw = article.images?.[0];
+  if (!raw) return '/images/articles/placeholder.svg';
+  if (raw.startsWith('http')) return raw;
+  return `${API_URL}${raw.startsWith('/') ? '' : '/'}${raw}`;
+}
+
 // ===== دسته‌بندی‌های کامل مقالات (هماهنگ با پنل ادمین) =====
 const CATEGORIES = [
   { key: 'all', label: 'all' },
@@ -211,7 +221,7 @@ export default function Articles() {
   /* ── Featured Article ── */
   const FeaturedCard = () => {
     if (!featured) return null;
-    const img = featured.images?.[0] || '/images/articles/placeholder.svg';
+    const img = getArticleImageUrl(featured);
     const title = featured.title?.[i18n.language] || featured.title?.fa || '';
     const excerpt = featured.excerpt?.[i18n.language] || featured.excerpt?.fa || '';
     const cat = typeof featured.category === 'object'
@@ -240,6 +250,7 @@ export default function Articles() {
                 alt={title}
                 className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                 loading="eager"
+                onError={(e) => { e.target.src = '/images/articles/placeholder.svg'; }}
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent lg:bg-gradient-to-r" />
               <span
@@ -285,7 +296,7 @@ export default function Articles() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <AnimatePresence mode="popLayout">
           {rest.map((article, idx) => {
-            const img = article.images?.[0] || '/images/articles/placeholder.svg';
+            const img = getArticleImageUrl(article);
             const title = article.title?.[i18n.language] || article.title?.fa || '';
             const excerpt = article.excerpt?.[i18n.language] || article.excerpt?.fa || '';
             const cat = typeof article.category === 'object'
@@ -315,6 +326,7 @@ export default function Articles() {
                       alt={title}
                       className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                       loading="lazy"
+                      onError={(e) => { e.target.src = '/images/articles/placeholder.svg'; }}
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                     <span

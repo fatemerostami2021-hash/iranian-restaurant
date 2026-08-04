@@ -2,9 +2,9 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FiX, FiMail, FiLock, FiPhone, FiUser } from 'react-icons/fi';
-import { FaGoogle } from 'react-icons/fa';
 import axios from 'axios';
 import { useTheme } from '../../context/ThemeContext';
+import GoogleLoginButton from '../GoogleLoginButton'; // ✅ اضافه شد
 
 const API_URL = import.meta.env.VITE_API_URL || '';
 
@@ -68,6 +68,12 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }) {
     } finally { setLoading(false); }
   };
 
+  // ✅ اضافه شد: هندلر موفقیت گوگل، هماهنگ با بقیه‌ی روش‌های ورود
+  const handleGoogleSuccess = (data) => {
+    onLoginSuccess(data.token, data.user);
+    onClose();
+  };
+
   const inputClass = `w-full p-3 rounded-xl bg-transparent border focus:outline-none focus:ring-2 transition-all ${
     isDark ? 'bg-white/5 border-white/20 text-white focus:border-[#FFD700]' : 'bg-gray-50 border-gray-300 text-black focus:border-[#D32F2F]'
   }`;
@@ -96,9 +102,8 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }) {
 
             {error && <div className="bg-red-500/10 text-red-500 p-3 rounded-lg mb-4 text-sm text-center">{error}</div>}
 
-            <button className="w-full flex items-center justify-center gap-2 bg-white text-black border border-gray-300 font-bold p-3 rounded-xl mb-6 hover:bg-gray-50">
-              <FaGoogle /> {t('authModal.google', 'ورود با گوگل')}
-            </button>
+            {/* ✅ دکمه فیک با کامپوننت واقعی گوگل جایگزین شد */}
+            <GoogleLoginButton onSuccess={handleGoogleSuccess} />
 
             <div className="flex border-b border-gray-300 mb-6">
               <button onClick={() => { setMode('email'); setStep(1); }} className={`flex-1 pb-2 font-medium ${mode === 'email' ? 'border-b-2 border-[#FFD700] text-[#FFD700]' : isDark ? 'text-gray-400' : 'text-gray-500'}`}>{t('authModal.email', 'ایمیل')}</button>

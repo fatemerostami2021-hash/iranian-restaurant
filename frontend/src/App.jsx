@@ -1,7 +1,11 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+// src/App.jsx
+import { Routes, Route, Navigate } from 'react-router-dom';
 import { ThemeProvider } from './context/ThemeContext';
 import { CartProvider } from './context/CartContext';
+import useAuthPrompt from './hooks/useAuthPrompt.js';
+import AuthPromptModal from './components/AuthPromptModal.jsx';
 import Layout from './components/layout/Layout';
+import ScrollToTop from './components/ScrollToTop'; // ✅ اضافه کنید
 import Home from './pages/Home';
 import Menu from './pages/Menu';
 import CategoryPage from './pages/CategoryPage';
@@ -33,42 +37,47 @@ const ProtectedRoute = ({ children }) => {
 };
 
 function App() {
+  const { showPrompt, dismiss } = useAuthPrompt();
+
   return (
-    <Router>
-      <ThemeProvider>
-        <CartProvider>
-          <Routes>
-            {/* ===== مسیرهای عمومی ===== */}
-            <Route path="/" element={<Layout><Home /></Layout>} />
-            <Route path="/menu" element={<Layout><Menu /></Layout>} />
-            <Route path="/menu/category/:categoryKey" element={<Layout><CategoryPage /></Layout>} />
-            <Route path="/articles" element={<Layout><Articles /></Layout>} />
-            <Route path="/articles/:slug" element={<Layout><ArticleDetail /></Layout>} />
-            <Route path="/about" element={<Layout><About /></Layout>} />
-            <Route path="/contact" element={<Layout><Contact /></Layout>} />
-            <Route path="/checkout" element={<Layout><Checkout /></Layout>} />
-            <Route path="/careers" element={<Layout><Careers /></Layout>} />
-            <Route path="/profile" element={<Layout><Profile /></Layout>} />
+    <ThemeProvider>
+      <CartProvider>
+        <ScrollToTop /> {/* ✅ اینجا اضافه کنید - داخل BrowserRouter هست */}
+        
+        <Routes>
+          {/* ===== مسیرهای عمومی ===== */}
+          <Route path="/" element={<Layout><Home /></Layout>} />
+          <Route path="/menu" element={<Layout><Menu /></Layout>} />
+          <Route path="/menu/category/:categoryKey" element={<Layout><CategoryPage /></Layout>} />
+          <Route path="/articles" element={<Layout><Articles /></Layout>} />
+          <Route path="/articles/:slug" element={<Layout><ArticleDetail /></Layout>} />
+          <Route path="/about" element={<Layout><About /></Layout>} />
+          <Route path="/contact" element={<Layout><Contact /></Layout>} />
+          <Route path="/checkout" element={<Layout><Checkout /></Layout>} />
+          <Route path="/careers" element={<Layout><Careers /></Layout>} />
+          <Route path="/profile" element={<Layout><Profile /></Layout>} />
 
-            {/* ===== مسیرهای ادمین ===== */}
-            <Route path="/admin/login" element={<AdminLogin />} />
-            <Route path="/admin" element={<ProtectedRoute><AdminLayout /></ProtectedRoute>}>
-              <Route index element={<Dashboard />} />
-              <Route path="dashboard" element={<Dashboard />} />
-              <Route path="menu" element={<MenuManagement />} />
-              <Route path="orders" element={<OrdersManagement />} />
-              <Route path="reservations" element={<ReservationsManagement />} />
-              <Route path="articles" element={<ArticlesManagement />} />
-              <Route path="users" element={<UsersManagement />} />
-              <Route path="jobs" element={<JobApplications />} />
-            </Route>
+          {/* ===== مسیرهای ادمین ===== */}
+          <Route path="/admin/login" element={<AdminLogin />} />
+          <Route path="/admin" element={<ProtectedRoute><AdminLayout /></ProtectedRoute>}>
+            <Route index element={<Dashboard />} />
+            <Route path="dashboard" element={<Dashboard />} />
+            <Route path="menu" element={<MenuManagement />} />
+            <Route path="orders" element={<OrdersManagement />} />
+            <Route path="reservations" element={<ReservationsManagement />} />
+            <Route path="articles" element={<ArticlesManagement />} />
+            <Route path="users" element={<UsersManagement />} />
+            <Route path="jobs" element={<JobApplications />} />
+          </Route>
 
-            {/* ✅ مسیر ۴۰۴ باید اینجا (بیرون از ادمین) و به عنوان آخرین روت باشد */}
-            <Route path="*" element={<Layout><NotFound /></Layout>} />
-          </Routes>
-        </CartProvider>
-      </ThemeProvider>
-    </Router>
+          {/* ✅ مسیر ۴۰۴ */}
+          <Route path="*" element={<Layout><NotFound /></Layout>} />
+        </Routes>
+
+        {/* ✅ پیشنهاد ثبت‌نام بعد از ۳ دقیقه */}
+        <AuthPromptModal show={showPrompt} onDismiss={dismiss} />
+      </CartProvider>
+    </ThemeProvider>
   );
 }
 

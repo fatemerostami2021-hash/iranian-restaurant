@@ -64,7 +64,7 @@ app.use('/api/', apiLimiter);
 // ===== امنیت: محدودیت سخت‌گیرانه‌تر روی مسیرهای لاگین/احراز هویت =====
 const authLimiter = rateLimit({
   windowMs: 60 * 60 * 1000,
-  max: 10,
+  max: 1000,
   standardHeaders: true,
   legacyHeaders: false,
   message: { message: 'تعداد تلاش‌های ناموفق زیاد بود. لطفاً ۱ ساعت دیگر دوباره تلاش کنید.' },

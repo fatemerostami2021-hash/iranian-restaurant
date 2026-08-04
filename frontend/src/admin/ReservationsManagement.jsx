@@ -61,7 +61,17 @@ export default function ReservationsManagement() {
         reservationApi.getStats(),
       ]);
 
-      const list = resList.data?.reservations || resList.data || [];
+      // ✅ اطمینان از آرایه بودن — اینجا بود مشکل
+      let list = [];
+      if (Array.isArray(resList.data?.reservations)) {
+        list = resList.data.reservations;
+      } else if (Array.isArray(resList.data)) {
+        list = resList.data;
+      } else if (resList.data && typeof resList.data === 'object') {
+        // اگه object بود شاید داخلش آرایه‌ای باشه
+        list = Object.values(resList.data).find(Array.isArray) || [];
+      }
+
       const meta = resList.data?.pagination || {};
 
       setReservations(list);
@@ -280,7 +290,7 @@ export default function ReservationsManagement() {
                   </tr>
                 </thead>
                 <tbody>
-                  {filtered.length === 0 ? (
+                  {(!Array.isArray(filtered) || filtered.length === 0) ? (
                     <tr>
                       <td colSpan="6" className="p-12 text-center text-gray-500">
                         <FiCalendar className="mx-auto mb-3 text-gray-600" size={40} />
@@ -362,7 +372,7 @@ export default function ReservationsManagement() {
 
           {/* Mobile Cards */}
           <div className="lg:hidden space-y-3">
-            {filtered.length === 0 ? (
+            {(!Array.isArray(filtered) || filtered.length === 0) ? (
               <div className="text-center py-12 text-gray-500">
                 <FiCalendar className="mx-auto mb-3 text-gray-600" size={40} />
                 <p className="font-bold">{t('reservations.empty', 'رزروی یافت نشد')}</p>

@@ -1,23 +1,29 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
+import { BrowserRouter } from 'react-router-dom';
+import { GoogleOAuthProvider } from '@react-oauth/google';
+import { HelmetProvider } from 'react-helmet-async';
+import { AuthProvider } from './context/AuthContext.jsx';
+import { registerSW } from 'virtual:pwa-register';
 import './i18n.js';
 import './index.css';
 import App from './App.jsx';
 
-// ✅ اضافه شد برای SEO و Social Preview
-import { HelmetProvider } from 'react-helmet-async';
-
-// این خط برای فعال کردن PWA اضافه شده بود
-import { registerSW } from 'virtual:pwa-register';
+// ⬇️ وقتی Google Client ID گرفتی، اینجا جایگزین کن
+const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || '';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    {/* ✅ کل اپلیکیشن در HelmetProvider پیچیده شد تا تگ‌های متا را بشناسد */}
-    <HelmetProvider>
-      <App />
-    </HelmetProvider>
-  </StrictMode>,
+    <BrowserRouter>
+      <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
+        <HelmetProvider>
+          <AuthProvider>
+            <App />
+          </AuthProvider>
+        </HelmetProvider>
+      </GoogleOAuthProvider>
+    </BrowserRouter>
+  </StrictMode>
 );
 
-// این خط برای ثبت خودکار اپلیکیشن اضافه شده بود
 registerSW({ immediate: true });

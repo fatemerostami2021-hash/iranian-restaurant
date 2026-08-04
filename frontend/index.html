@@ -1,37 +1,66 @@
 <!doctype html>
-<!-- ✅ زبان و جهت پیش‌فرض به عربی راست‌چین تغییر یافت -->
-<html lang="ar" dir="rtl">
+<html lang="fa" dir="rtl">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     
-    <!-- عنوان سایت در تب مرورگر -->
-    <title>كباب داغ نان داغ | Kabab Dagh Nan Dagh</title>
+    <!-- viewport با پشتیبانی safe area برای گوشی‌های notch‌دار -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     
-    <!-- ✅ تگ‌های سئو (SEO) -->
+    <!-- عنوان -->
+    <title>کباب داغ نان داغ | Kabab Dagh Nan Dagh</title>
+    
+    <!-- سئو -->
     <meta name="description" content="رستوران کباب داغ نان داغ، طعم اصیل و سنتی ایرانی را در قطر تجربه کنید. سفارش آنلاین کباب، کترینگ و سرویس منزل در دوحه." />
     <meta name="keywords" content="رستوران ایرانی در قطر, كباب في الدوحة, Kabab Doha, Iranian Restaurant Qatar, كباب داغ نان داغ" />
-
-    <!-- پشتیبانی اپلیکیشن موبایل برای آیفون (iOS) -->
-    <link rel="apple-touch-icon" href="/images/application/pwa-192x192.png" />
+    <meta name="robots" content="index, follow, max-image-preview:large" />
+    
+    <!-- جلوگیری از تشخیص خودکار شماره تلفن -->
+    <meta name="format-detection" content="telephone=no" />
+    
+    <!-- ✅ تم رنگ برای نوار آدرس موبایل -->
+    <meta name="theme-color" content="#0a0a0a" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#FFF8F0" media="(prefers-color-scheme: light)" />
+    
+    <!-- ✅ PWA Manifest — این لینک باید حتماً باشه! -->
+    <link rel="manifest" href="/manifest.json" />
+    
+    <!-- iOS PWA -->
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Kabab Dagh" />
+    <link rel="apple-touch-icon" href="/images/application/pwa-192x192.png" />
+    
+    <!-- اندروید -->
     <meta name="mobile-web-app-capable" content="yes" />
-
-    <!-- ✅ تگ‌های Open Graph برای واتساپ، تلگرام و اینستاگرام -->
-    <meta property="og:type" content="restaurant" />
-    <meta property="og:title" content="كباب داغ نان داغ | أفضل كباب إيراني في الدوحة" />
-    <meta property="og:description" content="تجربة الطعم الأصيل للكباب الإيراني على الفحم الحقيقي. اطلب عبر الإنترنت وخدمة التموين في منزلك في قطر." />
-    <meta property="og:image" content="/images/about/hero.jpg" />
+    
+    <!-- Canonical -->
+    <link rel="canonical" href="https://kababdagh.com/" />
+    
+    <!-- ✅ Open Graph — حتماً URL کامل عکس -->
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="fa_IR" />
+    <meta property="og:title" content="کباب داغ نان داغ | Kabab Dagh Nan Dagh" />
+    <meta property="og:description" content="رستوران کباب داغ نان داغ، طعم اصیل و سنتی ایرانی را در قطر تجربه کنید." />
+    <meta property="og:image" content="https://kababdagh.com/images/about/hero.jpg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
     <meta property="og:url" content="https://kababdagh.com" />
     <meta property="og:site_name" content="Kabab Dagh Nan Dagh" />
-
-    <!-- ✅ تگ‌های توییتر (X) -->
+    
+    <!-- ✅ Twitter/X — حتماً URL کامل عکس -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="كباب داغ نان داغ | أفضل كباب إيراني في الدوحة" />
-    <meta name="twitter:description" content="تجربة الطعم الأصيل للكباب الإيراني على الفحم الحقيقي. اطلب عبر الإنترنت وخدمة التموين في منزلك في قطر." />
-    <meta name="twitter:image" content="/images/about/hero.jpg" />
+    <meta name="twitter:title" content="کباب داغ نان داغ | Kabab Dagh Nan Dagh" />
+    <meta name="twitter:description" content="رستوران کباب داغ نان داغ، طعم اصیل و سنتی ایرانی را در قطر تجربه کنید." />
+    <meta name="twitter:image" content="https://kababdagh.com/images/about/hero.jpg" />
+    
+    <!-- جلوگیری از فلش سفید موقع لود -->
+    <style>
+      html, body, #root { background-color: #0a0a0a; }
+      @media (prefers-color-scheme: light) {
+        html, body, #root { background-color: #FFF8F0; }
+      }
+    </style>
   </head>
   <body>
     <div id="root"></div>

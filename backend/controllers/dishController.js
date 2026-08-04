@@ -1,14 +1,39 @@
 import Dish from '../models/Dish.js';
 import Order from '../models/Order.js';
 
+// ===== ترتیب دسته‌بندی‌ها برای نمایش =====
+const categoryOrder = {
+  'main': 0,
+  'combo': 1,
+  'breakfast': 2,
+  'appetizer': 3,
+  'drinks': 4,
+};
+
 export const getDishes = async (req, res) => {
   try {
     const { category } = req.query;
     const filter = category && category !== 'all' ? { category } : {};
-    const dishes = await Dish.find(filter).sort({ createdAt: -1 });
+    
+    // ===== دریافت غذاها =====
+    const dishes = await Dish.find(filter);
+    
+    // ===== مرتب‌سازی بر اساس دسته‌بندی (در حالت "all") =====
+    if (category === 'all' || !category) {
+      dishes.sort((a, b) => {
+        const orderA = categoryOrder[a.category] ?? 99;
+        const orderB = categoryOrder[b.category] ?? 99;
+        return orderA - orderB;
+      });
+    } else {
+      // در حالت فیلتر شده، بر اساس createdAt مرتب کن
+      dishes.sort((a, b) => b.createdAt - a.createdAt);
+    }
+    
     res.status(200).json(dishes);
   } catch (error) {
-    res.status(500).json({ message: 'خطا در دریافت لیست غذاها', error });
+    console.error('Error in getDishes:', error);
+    res.status(500).json({ message: 'خطا در دریافت لیست غذاها', error: error.message });
   }
 };
 
@@ -18,13 +43,15 @@ export const getDishById = async (req, res) => {
     if (!dish) return res.status(404).json({ error: 'Dish not found' });
     res.status(200).json(dish);
   } catch (error) {
-    res.status(500).json({ message: 'خطا در دریافت اطلاعات غذا', error });
+    console.error('Error in getDishById:', error);
+    res.status(500).json({ message: 'خطا در دریافت اطلاعات غذا', error: error.message });
   }
 };
 
 export const getCategoriesSummary = async (req, res) => {
   try {
-    const categories = ['breakfast', 'main', 'combo', 'appetizer', 'drinks'];
+    // ===== ترتیب دسته‌بندی‌ها برای نمایش =====
+    const categories = ['main', 'combo', 'breakfast', 'appetizer', 'drinks'];
 
     const result = await Promise.all(
       categories.map(async (key) => {
@@ -32,14 +59,15 @@ export const getCategoriesSummary = async (req, res) => {
         const items = await Dish.find({ category: key })
           .sort({ createdAt: -1 })
           .limit(5)
-          .select('_id code name price');
+          .select('_id code name price images');
         return { key, count, items };
       })
     );
 
     res.status(200).json(result);
   } catch (error) {
-    res.status(500).json({ message: 'خطا در دریافت خلاصه دسته‌بندی‌ها', error });
+    console.error('Error in getCategoriesSummary:', error);
+    res.status(500).json({ message: 'خطا در دریافت خلاصه دسته‌بندی‌ها', error: error.message });
   }
 };
 
@@ -48,7 +76,8 @@ export const createDish = async (req, res) => {
     const dish = await Dish.create(req.body);
     res.status(201).json(dish);
   } catch (error) {
-    res.status(400).json({ message: 'خطا در ایجاد غذای جدید', error });
+    console.error('Error in createDish:', error);
+    res.status(400).json({ message: 'خطا در ایجاد غذای جدید', error: error.message });
   }
 };
 
@@ -58,7 +87,8 @@ export const updateDish = async (req, res) => {
     if (!dish) return res.status(404).json({ error: 'Dish not found' });
     res.status(200).json(dish);
   } catch (error) {
-    res.status(400).json({ message: 'خطا در ویرایش غذا', error });
+    console.error('Error in updateDish:', error);
+    res.status(400).json({ message: 'خطا در ویرایش غذا', error: error.message });
   }
 };
 
@@ -68,7 +98,8 @@ export const deleteDish = async (req, res) => {
     if (!dish) return res.status(404).json({ error: 'Dish not found' });
     res.status(200).json({ message: 'Dish deleted' });
   } catch (error) {
-    res.status(500).json({ message: 'خطا در حذف غذا', error });
+    console.error('Error in deleteDish:', error);
+    res.status(500).json({ message: 'خطا در حذف غذا', error: error.message });
   }
 };
 
@@ -110,6 +141,7 @@ export const getBestOfWeek = async (req, res) => {
 
     res.status(200).json({ dishes: best, isFallback: false });
   } catch (error) {
-    res.status(500).json({ message: 'خطا در دریافت پیشنهادات هفته' });
+    console.error('Error in getBestOfWeek:', error);
+    res.status(500).json({ message: 'خطا در دریافت پیشنهادات هفته', error: error.message });
   }
 };
