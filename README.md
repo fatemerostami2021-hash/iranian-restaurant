@@ -27,7 +27,7 @@ A trilingual (Persian / Arabic / English) restaurant website with online orderin
 
 | Layer | Technologies |
 |-------|--------------|
-| Frontend | React, Vite, Tailwind CSS |
+| Frontend | React, Vite, Tailwind CSS |React Router, Framer Motion, Swiper
 | Backend | Node.js, Express |
 | Database | MongoDB (Mongoose) |
 | Auth | JWT, Google OAuth |
