@@ -21,7 +21,6 @@ export default function FloatingSupport() {
   const [isHovered, setIsHovered] = useState(false);
 
   const accentBg = isDark ? 'bg-[#FFD700] text-black' : 'bg-[#D32F2F] text-white';
-  const accentRing = isDark ? 'bg-[#FFD700]' : 'bg-[#D32F2F]';
   const cardBg = isDark ? 'bg-[#1C1C1C] border-white/10' : 'bg-white border-gray-200';
   const textClass = isDark ? 'text-white' : 'text-[#1A1A1A]';
   const mutedClass = isDark ? 'text-gray-400' : 'text-gray-600';
@@ -51,8 +50,8 @@ export default function FloatingSupport() {
 
   return (
     <>
-      {/* دکمه شناور و منو */}
-      <div className={`fixed bottom-24 md:bottom-10 ${isRtl ? 'right-5 md:right-8' : 'left-5 md:left-8'} z-50 flex flex-col items-${isRtl ? 'end' : 'start'} gap-3`}>
+      {/* دکمه شناور و منو - بالاتر */}
+      <div className={`fixed bottom-48 md:bottom-32 ${isRtl ? 'left-5 md:left-8' : 'right-5 md:right-8'} z-50 flex flex-col items-${isRtl ? 'start' : 'end'} gap-3`}>
         <AnimatePresence>
           {isMenuOpen && (
             <motion.div 
@@ -86,32 +85,13 @@ export default function FloatingSupport() {
           )}
         </AnimatePresence>
 
-        {/* دکمه اصلی + بج آنلاین همیشه‌نمایان + تولتیپ Keep in Touch */}
+        {/* دکمه اصلی + تولتیپ Keep in Touch */}
         <div
           className="relative flex items-center gap-3"
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
         >
-          {/* ✅ بج «آنلاین» — همیشه نمایان، نه فقط موقع هاور، شبیه نشانگر سبز پنل‌های پشتیبانی */}
-          <AnimatePresence>
-            {!isMenuOpen && (
-              <motion.div
-                initial={{ opacity: 0, x: isRtl ? 10 : -10, scale: 0.9 }}
-                animate={{ opacity: 1, x: 0, scale: 1 }}
-                exit={{ opacity: 0, x: isRtl ? 10 : -10, scale: 0.9 }}
-                transition={{ duration: 0.25 }}
-                className={`${isRtl ? 'order-first' : 'order-last'} flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold whitespace-nowrap shadow-xl border ${cardBg} ${textClass}`}
-              >
-                <span className="relative flex h-2 w-2 shrink-0">
-                  <span className="absolute inline-flex h-full w-full rounded-full bg-green-500 opacity-75 animate-ping" />
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500" />
-                </span>
-                {t('supportAgent.online', 'آنلاین')}
-              </motion.div>
-            )}
-          </AnimatePresence>
-
-          {/* ✅ تولتیپ Keep in Touch - فقط موقع هاور، بالای بج آنلاین */}
+          {/* ✅ تولتیپ Keep in Touch - فقط موقع هاور */}
           <AnimatePresence>
             {isHovered && !isMenuOpen && (
               <motion.div
@@ -119,7 +99,7 @@ export default function FloatingSupport() {
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: 6, scale: 0.9 }}
                 transition={{ duration: 0.2 }}
-                className={`absolute bottom-full mb-2 ${isRtl ? 'right-0' : 'left-0'} px-3 py-2 rounded-xl text-xs font-bold whitespace-nowrap shadow-xl border ${cardBg} ${textClass}`}
+                className={`absolute bottom-full mb-2 ${isRtl ? 'left-0' : 'right-0'} px-3 py-2 rounded-xl text-xs font-bold whitespace-nowrap shadow-xl border ${cardBg} ${textClass}`}
               >
                 {t('supportAgent.keepInTouch', 'Keep in Touch')}
               </motion.div>
@@ -130,19 +110,21 @@ export default function FloatingSupport() {
             whileTap={{ scale: 0.9 }}
             whileHover={{ scale: 1.08 }}
             onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className={`relative w-14 h-14 md:w-16 md:h-16 rounded-full flex items-center justify-center shadow-2xl text-white transition-colors duration-300 ${isMenuOpen ? 'bg-gray-700' : accentBg}`}
+            className={`relative w-14 h-14 md:w-16 md:h-16 rounded-full flex items-center justify-center shadow-2xl text-white transition-all duration-300 ${
+              isMenuOpen ? 'bg-gray-700' : (isHovered ? 'bg-[#25D366]' : accentBg)
+            }`}
           >
-            {/* ✅ حلقه‌ی نور چشمک‌زن دائمی رنگ اصلی برند (روشن بودن دکمه) */}
+            {/* ✅ حلقه‌ی نور چشمک‌زن — عادی رنگ برند، هاور سبز */}
             {!isMenuOpen && (
               <>
-                <span className={`absolute inset-0 rounded-full ${accentRing} opacity-30 animate-ping pointer-events-none`} />
-                <span className={`absolute -inset-1 rounded-full ${accentRing} opacity-20 blur-md pointer-events-none ${isHovered ? 'opacity-40' : ''} transition-opacity duration-300`} />
+                <span className={`absolute inset-0 rounded-full ${isHovered ? 'bg-[#25D366]' : 'bg-[#D32F2F]'} opacity-30 animate-ping pointer-events-none transition-colors duration-300`} />
+                <span className={`absolute -inset-1 rounded-full ${isHovered ? 'bg-[#25D366]' : 'bg-[#D32F2F]'} opacity-20 blur-md pointer-events-none transition-colors duration-300`} />
               </>
             )}
 
-            {/* ✅ نقطه سبز کوچک گوشه دکمه — نشانگر آنلاین بودن روی خود آیکون */}
+            {/* ✅ نقطه سبز وضعیت آنلاین روی گوشه دکمه */}
             {!isMenuOpen && (
-              <span className={`absolute top-0.5 ${isRtl ? 'left-0.5' : 'right-0.5'} flex h-3.5 w-3.5 z-20`}>
+              <span className={`absolute top-0.5 ${isRtl ? 'right-0.5' : 'left-0.5'} flex h-3.5 w-3.5 z-20`}>
                 <span className="absolute inline-flex h-full w-full rounded-full bg-green-500 opacity-75 animate-ping" />
                 <span className={`relative inline-flex rounded-full h-3.5 w-3.5 bg-green-500 border-2 ${isDark ? 'border-[#1C1C1C]' : 'border-white'}`} />
               </span>

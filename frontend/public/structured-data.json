@@ -1,0 +1,98 @@
+{
+  "@context": "https://schema.org",
+  "@type": "Restaurant",
+  "name": "Kabab Dagh Nan Dagh",
+  "alternateName": "کباب داغ نان داغ",
+  "image": [
+    "https://kababdagh.com/images/about/hero.jpg",
+    "https://kababdagh.com/images/application/pwa-512x512.png"
+  ],
+  "url": "https://kababdagh.com",
+  "telephone": "+974 3300 0157",
+  "email": "info@kababdagh.com",
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "6FW8+F7W, Salwa Road",
+    "addressLocality": "Doha",
+    "addressRegion": "Doha",
+    "addressCountry": "QA"
+  },
+  "geo": {
+    "@type": "GeoCoordinates",
+    "latitude": "25.2465",
+    "longitude": "51.4654"
+  },
+  "openingHoursSpecification": [
+    {
+      "@type": "OpeningHoursSpecification",
+      "dayOfWeek": [
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday",
+        "Sunday"
+      ],
+      "opens": "10:00",
+      "closes": "01:00"
+    }
+  ],
+  "servesCuisine": [
+    "Iranian",
+    "Persian",
+    "Arabic",
+    "Kebab",
+    "Barbecue"
+  ],
+  "priceRange": "$",
+  "acceptsReservations": true,
+  "hasMenu": "https://kababdagh.com/menu",
+  "paymentAccepted": [
+    "Cash",
+    "Credit Card",
+    "Debit Card"
+  ],
+  "currenciesAccepted": "QAR",
+  "aggregateRating": {
+    "@type": "AggregateRating",
+    "ratingValue": "4.7",
+    "reviewCount": "69"
+  },
+  "potentialAction": [
+    {
+      "@type": "ReserveAction",
+      "target": {
+        "@type": "EntryPoint",
+        "urlTemplate": "https://kababdagh.com/reservation",
+        "actionPlatform": [
+          "http://schema.org/DesktopWebPlatform",
+          "http://schema.org/MobileWebPlatform"
+        ]
+      },
+      "result": {
+        "@type": "Reservation",
+        "name": "Table Reservation"
+      }
+    },
+    {
+      "@type": "OrderAction",
+      "target": {
+        "@type": "EntryPoint",
+        "urlTemplate": "https://kababdagh.com/menu",
+        "actionPlatform": [
+          "http://schema.org/DesktopWebPlatform",
+          "http://schema.org/MobileWebPlatform"
+        ]
+      },
+      "deliveryMethod": [
+        "http://schema.org/DeliveryModePickup",
+        "http://schema.org/DeliveryModeOwnFleet"
+      ]
+    }
+  ],
+  "sameAs": [
+    "https://www.instagram.com/kabab.dagh.nan.dagh",
+    "https://www.tiktok.com/@kabab.dagh.nan.dagh"
+  ]
+}

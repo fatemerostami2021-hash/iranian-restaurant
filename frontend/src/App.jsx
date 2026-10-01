@@ -4,8 +4,9 @@ import { ThemeProvider } from './context/ThemeContext';
 import { CartProvider } from './context/CartContext';
 import useAuthPrompt from './hooks/useAuthPrompt.js';
 import AuthPromptModal from './components/AuthPromptModal.jsx';
+import PWAUpdatePrompt from './components/PWAUpdatePrompt';
 import Layout from './components/layout/Layout';
-import ScrollToTop from './components/ScrollToTop'; // ✅ اضافه کنید
+import ScrollToTop from './components/ScrollToTop';
 import Home from './pages/Home';
 import Menu from './pages/Menu';
 import CategoryPage from './pages/CategoryPage';
@@ -42,7 +43,7 @@ function App() {
   return (
     <ThemeProvider>
       <CartProvider>
-        <ScrollToTop /> {/* ✅ اینجا اضافه کنید - داخل BrowserRouter هست */}
+        <ScrollToTop />
         
         <Routes>
           {/* ===== مسیرهای عمومی ===== */}
@@ -70,12 +71,17 @@ function App() {
             <Route path="jobs" element={<JobApplications />} />
           </Route>
 
-          {/* ✅ مسیر ۴۰۴ */}
+          {/* مسیر ۴۰۴ */}
           <Route path="*" element={<Layout><NotFound /></Layout>} />
         </Routes>
 
-        {/* ✅ پیشنهاد ثبت‌نام بعد از ۳ دقیقه */}
+        {/* ===== کامپوننت‌های سراسری ===== */}
+        
+        {/* پیشنهاد ثبت‌نام بعد از ۳ دقیقه */}
         <AuthPromptModal show={showPrompt} onDismiss={dismiss} />
+        
+        {/* آپدیت PWA */}
+        <PWAUpdatePrompt />
       </CartProvider>
     </ThemeProvider>
   );

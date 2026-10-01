@@ -52,11 +52,15 @@ export default function About() {
       {/* ===== HERO SECTION ===== */}
       <section className="relative h-[60vh] min-h-[400px] flex items-center justify-center text-center">
         <video
-          autoPlay loop muted playsInline
-          className="absolute inset-0 w-full h-full object-cover"
-        >
-          <source src="/images/about/story.mp4" type="video/mp4" />
-        </video>
+  autoPlay
+  loop
+  muted
+  playsInline
+  poster="/images/about/hero.jpg"  // ✅ این خط اضافه شه
+  className="absolute inset-0 w-full h-full object-cover"
+>
+  <source src="/images/about/story.mp4" type="video/mp4" />
+</video>
         
         <div className="absolute inset-0 bg-black/70 backdrop-blur-sm"></div>
 
