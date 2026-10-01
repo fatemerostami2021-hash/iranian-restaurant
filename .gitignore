@@ -1,7 +1,12 @@
 node_modules/
 .env
-.env.local
+.env.*
+!.env.example
+public/uploads/
+*.log
 dist/
 build/
+*.backup
+*.bak
 .DS_Store
-*.log
+Thumbs.db

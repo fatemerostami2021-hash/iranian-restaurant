@@ -7,7 +7,7 @@ import { sendTelegramMessage } from '../utils/telegramNotifier.js';
 const signToken = (user) => {
   return jwt.sign(
     { id: user._id, role: user.role }, 
-    process.env.JWT_SECRET || 'your_super_secret_key', 
+    process.env.JWT_SECRET, 
     { expiresIn: '30d' }
   );
 };

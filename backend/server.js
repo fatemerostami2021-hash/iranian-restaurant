@@ -34,6 +34,7 @@ import { sendTelegramMessage } from './utils/telegramNotifier.js';
 
 
 dotenv.config();
+if (!process.env.JWT_SECRET) { console.error('JWT_SECRET is not set'); process.exit(1); }
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -151,14 +152,14 @@ app.post('/api/contact/send-email', async (req, res) => {
     const transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
-        user: process.env.EMAIL_USER || 'rostamy141@gmail.com',
-        pass: process.env.EMAIL_PASS || 'your_app_password_here',
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
       },
     });
 
     await transporter.sendMail({
-      from: `"Website Contact" <${process.env.EMAIL_USER || 'rostamy141@gmail.com'}>`,
-      to: 'rostamy141@gmail.com',
+      from: `"Website Contact" <${process.env.EMAIL_USER}>`,
+      to: process.env.CONTACT_TO_EMAIL || process.env.EMAIL_USER,
       subject: `پیام جدید از ${name}`,
       text: `نام: ${name}\nتلفن: ${phone}\nایمیل: ${email}\nلوکیشن: ${locationLink || 'ثبت نشده'}\n\nپیام:\n${message}`,
     });

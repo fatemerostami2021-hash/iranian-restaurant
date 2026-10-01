@@ -62,7 +62,7 @@ const reviews = [
 
 async function updateReviews() {
   try {
-    await mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/iranian-restaurant');
+    await mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/iranian-restaurant');
     console.log('📦 Connected to MongoDB');
     
     await Review.deleteMany({});
