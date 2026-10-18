@@ -1,5 +1,6 @@
 // src/App.jsx
 import { Routes, Route, Navigate } from 'react-router-dom';
+// ❌ HelmetProvider حذف شد
 import { ThemeProvider } from './context/ThemeContext';
 import { CartProvider } from './context/CartContext';
 import useAuthPrompt from './hooks/useAuthPrompt.js';
@@ -7,11 +8,13 @@ import AuthPromptModal from './components/AuthPromptModal.jsx';
 import PWAUpdatePrompt from './components/PWAUpdatePrompt';
 import Layout from './components/layout/Layout';
 import ScrollToTop from './components/ScrollToTop';
+import RouteSeo from './components/RouteSeo';
 import Home from './pages/Home';
 import Menu from './pages/Menu';
 import CategoryPage from './pages/CategoryPage';
 import Articles from './pages/Articles';
 import ArticleDetail from './pages/ArticleDetail';
+import DessertArticle from './pages/DessertArticle';
 import About from './pages/About';
 import Contact from './pages/Contact';
 import Checkout from './pages/Checkout';
@@ -30,7 +33,6 @@ import ReservationsManagement from './admin/ReservationsManagement';
 import UsersManagement from './admin/UsersManagement';
 import JobApplications from './admin/JobApplications';
 
-// محافظت از روت‌های ادمین
 const ProtectedRoute = ({ children }) => {
   const token = localStorage.getItem('adminToken');
   if (!token) return <Navigate to="/admin/login" />;
@@ -41,16 +43,22 @@ function App() {
   const { showPrompt, dismiss } = useAuthPrompt();
 
   return (
+    // ✅ HelmetProvider از اینجا حذف شد
     <ThemeProvider>
       <CartProvider>
         <ScrollToTop />
-        
+        <RouteSeo />
+
         <Routes>
           {/* ===== مسیرهای عمومی ===== */}
           <Route path="/" element={<Layout><Home /></Layout>} />
           <Route path="/menu" element={<Layout><Menu /></Layout>} />
           <Route path="/menu/category/:categoryKey" element={<Layout><CategoryPage /></Layout>} />
           <Route path="/articles" element={<Layout><Articles /></Layout>} />
+          <Route
+            path="/articles/best-ice-cream-qatar-bastani-faloodeh"
+            element={<Layout><DessertArticle /></Layout>}
+          />
           <Route path="/articles/:slug" element={<Layout><ArticleDetail /></Layout>} />
           <Route path="/about" element={<Layout><About /></Layout>} />
           <Route path="/contact" element={<Layout><Contact /></Layout>} />
@@ -75,12 +83,7 @@ function App() {
           <Route path="*" element={<Layout><NotFound /></Layout>} />
         </Routes>
 
-        {/* ===== کامپوننت‌های سراسری ===== */}
-        
-        {/* پیشنهاد ثبت‌نام بعد از ۳ دقیقه */}
         <AuthPromptModal show={showPrompt} onDismiss={dismiss} />
-        
-        {/* آپدیت PWA */}
         <PWAUpdatePrompt />
       </CartProvider>
     </ThemeProvider>

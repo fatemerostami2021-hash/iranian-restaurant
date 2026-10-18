@@ -19,6 +19,7 @@
   "combo": "Platters",
   "appetizer": "Appetizers",
   "drinks": "Beverages",
+  "dessert": "Desserts",
   "all": "All",
   "view_all": "View All",
   "food-stories": "Food Stories",
@@ -68,7 +69,8 @@
       "main": "Main Dishes",
       "combo": "Platters",
       "appetizer": "Appetizers",
-      "drinks": "Beverages"
+      "drinks": "Beverages",
+      "dessert": "Desserts"
     }
   },
   "cart": {

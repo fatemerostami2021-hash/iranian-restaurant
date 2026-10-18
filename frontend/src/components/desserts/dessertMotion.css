@@ -1,0 +1,244 @@
+/* Dessert hero v17 — theme-aware (no dark band), 86svh video, red/yellow CTA, no scroll tricks */
+
+/* ---------- dark cinematic band ---------- */
+.dz-hero.dz-cine {
+  background: none !important;
+  color: inherit;
+  padding: clamp(10px, 1.2vw, 18px) 0 0;
+  overflow-x: clip;
+}
+
+/* theme accents: light = red, dark = saffron yellow */
+.dz-hero.dz-cine { --dz-accent: #d62d2d; --dz-accent-2: #b71f1f; --dz-on-accent: #fff; }
+.dark .dz-hero.dz-cine, [data-theme='dark'] .dz-hero.dz-cine, html.dark .dz-hero.dz-cine {
+  --dz-accent: #f2b81b; --dz-accent-2: #e0a30c; --dz-on-accent: #1a1206;
+}
+
+/* ---------- brand header (above the video) ---------- */
+.dz-brand { display: flex; flex-direction: column; align-items: center; text-align: center; gap: clamp(2px, .35vw, 6px); margin-bottom: clamp(8px, 1vw, 14px); padding-inline: clamp(16px, 4vw, 80px); }
+.dz-brand__name { display: flex; align-items: center; gap: 16px; color: var(--dz-accent); font-weight: 900; }
+.dz-brand__name span { font-size: clamp(.85rem, 1vw, 1.05rem); opacity: 0; }
+.dz[lang='en'] .dz-brand__name span { font-size: clamp(.78rem, .9vw, 1rem); letter-spacing: .42em; text-transform: uppercase; }
+.dz-brand__line { display: block; width: clamp(36px, 8vw, 110px); height: 1px; background: linear-gradient(90deg, transparent, var(--dz-accent)); }
+.dz-brand__line:last-child { background: linear-gradient(270deg, transparent, var(--dz-accent)); }
+.dz-brand__title {
+  margin: 0; max-width: 40ch;
+  font-size: clamp(1.35rem, 2.3vw, 2.5rem); font-weight: 900; line-height: 1.15;
+  color: inherit;
+}
+.dz[lang='en'] .dz-brand__title { font-family: var(--dz-display); font-weight: 800; letter-spacing: -.015em; line-height: 1.1; max-width: 22ch; }
+.dz-brand__sub { margin: 0; max-width: 70ch; opacity: 0; font-weight: 700; font-size: clamp(.85rem, 1vw, 1.05rem); line-height: 1.5; color: inherit; }
+.dz[lang='en'] .dz-brand__sub { line-height: 1.65; }
+
+/* ---------- stage: full-bleed, full-screen on desktop ---------- */
+.dz-hero.dz-cine .dz-canvas {
+  width: 100%; max-width: none;
+  height: 86svh; min-height: 480px; max-height: 1000px; overflow: hidden;
+  margin: 0;
+  aspect-ratio: auto;
+  border-radius: 0; border: 0;
+  box-shadow: none;
+  background:
+    url('/images/desserts/dessert-poster.webp?v=3') center / cover no-repeat,
+    #1a0d10;
+}
+.dz-hero.dz-cine .dz-canvas::after { border-radius: inherit; }
+.dz-hero.dz-cine .dz-canvas__video { object-fit: cover; object-position: center 45%; transition: none; transform: scale(var(--dz-zoom, 1)); }
+
+/* scrims: only darken where the copy sits so the dessert stays bright */
+.dz-hero.dz-cine .dz-canvas__scrim {
+  background: linear-gradient(0deg, rgba(13,5,9,.78) 0%, rgba(13,5,9,.32) 32%, transparent 58%);
+}
+.dz-side { position: absolute; inset: 0; z-index: 2; pointer-events: none; }
+.dz[dir='rtl'] .dz-side { background: linear-gradient(270deg, rgba(13,5,9,.82) 0%, rgba(13,5,9,.5) 34%, transparent 62%); }
+.dz[dir='ltr'] .dz-side { background: linear-gradient(90deg,  rgba(13,5,9,.82) 0%, rgba(13,5,9,.5) 34%, transparent 62%); }
+
+/* ---------- 3D bowl ---------- */
+.dz-bowl {
+  position: absolute; z-index: 6; pointer-events: none;
+  inset-inline-end: clamp(12px, 4vw, 90px);
+  inset-block-end: clamp(8px, 3vw, 60px);
+  width: min(26%, 440px); aspect-ratio: 4 / 5;
+  opacity: 0; transform: translateY(18px) scale(.96);
+  transition: opacity .9s ease, transform .9s cubic-bezier(.2,.7,.2,1);
+}
+.dz-bowl.is-ready { opacity: 1; transform: none; }
+.dz-bowl canvas { display: block; width: 100%; height: 100%; }
+
+/* ---------- lower-third ad copy ---------- */
+.dz-ad {
+  position: absolute; z-index: 8;
+  inset-inline-start: clamp(18px, 5vw, 110px);
+  inset-block-end: clamp(18px, 3.5vw, 64px);
+  width: clamp(300px, 44vw, 820px); max-width: 54%;
+  display: flex; flex-direction: column; gap: clamp(12px, 1.4vw, 24px);
+  pointer-events: none; color: var(--dz-cream);
+}
+.dz-ad__stack { display: grid; }
+.dz-ad__panel {
+  grid-area: 1 / 1; display: flex; flex-direction: column; gap: clamp(8px, .9vw, 16px);
+  opacity: 0; visibility: hidden;
+  transition: opacity .35s ease, visibility 0s linear .35s;
+}
+.dz-ad__panel.is-active { opacity: 1; visibility: visible; transition: opacity .35s ease; }
+.dz-ad__panel[data-tone='falooda'] { --tone: #ff8fab; }
+.dz-ad__panel[data-tone='bastani'] { --tone: var(--dz-saffron); }
+
+.dz-ad__tag { opacity: 0; font-size: clamp(.9rem, 1.2vw, 1.35rem); font-weight: 800; color: var(--tone); text-shadow: 0 2px 10px rgba(0,0,0,.6); }
+.dz[lang='en'] .dz-ad__tag { letter-spacing: .14em; text-transform: uppercase; font-size: clamp(.78rem, 1vw, 1.1rem); }
+.dz-ad__name {
+  margin: 0; font-size: clamp(1.8rem, 3.8vw, 4.4rem); font-weight: 900; line-height: 1.2;
+  color: var(--dz-cream); text-shadow: 0 4px 22px rgba(0,0,0,.7);
+}
+.dz[lang='en'] .dz-ad__name { font-family: var(--dz-display); font-weight: 800; letter-spacing: -.015em; line-height: 1.08; }
+.dz-ad__tagline {
+  margin: 0; opacity: 0; max-width: 40ch;
+  font-size: clamp(.95rem, 1.3vw, 1.5rem); font-weight: 700; line-height: 1.85; color: rgba(248,236,217,.94);
+  text-shadow: 0 2px 12px rgba(0,0,0,.75);
+}
+.dz[lang='en'] .dz-ad__tagline { line-height: 1.6; }
+.dz-ad__chips { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: clamp(7px, .7vw, 12px); }
+.dz-ad__chips li {
+  opacity: 0; padding: .3em .85em; font-size: clamp(.78rem, 1vw, 1.1rem); font-weight: 800; border-radius: 999px; color: var(--dz-cream);
+  background: rgba(255,255,255,.08); border: 1px solid color-mix(in srgb, var(--tone) 60%, transparent);
+  backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+}
+
+.dz-ad__foot { display: flex; align-items: center; flex-wrap: wrap; gap: 12px 22px; opacity: 0; pointer-events: auto; }
+.dz-ad__cta {
+  display: inline-flex; align-items: center; gap: 10px; padding: .7em 1.5em; border-radius: 999px;
+  font-size: clamp(.92rem, 1.2vw, 1.3rem); font-weight: 800; color: var(--dz-on-accent); text-decoration: none;
+  background: var(--dz-accent);
+  box-shadow: 0 12px 28px -10px color-mix(in srgb, var(--dz-accent) 80%, transparent);
+  transition: transform .3s ease, box-shadow .3s ease, background .3s ease;
+}
+.dz-ad__cta:hover { background: var(--dz-accent-2); transform: translateY(-2px); box-shadow: 0 16px 36px -10px rgba(217,72,106,.9); }
+.dz-ad__arrow { transition: transform .3s ease; }
+.dz[dir='rtl'] .dz-ad__arrow { transform: scaleX(-1); }
+.dz-ad__cta:hover .dz-ad__arrow { transform: translateX(4px); }
+.dz[dir='rtl'] .dz-ad__cta:hover .dz-ad__arrow { transform: scaleX(-1) translateX(4px); }
+
+.dz-ad__pager { display: flex; gap: 8px; }
+.dz-ad__dot { background: none; border: 0; padding: 8px 0; cursor: pointer; }
+.dz-ad__line { position: relative; display: block; width: clamp(36px, 3.4vw, 64px); height: 3px; border-radius: 3px; background: rgba(248,236,217,.28); overflow: hidden; }
+.dz-ad__bar { position: absolute; inset: 0; background: var(--dz-accent); transform: scaleX(0); transform-origin: left; }
+.dz[dir='rtl'] .dz-ad__bar { transform-origin: right; }
+.dz-ad__dot.is-active .dz-ad__bar { animation: dz-fill var(--dz-cycle, 12s) linear forwards; }
+@keyframes dz-fill { to { transform: scaleX(1); } }
+
+/* ---------- SplitWords ---------- */
+.dz-w { display: inline-block; overflow: hidden; vertical-align: top; padding-block: .18em; margin-block: -.18em; }
+.dz-w__i { display: inline-block; opacity: 0; will-change: transform, opacity, filter; }
+
+/* ---------- tablet ---------- */
+@media (max-width: 1000px) {
+  .dz-ad { width: min(460px, 56%); max-width: 56%; }
+  .dz-ad__chips { display: none; }
+}
+
+/* ---------- mobile: the WHOLE wide (16:9) video is shown; the glass card sits below it on a blurred copy of the poster ---------- */
+@media (max-width: 760px) {
+  .dz-hero.dz-cine { padding-inline: 0; }
+  .dz-hero.dz-cine .dz-canvas {
+    display: flex; flex-direction: column; position: relative; isolation: isolate;
+    height: auto; min-height: 0; max-height: none; aspect-ratio: auto;
+    background: #1a0d10;
+  }
+  /* blurred backdrop (static poster, cheap) */
+  .dz-hero.dz-cine .dz-canvas::before {
+    content: ''; position: absolute; inset: -24px; z-index: -1;
+    background: url('/images/desserts/dessert-poster.webp?v=3') center / cover no-repeat;
+    filter: blur(22px) saturate(1.15) brightness(.8);
+  }
+  .dz-hero.dz-cine .dz-canvas__video {
+    position: relative; inset: auto; width: 100%; height: auto; aspect-ratio: 16 / 9;
+    object-fit: contain; object-position: center;
+  }
+  .dz-hero.dz-cine .dz-canvas__scrim, .dz-side, .dz-bowl { display: none; }
+
+  .dz-ad {
+    position: relative; inset: auto; z-index: 8;
+    margin: 10px 12px 14px; width: auto; max-width: none;
+    padding: 14px 16px 12px; gap: 8px;
+    border-radius: 20px;
+    background: rgba(18, 9, 12, .34);
+    border: 1px solid rgba(255, 255, 255, .24);
+    -webkit-backdrop-filter: blur(16px) saturate(1.25);
+    backdrop-filter: blur(16px) saturate(1.25);
+    box-shadow: 0 14px 34px -12px rgba(0, 0, 0, .55), inset 0 1px 0 rgba(255, 255, 255, .18);
+  }
+  .dz-ad__name { font-size: clamp(1.5rem, 6.4vw, 2.1rem); }
+  .dz-ad__tagline { max-width: none; font-size: clamp(.88rem, 3.5vw, 1.02rem); line-height: 1.65; }
+  .dz-ad__chips { display: flex; }
+  .dz-ad__foot { gap: 10px 14px; }
+}
+
+/* ---------- Persian / Arabic: the site's font, Vazirmatn (weights 100-900 are loaded in index.html) ---------- */
+.dz-hero.dz-cine[lang='fa'], .dz-hero.dz-cine[lang='fa'] *,
+.dz-hero.dz-cine[lang='ar'], .dz-hero.dz-cine[lang='ar'] * { font-family: 'Vazirmatn', system-ui, sans-serif; }
+
+/* ---------- extra-strong type ---------- */
+.dz-hero.dz-cine .dz-brand__title,
+.dz-hero.dz-cine .dz-ad__name {
+  font-weight: 900 !important;
+  -webkit-text-stroke: .012em currentColor;
+  paint-order: stroke fill;
+}
+.dz-hero.dz-cine .dz-brand__sub,
+.dz-hero.dz-cine .dz-ad__tagline,
+.dz-hero.dz-cine .dz-ad__tag,
+.dz-hero.dz-cine .dz-brand__name span {
+  font-weight: 800 !important;
+}
+.dz-hero.dz-cine .dz-ad__cta, .dz-hero.dz-cine .dz-ad__chips li { font-weight: 800 !important; }
+
+/* ---------- text is visible immediately (no reveal / no delay); it only moves with the mouse ---------- */
+.dz-hero.dz-cine .dz-w__i,
+.dz-hero.dz-cine .dz-brand__name span,
+.dz-hero.dz-cine .dz-brand__sub,
+.dz-hero.dz-cine .dz-ad__tag,
+.dz-hero.dz-cine .dz-ad__tagline,
+.dz-hero.dz-cine .dz-ad__chips li,
+.dz-hero.dz-cine .dz-ad__foot { opacity: 1 !important; }
+.dz-ad__panel, .dz-ad__panel.is-active { transition-duration: .12s; }
+
+/* ---------- reduced motion ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .dz-w__i, .dz-brand__name span, .dz-brand__sub, .dz-ad__foot, .dz-ad__tag, .dz-ad__tagline, .dz-ad__chips li { opacity: 1 !important; }
+  .dz-ad__bar { animation: none !important; transform: scaleX(1); }
+  .dz-canvas__shimmer { display: none !important; }
+}
+
+/* ===== v18: 3D bowl beside the hero headline (moved out of the video) ===== */
+.dz-hero.dz-cine .dz-brand {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr);
+  align-items: center;
+  text-align: start;
+  gap: clamp(8px, 3vw, 56px);
+  width: 100%; max-width: 1440px; margin-inline: auto;
+  padding-inline: clamp(16px, 5vw, 90px);
+  margin-bottom: clamp(8px, 1.2vw, 18px);
+}
+.dz-hero.dz-cine .dz-brand__copy {
+  display: flex; flex-direction: column; align-items: flex-start;
+  gap: clamp(6px, .8vw, 14px); min-width: 0;
+}
+.dz-hero.dz-cine .dz-brand__title { max-width: 22ch; font-size: clamp(1.7rem, 3.2vw, 3.4rem); }
+.dz-hero.dz-cine .dz-brand__sub { max-width: 44ch; font-size: clamp(.95rem, 1.3vw, 1.3rem); }
+.dz-hero.dz-cine .dz-brand__stage { min-width: 0; display: flex; justify-content: center; }
+.dz-hero.dz-cine .dz-brand .dz-bowl {
+  display: block; position: relative; inset: auto; z-index: 1;
+  width: min(100%, 600px); aspect-ratio: 3 / 2;
+  pointer-events: auto;
+}
+@media (max-width: 1000px) {
+  .dz-hero.dz-cine .dz-brand { grid-template-columns: minmax(0, 1fr) minmax(0, .9fr); }
+}
+@media (max-width: 760px) {
+  .dz-hero.dz-cine .dz-brand { grid-template-columns: minmax(0, 1fr); text-align: center; gap: 4px; }
+  .dz-hero.dz-cine .dz-brand__copy { align-items: center; }
+  .dz-hero.dz-cine .dz-brand__title { max-width: 24ch; font-size: clamp(1.5rem, 6.6vw, 2.2rem); }
+  .dz-hero.dz-cine .dz-brand__sub { max-width: 36ch; }
+  .dz-hero.dz-cine .dz-brand .dz-bowl { width: min(100%, 460px); aspect-ratio: 4 / 3; }
+}

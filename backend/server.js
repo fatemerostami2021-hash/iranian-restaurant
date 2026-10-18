@@ -27,7 +27,7 @@ import { verifyAdminToken } from './middleware/authMiddleware.js';
 // ===== کنترلرهای مدیریت =====
 import { getDishes, createDish, updateDish, deleteDish } from './controllers/dishController.js';
 import { getAllAdminArticles, createArticle, updateArticle, deleteArticle } from './controllers/articleController.js';
-import { uploadFile } from './controllers/uploadController.js';
+import { uploadFile, uploadImage, imageUploadMiddleware } from './controllers/uploadController.js';
 
 // ✅ ایمپورت تابع تلگرام
 import { sendTelegramMessage } from './utils/telegramNotifier.js';
@@ -136,7 +136,7 @@ app.use('/api/admin/users', verifyAdminToken, userRoutes);
 app.use('/api/admin/jobs', jobApplicationRoutes); 
 
 // ===== Routes ادمین - آپلود فایل =====
-app.post('/api/admin/upload/image', verifyAdminToken, upload.single('image'), uploadFile);
+app.post('/api/admin/upload/image', verifyAdminToken, imageUploadMiddleware, uploadImage);
 app.post('/api/admin/upload/video', verifyAdminToken, upload.single('video'), uploadFile);
 
 // ===== Route ارسال ایمیل تماس (عمومی) =====

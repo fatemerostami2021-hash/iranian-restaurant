@@ -13,10 +13,20 @@ export default defineConfig({
       workbox: {
         skipWaiting: true,
         clientsClaim: true,
-        maximumFileSizeToCacheInBytes: 8 * 1024 * 1024,
-        globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2,json}'],
+        navigateFallbackDenylist: [/^\/api\//, /^\/uploads\//, /^\/sitemap\.xml$/, /^\/robots\.txt$/],
+        globPatterns: ['**/*.{js,css,html,ico,svg,woff2,json}', '*.png'],
         
         runtimeCaching: [
+          {
+            // images are cached on first visit instead of being precached
+            urlPattern: ({ url, sameOrigin }) => sameOrigin && url.pathname.startsWith('/images/') && /\.(png|jpe?g|webp|avif)$/i.test(url.pathname),
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'static-images',
+              expiration: { maxEntries: 80, maxAgeSeconds: 60 * 60 * 24 * 14 },
+              cacheableResponse: { statuses: [200] }
+            }
+          },
           {
             urlPattern: /^https:\/\/.*\/uploads\/.*/,
             handler: 'CacheFirst',

@@ -7,6 +7,7 @@ import { AuthProvider } from './context/AuthContext.jsx';
 import { registerSW } from 'virtual:pwa-register';
 import './i18n.js';
 import './index.css';
+import './lib/smoothScroll.js';
 import App from './App.jsx';
 
 // ⬇️ وقتی Google Client ID گرفتی، اینجا جایگزین کن

@@ -19,6 +19,13 @@ export function getDishImageUrl(dish) {
 
 export const PLACEHOLDER_IMAGE = '/images/dishes/placeholder.svg';
 
+// Cloudflare Image Transformations: resize + WebP/AVIF at the edge. Only /uploads/ paths, production build only.
+const CF_IMG_QUALITY = 80;
+export function cfImage(url, width = 640) {
+  if (!import.meta.env.PROD || typeof url !== 'string' || !url.startsWith('/uploads/')) return url;
+  return `/cdn-cgi/image/width=${width},quality=${CF_IMG_QUALITY},format=auto${url}`;
+}
+
 export async function fetchDishes(category) {
   const params = category && category !== 'all' ? { category } : {};
   const { data } = await api.get('/api/dishes', { params });  // ← /api اضافه شد

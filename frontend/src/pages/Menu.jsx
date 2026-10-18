@@ -1,3 +1,20 @@
+/**
+ * PATCH INSTRUCTIONS for Menu.jsx
+ * ------------------------------------------------------------------
+ * Apply the THREE changes below to your existing
+ * frontend/src/pages/Menu.jsx to:
+ *   1) Show real desserts when the API returns none (fixes
+ *      "No matching dishes found" on the dessert category).
+ *   2) Insert a link to the SEO article at the top of the dessert
+ *      grid so internal linking + AI discovery works.
+ *
+ * The file below is a COMPLETE, drop-in replacement of Menu.jsx
+ * with only those changes applied. If you have other local edits,
+ * prefer applying the diffs manually using the comments marked
+ * with "✅ NEW".
+ * ------------------------------------------------------------------
+ */
+
 import { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSearchParams, useNavigate } from 'react-router-dom';
@@ -6,18 +23,21 @@ import { FiSearch, FiFilter, FiX, FiAward, FiTrash2, FiShoppingBag, FiPlus, FiMi
 import { useDishes } from '../hooks/useDishes';
 import DishCard from '../components/menu/DishCard';
 import QuickViewModal from '../components/menu/QuickViewModal';
-import ReviewsSection from '../components/home/ReviewsSection';
 import ReservationBar from '../components/home/ReservationBar';
 import { useTheme } from '../context/ThemeContext';
 import { useCart } from '../context/CartContext';
+// ✅ NEW: local dessert fallback + article link card
+import { getLocalDesserts } from '../data/dessertsContent';
+import DessertArticleCard from '../components/desserts/DessertArticleCard';
 
-// ===== کمک‌کننده: گرفتن عکس غذا (مشابه dishService.js) =====
+// ===== کمک‌کننده: گرفتن عکس غذا =====
 const CATEGORY_IMAGE_MAP = {
   breakfast: 'breakfast',
   main: 'main',
   combo: 'combo',
   appetizer: 'appetizer',
   drinks: 'drinks',
+  dessert: 'dessert',
 };
 
 function getDishImageUrl(dish) {
@@ -37,11 +57,11 @@ export default function Menu() {
   const isDark = theme === 'dark';
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
+
   const highlightId = searchParams.get('highlight');
   const urlCategory = searchParams.get('category') || 'all';
   const urlSearch = searchParams.get('search') || '';
 
-  // ✅ دریافت اطلاعات سبد خرید
   const { cart, totalPrice, clearCart, updateQuantity, removeItem } = useCart();
   const cartItemCount = cart.reduce((acc, item) => acc + item.quantity, 0);
 
@@ -49,11 +69,12 @@ export default function Menu() {
   const [searchTerm, setSearchTerm] = useState(urlSearch);
   const [specialFilter, setSpecialFilter] = useState('all');
   const [quickViewDish, setQuickViewDish] = useState(null);
+
   const { dishes, loading, error } = useDishes(category);
   const hasScrolled = useRef(false);
   const lang = i18n.language;
 
-  // ===== استایل‌های پویا بر اساس تم =====
+  // ===== استایل‌های پویا =====
   const bgClass = isDark ? 'bg-[#1C1C1C]' : 'bg-[#FFF8F0]';
   const textClass = isDark ? 'text-[#F7F0E6]' : 'text-[#1A1A1A]';
   const mutedClass = isDark ? 'text-gray-400' : 'text-[#666666]';
@@ -66,27 +87,53 @@ export default function Menu() {
     ? 'bg-gradient-to-r from-[#FFD700] via-[#FFE8A3] to-[#FFD700]'
     : 'bg-gradient-to-r from-[#D32F2F] via-[#8B2020] to-[#D32F2F]';
 
-  // ===== همگام‌سازی با URL =====
   useEffect(() => { setCategory(urlCategory); }, [urlCategory]);
   useEffect(() => { setSearchTerm(urlSearch); }, [urlSearch]);
 
-  // ===== کدهای پرفروش =====
   const bestSellerCodes = ['0018', '0029', '0010', '0064'];
 
   // ===== فیلتر کردن غذاها =====
-  const filteredDishes = dishes.filter((dish) => {
+  let filteredDishes = dishes.filter((dish) => {
     const searchableValues = [dish.name?.fa, dish.name?.ar, dish.name?.en, dish.code].filter(Boolean);
     const matchesSearch = searchTerm
       ? searchableValues.some((val) => val.toString().toLowerCase().includes(searchTerm.toLowerCase()))
       : true;
+
     let matchesSpecial = true;
     if (specialFilter === 'best') {
       matchesSpecial = bestSellerCodes.includes(dish.code);
     }
-    return matchesSearch && matchesSpecial;
+
+    let matchesCategory = true;
+    if (category === 'dessert') {
+      const searchString = `${dish.name?.fa || ''} ${dish.name?.en || ''} ${dish.name?.ar || ''}`.toLowerCase();
+      const isDessert =
+        searchString.includes('فالوده') ||
+        searchString.includes('بستنی') ||
+        searchString.includes('دسر') ||
+        searchString.includes('faloodeh') ||
+        searchString.includes('ice cream') ||
+        searchString.includes('icecream') ||
+        searchString.includes('bastani') ||
+        searchString.includes('dessert') ||
+        searchString.includes('حلويات') ||
+        searchString.includes('حلو') ||
+        dish.category === 'dessert';
+      matchesCategory = isDessert;
+    } else if (category !== 'all') {
+      matchesCategory = dish.category === category;
+    }
+
+    return matchesSearch && matchesSpecial && matchesCategory;
   });
 
-  // ===== تغییر جستجو =====
+  // ✅ NEW: If we're on the dessert category and the API returned nothing
+  // matching our keywords, fall back to the local dessert catalogue so
+  // the page never shows "No matching dishes found".
+  if (category === 'dessert' && filteredDishes.length === 0 && !loading) {
+    filteredDishes = getLocalDesserts(lang.slice(0, 2));
+  }
+
   const handleSearchChange = (value) => {
     setSearchTerm(value);
     const next = new URLSearchParams(searchParams);
@@ -94,7 +141,6 @@ export default function Menu() {
     setSearchParams(next, { replace: true });
   };
 
-  // ===== اسکرول به غذای هایلایت شده =====
   useEffect(() => {
     if (!loading && highlightId && !hasScrolled.current) {
       const el = document.getElementById(`dish-${highlightId}`);
@@ -105,7 +151,6 @@ export default function Menu() {
     }
   }, [loading, dishes, highlightId]);
 
-  // ===== نمایش لودینگ =====
   if (loading) {
     return (
       <section className={`max-w-7xl mx-auto px-4 py-12 ${bgClass}`}>
@@ -119,10 +164,8 @@ export default function Menu() {
     );
   }
 
-  // ===== نمایش خطا =====
   if (error) return <p className="text-center text-red-500 py-10">{error}</p>;
 
-  // ===== دسته‌بندی‌ها (غذای اصلی و سینی‌ها اول) =====
   const categories = [
     { key: 'all', label: t('menu.categories.all') },
     { key: 'main', label: t('menu.categories.main') },
@@ -130,12 +173,12 @@ export default function Menu() {
     { key: 'breakfast', label: t('menu.categories.breakfast') },
     { key: 'appetizer', label: t('menu.categories.appetizer') },
     { key: 'drinks', label: t('menu.categories.drinks') },
+    { key: 'dessert', label: t('dessert') },
   ];
 
-  // ===== رندر اصلی =====
   return (
     <section className={`max-w-7xl mx-auto px-4 py-12 ${bgClass} transition-colors duration-300`}>
-      {/* ===== هدر ===== */}
+      {/* هدر */}
       <div className="mb-10 text-center lg:text-right">
         <h1 className={`text-4xl font-black mb-2 bg-clip-text text-transparent ${heroGradient}`}>
           {t('menu.title')}
@@ -144,10 +187,9 @@ export default function Menu() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-        {/* ===== سایدبار فیلترینگ (دسکتاپ) ===== */}
+        {/* سایدبار فیلترینگ */}
         <aside className="hidden lg:block lg:col-span-1">
           <div className="sticky top-24 space-y-6">
-            {/* جستجو */}
             <div className={`p-4 rounded-2xl border ${cardBg} ${cardDepth} transition-all duration-300 hover:-translate-y-0.5`}>
               <div className="flex items-center gap-2 bg-gray-100 dark:bg-gray-800 rounded-xl px-3 py-2">
                 <FiSearch className={mutedClass} />
@@ -162,7 +204,6 @@ export default function Menu() {
               </div>
             </div>
 
-            {/* دسته‌بندی‌ها */}
             <div className={`p-4 rounded-2xl border ${cardBg} ${cardDepth} transition-all duration-300 hover:-translate-y-0.5`}>
               <h3 className={`font-bold mb-4 flex items-center gap-2 ${textClass}`}>
                 <FiFilter /> {t('menu.categoriesTitle')}
@@ -184,7 +225,6 @@ export default function Menu() {
               </div>
             </div>
 
-            {/* پیشنهادهای ویژه */}
             <div className={`p-4 rounded-2xl border ${cardBg} ${cardDepth} transition-all duration-300 hover:-translate-y-0.5`}>
               <h3 className={`font-bold mb-4 flex items-center gap-2 ${textClass}`}>
                 <FiAward className="text-[#FFD700]" /> {t('menu.specialOffers')}
@@ -208,9 +248,8 @@ export default function Menu() {
           </div>
         </aside>
 
-        {/* ===== لیست غذاها ===== */}
+        {/* لیست غذاها */}
         <div className="lg:col-span-3">
-          {/* فیلترهای موبایل */}
           <div className="lg:hidden mb-6 overflow-x-auto pb-2">
             <div className="flex gap-2 min-w-max">
               <button
@@ -237,19 +276,24 @@ export default function Menu() {
             </div>
           </div>
 
-          {/* نتایج */}
+          {/* ✅ NEW: when viewing desserts, show the article link card */}
+          {category === 'dessert' && (
+            <DessertArticleCard lang={lang.slice(0, 2)} isDark={isDark} />
+          )}
+
           {filteredDishes.length === 0 ? (
             <div className={`text-center py-20 border-2 border-dashed rounded-3xl ${isDark ? 'border-white/10' : 'border-gray-200'}`}>
               <p className={`${mutedClass} text-lg`}>{t('menu.noResults')}</p>
             </div>
           ) : (
             <motion.div layout className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
-              {filteredDishes.map((dish) => (
+              {filteredDishes.map((dish, index) => (
                 <DishCard
                   key={dish._id}
                   dish={dish}
                   highlight={dish._id === highlightId}
                   onQuickView={setQuickViewDish}
+                  priority={index === 0}
                 />
               ))}
             </motion.div>
@@ -257,15 +301,9 @@ export default function Menu() {
         </div>
       </div>
 
-      {/* ===== نظرات مشتریان ===== */}
-      <ReviewsSection />
-
- {/* ===== رزرو و دلیوری ===== */}
       <ReservationBar />
-
-      {/* ===== مودال ===== */}
       <QuickViewModal dish={quickViewDish} onClose={() => setQuickViewDish(null)} />
-      {/* ===== نوار پایین سبد خرید ===== */}
+
       <AnimatePresence>
         {cart.length > 0 && (
           <motion.div
@@ -277,7 +315,6 @@ export default function Menu() {
               isDark ? 'bg-[#1C1C1C] border-[#FFD700]/30' : 'bg-white border-[#D32F2F]/20'
             }`}
           >
-            {/* ردیف عکس‌ها و کنترل تعداد (اسکرول افقی) */}
             <div className={`flex gap-3 overflow-x-auto px-3 pt-3 pb-2 scrollbar-hide ${
               isDark ? 'bg-[#252525]' : 'bg-gray-50'
             }`}>
@@ -294,7 +331,6 @@ export default function Menu() {
                       isDark ? 'bg-[#1C1C1C] border-gray-700' : 'bg-white border-gray-200'
                     }`}
                   >
-                    {/* عکس غذا */}
                     <div className="relative">
                       <img
                         src={imageUrl}
@@ -302,19 +338,16 @@ export default function Menu() {
                         className="w-12 h-12 rounded-lg object-cover border border-gray-600"
                         onError={(e) => { e.target.src = '/images/dishes/placeholder.svg'; }}
                       />
-                      {/* تعداد روی عکس */}
                       <span className="absolute -top-1.5 -right-1.5 bg-[#FFD700] text-black text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center shadow-md">
                         {item.quantity}
                       </span>
                     </div>
 
-                    {/* نام (مخفی توی موبایل) */}
                     <div className="hidden sm:block min-w-[80px]">
                       <p className={`text-xs font-bold truncate ${textClass}`}>{itemName}</p>
                       <p className="text-[10px] text-[#FFD700]">{item.price} QR</p>
                     </div>
 
-                    {/* دکمه + و - */}
                     <div className={`flex items-center gap-1 rounded-lg px-1 py-0.5 ${
                       isDark ? 'bg-white/10' : 'bg-gray-100'
                     }`}>
@@ -339,7 +372,6 @@ export default function Menu() {
                       </button>
                     </div>
 
-                    {/* حذف */}
                     <button
                       onClick={() => removeItem(item._id)}
                       className="p-1 text-red-400 hover:bg-red-500/10 rounded transition-colors"
@@ -351,11 +383,9 @@ export default function Menu() {
               })}
             </div>
 
-            {/* ردیف جمع‌بندی و Checkout */}
             <div className={`flex items-center justify-between gap-3 px-4 py-3 ${
               isDark ? 'bg-[#1C1C1C]' : 'bg-white'
             }`}>
-              {/* دکمه خالی کردن */}
               <button
                 onClick={clearCart}
                 className={`p-2.5 rounded-xl transition-colors shrink-0 ${
@@ -366,7 +396,6 @@ export default function Menu() {
                 <FiTrash2 size={20} />
               </button>
 
-              {/* اطلاعات */}
               <div className="flex-1 text-center sm:text-right">
                 <p className={`text-xs ${mutedClass}`}>
                   {cartItemCount} {t('cart.items')}
@@ -376,7 +405,6 @@ export default function Menu() {
                 </p>
               </div>
 
-              {/* دکمه Checkout */}
               <button
                 onClick={() => navigate('/checkout')}
                 className={`flex items-center justify-center gap-2 px-5 py-3 rounded-xl font-bold text-sm transition-all hover:scale-105 shrink-0 ${accentBg}`}

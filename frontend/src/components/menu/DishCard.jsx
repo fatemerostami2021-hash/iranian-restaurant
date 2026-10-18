@@ -1,16 +1,17 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FiPlus } from 'react-icons/fi';
-import { getDishImageUrl, PLACEHOLDER_IMAGE } from '../../services/dishService';
+import { getDishImageUrl, PLACEHOLDER_IMAGE, cfImage } from '../../services/dishService';
 import { useCart } from '../../context/CartContext';
 import { useTheme } from '../../context/ThemeContext';
 
-export default function DishCard({ dish, highlight, onQuickView }) {
+export default function DishCard({ dish, highlight, onQuickView, priority = false }) {
   const { i18n, t } = useTranslation();
   const { theme } = useTheme();
   const { addItem } = useCart();
   const isDark = theme === 'dark';
   const [imgSrc, setImgSrc] = useState(getDishImageUrl(dish) || PLACEHOLDER_IMAGE);
+  const [cfFailed, setCfFailed] = useState(false);
 
   const lang = i18n.language;
   const name = dish.name?.[lang] || dish.name?.en || '';
@@ -57,11 +58,15 @@ export default function DishCard({ dish, highlight, onQuickView }) {
     >
       <div className="aspect-square bg-gray-50 dark:bg-[#1C1C1C] overflow-hidden">
         <img
-          src={imgSrc}
+          src={cfFailed ? imgSrc : cfImage(imgSrc, 640)}
           alt={name}
           className="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
-          loading="lazy"
-          onError={() => setImgSrc(PLACEHOLDER_IMAGE)}
+          loading={priority ? 'eager' : 'lazy'}
+          fetchPriority={priority ? 'high' : undefined}
+          decoding="async"
+          width="600"
+          height="600"
+          onError={() => { if (!cfFailed && cfImage(imgSrc, 640) !== imgSrc) setCfFailed(true); else setImgSrc(PLACEHOLDER_IMAGE); }}
         />
       </div>
 

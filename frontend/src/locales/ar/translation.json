@@ -19,6 +19,7 @@
   "combo": "الصواني",
   "appetizer": "المقبلات",
   "drinks": "المشروبات",
+  "dessert": "الحلويات",
   "all": "الكل",
   "view_all": "عرض الكل",
   "food-stories": "قصص الطعام",
@@ -57,7 +58,7 @@
     "categoriesTitle": "الفئات",
     "specialOffers": "عروض خاصة",
     "bestSellers": "الأكثر مبيعًا",
-    "bestSellersDesc": "يشمل: باجة داغ، مهياوة، مشكل مشوي وآش سبزی",
+    "bestSellersDesc": "يشمل: باجة داغ، مهياوة، مشكل مشوي وآش سبزي",
     "noResults": "لم يتم العثور على أطباق مطابقة",
     "addToCart": "أضف إلى السلة",
     "ingredients": "المكونات",
@@ -68,7 +69,8 @@
       "main": "الوجبات الرئيسية",
       "combo": "الصواني",
       "appetizer": "المقبلات",
-      "drinks": "المشروبات"
+      "drinks": "المشروبات",
+      "dessert": "الحلويات"
     }
   },
   "cart": {

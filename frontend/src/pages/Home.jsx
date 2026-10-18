@@ -8,6 +8,8 @@ import MenuWaveSlider from '../components/home/MenuWaveSlider';
 import SimpleWaveDivider from '../components/home/SimpleWaveDivider';
 // ✅ اضافه کردن import برای BestSellersGallery
 import BestSellersGallery from '../components/home/BestSellersGallery';
+// ✅ بخش دسر: فالوده شیرازی + بستنی سنتی (سه‌بعدی)
+import LazyDessertSection from '../components/home/LazyDessertSection';
 
 export default function Home() {
   return (
@@ -19,22 +21,16 @@ export default function Home() {
 
       <HeroVideo />
       <MenuWaveSlider />
-        <HomeExperienceSection />
-      <BestSellersGallery />
-     
-     
-      {/* ✅ جداساز اول: مارکی غذاها */}
-     
-     
-    
-     
-      <CinematicGallery />
-     
+       <LazyDessertSection />
+       <BestSellersGallery />
+      <HomeExperienceSection />
       
+      <CinematicGallery />
+
       <DeliveryApps />
       {/* ✅ جداساز دوم: موج ساده */}
       <SimpleWaveDivider />
-      
+
       <FAQSection />
     </div>
   );

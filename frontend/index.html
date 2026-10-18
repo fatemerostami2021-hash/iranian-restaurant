@@ -17,6 +17,12 @@
     <!-- viewport -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 
+    <!-- fonts: preconnect + non-blocking stylesheet (moved from index.css @import) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@100;200;300;400;500;600;700;800;900&amp;display=swap" media="print" onload="this.media='all'" />
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@100;200;300;400;500;600;700;800;900&amp;display=swap" /></noscript>
+
     <!-- ✅ عنوان بهینه‌شده برای SEO -->
     <title>کباب داغ نان داغ | رستوران کباب ایرانی در دوحه قطر | سفارش آنلاین</title>
 
@@ -39,8 +45,7 @@
     <meta name="apple-mobile-web-app-title" content="Kabab Dagh" />
     <meta name="mobile-web-app-capable" content="yes" />
 
-    <!-- Canonical -->
-    <link rel="canonical" href="https://kababdagh.com/" />
+    <!-- canonical is set per page by RouteSeo (React) -->
 
     <!-- ✅ Open Graph — عکس درست جایگزین شد -->
     <meta property="og:type" content="website" />
@@ -139,6 +144,7 @@
         html, body, #root { background-color: #FFF8F0; }
       }
     </style>
+    <link rel="preload" as="image" href="/images/desserts/dessert-poster.webp?v=3" type="image/webp" fetchpriority="high" />
   </head>
   <body>
     <div id="root"></div>

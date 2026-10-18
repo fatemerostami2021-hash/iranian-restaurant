@@ -10,3 +10,21 @@ build/
 *.bak
 .DS_Store
 Thumbs.db
+*.bak*
+
+# --- whitelist: only these top-level entries belong in git ---
+/*
+!/backend
+!/frontend
+!/deploy.sh
+!/README.md
+!/.gitignore
+!/package.json
+!/package-lock.json
+
+# local-only backups / patch leftovers anywhere
+*.bak
+*.bak-*
+
+*.zip
+*.tar.gz

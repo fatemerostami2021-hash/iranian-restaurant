@@ -1,0 +1,414 @@
+/* Dessert room v3.1 — silent video hero on the home page + a /desserts-menu page.
+   The hero section is text-free, the section is transparent (inherits the site theme). */
+
+.dz {
+  /* palette kept as variables so the overlay particles/gradient can use them,
+     but the section itself has NO background — it sits on the site's own theme. */
+  --dz-ink: transparent;
+  --dz-ink-2: transparent;
+  --dz-rose: #d9486a;
+  --dz-syrup: #8e1b3a;
+  --dz-saffron: #f2a71b;
+  --dz-cream: #f8ecd9;
+  --dz-pistachio: #a8c686;
+  --dz-silver: #cfd3d9;
+  --dz-display: 'Cormorant Garamond', 'Iowan Old Style', 'Palatino Linotype', Georgia, serif;
+
+  position: relative;
+  color: var(--dz-cream);
+  background: transparent;
+  overflow: hidden;
+  isolation: isolate;
+}
+.dz *, .dz *::before, .dz *::after { box-sizing: border-box; }
+
+/* ---------- home video hero ---------- */
+.dz-hero {
+  position: relative;
+  width: 100%;
+  padding: 0;
+  margin: 0;
+  background: transparent;
+}
+.dz-hero .dz-canvas {
+  position: relative;
+  width: 100%;
+  aspect-ratio: auto;
+  height: min(86vh, 820px);
+  min-height: 460px;
+  border-radius: 0;
+  background: #0d0509;
+  box-shadow: none;
+}
+.dz-hero .dz-canvas::after {
+  border-radius: 0;
+}
+
+/* ---------- video stage (the canvas host itself) ---------- */
+.dz-canvas {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1.04;
+  min-height: 360px;
+  border-radius: 22px;
+  overflow: hidden;
+  isolation: isolate;
+  box-shadow:
+    0 40px 90px -20px rgba(0, 0, 0, 0.55),
+    0 0 0 1px rgba(255, 255, 255, 0.06) inset;
+  background: #0d0509;
+}
+.dz-canvas__video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 1;
+  will-change: transform;
+  transform: scale(var(--dz-zoom, 1));
+  transition: transform 0.6s ease-out;
+  filter: saturate(1.05) contrast(1.02);
+}
+.dz-canvas__scrim {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, rgba(13, 5, 9, 0.55) 0%, transparent 28%, transparent 60%, rgba(13, 5, 9, 0.78) 100%),
+    radial-gradient(70% 50% at 50% 50%, transparent 40%, rgba(13, 5, 9, 0.35) 100%);
+  transition: background 0.8s ease;
+}
+.dz-canvas[data-key='bastani'] .dz-canvas__scrim {
+  background:
+    linear-gradient(180deg, rgba(34, 16, 0, 0.45) 0%, transparent 28%, transparent 60%, rgba(34, 16, 0, 0.75) 100%),
+    radial-gradient(70% 50% at 50% 50%, transparent 40%, rgba(242, 167, 27, 0.18) 100%);
+}
+.dz-canvas::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08), inset 0 0 80px rgba(0, 0, 0, 0.45);
+  border-radius: 22px;
+}
+
+/* ---------- overlay animations ---------- */
+.dz-canvas__dust {
+  position: absolute; inset: 0; z-index: 4; pointer-events: none;
+  opacity: 0; transition: opacity 0.8s ease;
+}
+.dz-canvas[data-key='bastani'] .dz-canvas__dust { opacity: 1; }
+.dz-canvas[data-key='falooda'] .dz-canvas__dust { opacity: 0; }
+.dz-dust__grain {
+  position: absolute;
+  width: 6px; height: 6px; border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #fff6cc, #f2a71b 60%, #a65a00);
+  box-shadow: 0 0 12px rgba(242, 167, 27, 0.7);
+  will-change: transform, opacity;
+}
+
+.dz-canvas__petals {
+  position: absolute; inset: 0; z-index: 4; pointer-events: none;
+  opacity: 0; transition: opacity 0.8s ease;
+}
+.dz-canvas[data-key='falooda'] .dz-canvas__petals { opacity: 1; }
+.dz-canvas[data-key='bastani'] .dz-canvas__petals { opacity: 0; }
+.dz-petal {
+  position: absolute;
+  width: 18px; height: 22px;
+  background: radial-gradient(ellipse at 30% 30%, #ffe3ec 0%, #f3c3cf 45%, #c8456a 100%);
+  border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.3));
+  will-change: transform, opacity;
+}
+
+.dz-canvas__crystals {
+  position: absolute; inset: 0; z-index: 4; pointer-events: none;
+  opacity: 0; transition: opacity 0.8s ease;
+}
+.dz-canvas[data-key='falooda'] .dz-canvas__crystals { opacity: 1; }
+.dz-canvas[data-key='bastani'] .dz-canvas__crystals { opacity: 0; }
+.dz-crystal {
+  position: absolute;
+  width: 14px; height: 14px;
+  background: rgba(255, 255, 255, 0.85);
+  clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+  filter: drop-shadow(0 0 8px rgba(180, 230, 255, 0.9));
+  will-change: transform, opacity;
+}
+
+.dz-canvas__shimmer {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  pointer-events: none;
+  background: linear-gradient(115deg,
+    transparent 0%, transparent 38%,
+    rgba(255, 246, 220, 0.0) 42%,
+    rgba(255, 246, 220, 0.55) 50%,
+    rgba(255, 246, 220, 0.0) 58%,
+    transparent 62%, transparent 100%);
+  background-size: 280% 280%;
+  background-position: -120% 0;
+  mix-blend-mode: screen;
+  opacity: 0;
+}
+.dz-canvas.is-sweeping .dz-canvas__shimmer {
+  animation: dz-sweep 1.1s cubic-bezier(0.2, 0.6, 0.2, 1) forwards;
+}
+@keyframes dz-sweep {
+  0%   { background-position: -120% 0; opacity: 0; }
+  20%  { opacity: 1; }
+  80%  { opacity: 1; }
+  100% { background-position: 220% 0; opacity: 0; }
+}
+
+.dz-canvas__rail {
+  position: absolute;
+  inset-block: 28px 28px;
+  inset-inline-end: 10px;
+  width: 2px;
+  z-index: 6;
+  background: rgba(248, 236, 217, 0.18);
+  pointer-events: none;
+  border-radius: 1px;
+}
+.dz-canvas__rail::after {
+  content: '';
+  position: absolute;
+  inset-inline: -3px;
+  top: 0;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--dz-tone, var(--dz-rose));
+  box-shadow: 0 0 14px var(--dz-tone, var(--dz-rose));
+  transform: translateY(calc(var(--dz-p, 0) * (100% - 8px) - 4px));
+  transition: background 0.6s, box-shadow 0.6s;
+}
+.dz-canvas[data-key='falooda'] { --dz-tone: var(--dz-rose); }
+.dz-canvas[data-key='bastani'] { --dz-tone: var(--dz-saffron); }
+
+/* the corner mark has been removed from JSX, but the rule is kept here so
+   any leftover reference still renders nothing. */
+.dz-canvas__mark { display: none; }
+
+/* ---------- caption overlay (on top of the video) ---------- */
+.dz-canvas__caption {
+  position: absolute;
+  inset-inline-start: clamp(20px, 5vw, 72px);
+  inset-block-end: clamp(28px, 6vh, 72px);
+  z-index: 7;
+  max-width: min(540px, 46ch);
+  padding: clamp(18px, 2vw, 26px) clamp(20px, 2.4vw, 30px);
+  background: linear-gradient(180deg, rgba(13, 5, 9, 0.55), rgba(13, 5, 9, 0.78));
+  border: 1px solid rgba(248, 236, 217, 0.14);
+  border-radius: 14px;
+  backdrop-filter: blur(10px) saturate(1.15);
+  -webkit-backdrop-filter: blur(10px) saturate(1.15);
+  box-shadow: 0 24px 60px -16px rgba(0, 0, 0, 0.6);
+  color: var(--dz-cream);
+  pointer-events: none;
+  will-change: opacity, transform;
+}
+.dz-canvas__caption[data-tone='falooda'] {
+  border-inline-start: 3px solid var(--dz-rose);
+}
+.dz-canvas__caption[data-tone='bastani'] {
+  border-inline-start: 3px solid var(--dz-saffron);
+}
+.dz-canvas__kicker {
+  display: inline-block;
+  width: 32px;
+  height: 1px;
+  background: var(--dz-tone, var(--dz-cream));
+  margin-block-end: 12px;
+  opacity: 0.7;
+}
+.dz-canvas__name {
+  margin: 0 0 0.45rem;
+  font-family: var(--dz-display, Georgia, serif);
+  font-size: clamp(1.6rem, 2.8vw, 2.4rem);
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: 0;
+  color: var(--dz-cream);
+  text-shadow: 0 2px 14px rgba(0, 0, 0, 0.5);
+}
+.dz[lang='en'] .dz-canvas__name {
+  font-family: var(--dz-display);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+.dz-canvas__blurb {
+  margin: 0;
+  font-size: clamp(0.92rem, 1.1vw, 1.05rem);
+  line-height: 1.85;
+  color: rgba(248, 236, 217, 0.92);
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.45);
+}
+.dz[lang='en'] .dz-canvas__blurb { line-height: 1.7; }
+
+/* On narrow viewports the caption sits full-width at the bottom of the video,
+   so it never covers the dessert itself. */
+@media (max-width: 760px) {
+  .dz-canvas__caption {
+    inset-inline: clamp(14px, 4vw, 24px);
+    inset-block-end: clamp(16px, 4vh, 24px);
+    max-width: none;
+    padding: 14px 18px;
+  }
+  .dz-canvas__name { font-size: clamp(1.25rem, 4vw, 1.6rem); }
+  .dz-canvas__blurb { font-size: 0.9rem; line-height: 1.7; }
+}
+@media (max-width: 480px) {
+  .dz-canvas__caption { border-radius: 10px; }
+}
+
+/* ---------- reduced motion ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .dz-canvas__dust, .dz-canvas__petals, .dz-canvas__crystals, .dz-canvas__shimmer { display: none !important; }
+  .dz-canvas__video { transform: none !important; }
+}
+
+/* ---------- /desserts-menu page ---------- */
+.dz-menu {
+  position: relative;
+  background: transparent;
+  padding: clamp(48px, 7vw, 110px) clamp(20px, 5vw, 72px);
+}
+.dz-menu::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background:
+    radial-gradient(60% 60% at 80% 20%, rgba(217, 72, 106, 0.10), transparent 70%),
+    radial-gradient(45% 45% at 15% 75%, rgba(242, 167, 27, 0.08), transparent 70%);
+  pointer-events: none;
+}
+.dz-menu__head {
+  position: relative;
+  z-index: 1;
+  max-width: 760px;
+  margin: 0 auto clamp(36px, 5vw, 64px);
+  text-align: center;
+}
+.dz-menu__title {
+  margin: 0 0 1rem;
+  font-weight: 700;
+  font-size: clamp(2.2rem, 5vw, 4rem);
+  line-height: 1.1;
+  color: var(--dz-cream);
+  text-shadow: 0 2px 18px rgba(0, 0, 0, 0.4);
+}
+.dz[lang='en'] .dz-menu__title {
+  font-family: var(--dz-display);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+.dz-menu__lead {
+  margin: 0 auto;
+  max-width: 38rem;
+  font-size: clamp(1rem, 1.3vw, 1.1rem);
+  line-height: 1.85;
+  color: rgba(248, 236, 217, 0.88);
+  text-shadow: 0 1px 10px rgba(0, 0, 0, 0.5);
+}
+.dz[lang='en'] .dz-menu__lead { line-height: 1.7; }
+
+.dz-menu__grid {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(20px, 3vw, 40px);
+  max-width: 1100px;
+  margin: 0 auto;
+}
+@media (max-width: 760px) {
+  .dz-menu__grid { grid-template-columns: minmax(0, 1fr); }
+}
+.dz-menu__card {
+  position: relative;
+  padding: clamp(28px, 3vw, 44px) clamp(24px, 3vw, 40px);
+  background: rgba(248, 236, 217, 0.04);
+  border: 1px solid rgba(248, 236, 217, 0.14);
+  border-radius: 18px;
+  backdrop-filter: blur(8px) saturate(1.1);
+  -webkit-backdrop-filter: blur(8px) saturate(1.1);
+  transition: transform 0.4s ease, box-shadow 0.4s ease, border-color 0.4s ease;
+  overflow: hidden;
+}
+.dz-menu__card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(160deg, var(--dz-tone, transparent), transparent 60%);
+  opacity: 0.08;
+  pointer-events: none;
+}
+.dz-menu__card[data-tone='falooda'] { --dz-tone: var(--dz-rose); }
+.dz-menu__card[data-tone='bastani'] { --dz-tone: var(--dz-saffron); }
+.dz-menu__card:hover {
+  transform: translateY(-4px);
+  border-color: var(--dz-tone, rgba(248, 236, 217, 0.3));
+  box-shadow: 0 30px 70px -20px rgba(0, 0, 0, 0.5), 0 0 0 1px var(--dz-tone, rgba(248, 236, 217, 0.2)) inset;
+}
+.dz-menu__tag {
+  display: inline-block;
+  padding: 0.35em 0.9em;
+  margin-bottom: 1.2rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--dz-tone, var(--dz-cream));
+  background: rgba(248, 236, 217, 0.08);
+  border: 1px solid var(--dz-tone, rgba(248, 236, 217, 0.3));
+  border-radius: 999px;
+}
+.dz-menu__name {
+  margin: 0 0 0.35rem;
+  font-size: clamp(1.6rem, 2.8vw, 2.4rem);
+  font-weight: 700;
+  line-height: 1.15;
+  color: var(--dz-cream);
+}
+.dz[lang='en'] .dz-menu__name {
+  font-family: var(--dz-display);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+.dz-menu__alt {
+  margin: 0 0 1.2rem;
+  font-size: 0.95rem;
+  opacity: 0.65;
+  letter-spacing: 0.04em;
+}
+.dz-menu__blurb {
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.85;
+  color: rgba(248, 236, 217, 0.9);
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.35);
+}
+.dz[lang='en'] .dz-menu__blurb { line-height: 1.7; }
+
+.dz-menu__divider {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 600px;
+  height: 1px;
+  margin: clamp(40px, 6vw, 72px) auto 0;
+  background: linear-gradient(90deg, transparent, rgba(248, 236, 217, 0.25), transparent);
+}
+
+/* ---------- responsive fine-tuning ---------- */
+@media (max-width: 540px) {
+  .dz-hero .dz-canvas { height: 70vh; min-height: 380px; }
+}
