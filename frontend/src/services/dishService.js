@@ -14,7 +14,7 @@ export function getDishImageUrl(dish) {
   }
   const folder = CATEGORY_IMAGE_MAP[dish.category] || 'main';
   const key = dish.code || dish._id;
-  return `/images/dishes/${folder}/${key}.png`;
+  return `/images/dishes/${folder}/${key}.webp`;
 }
 
 export const PLACEHOLDER_IMAGE = '/images/dishes/placeholder.svg';

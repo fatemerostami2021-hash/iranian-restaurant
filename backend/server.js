@@ -13,6 +13,9 @@ import orderRoutes from './routes/orderRoutes.js';
 import authRoutes from './routes/authRoutes.js';
 import articleRoutes from './routes/articleRoutes.js';
 import reservationRoutes from './routes/reservationRoutes.js';
+import Article from './models/Article.js';
+import Dish from './models/Dish.js';
+import { createSeoRouter } from './seo/seoRouter.js';
 
 // ✅ روت‌های جدید اضافه شد
 import userRoutes from './routes/userRoutes.js';
@@ -172,9 +175,13 @@ app.post('/api/contact/send-email', async (req, res) => {
 });
 
 // ===== Health Check =====
-app.get('/', (req, res) => {
+app.get('/healthz', (req, res) => {
   res.json({ status: 'ok', message: 'Iranian Restaurant API running' });
 });
+
+// ===== SEO shell: page-specific meta + text snapshot for crawlers, /sitemap.xml, /llms.txt =====
+// Must stay AFTER every /api and /uploads route.
+app.use(createSeoRouter({ Article, Dish }));
 
 // ===== Error Handler =====
 app.use((err, req, res, next) => {

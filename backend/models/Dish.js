@@ -17,7 +17,8 @@ const dishSchema = new mongoose.Schema({
   },
   category: {
     type: String,
-    enum: ['breakfast', 'main', 'combo', 'appetizer', 'drinks'],
+    // 'dessert' added: the admin form already offers "دسرها" but the old enum rejected it
+    enum: ['breakfast', 'main', 'combo', 'appetizer', 'drinks', 'dessert'],
     required: true
   },
   price: Number,

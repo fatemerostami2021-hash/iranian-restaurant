@@ -1,21 +1,18 @@
 /**
- * PATCH INSTRUCTIONS for Menu.jsx
+ * Menu.jsx (v5 — with hero slider + all previous fixes)
  * ------------------------------------------------------------------
- * Apply the THREE changes below to your existing
- * frontend/src/pages/Menu.jsx to:
- *   1) Show real desserts when the API returns none (fixes
- *      "No matching dishes found" on the dessert category).
- *   2) Insert a link to the SEO article at the top of the dessert
- *      grid so internal linking + AI discovery works.
- *
- * The file below is a COMPLETE, drop-in replacement of Menu.jsx
- * with only those changes applied. If you have other local edits,
- * prefer applying the diffs manually using the comments marked
- * with "✅ NEW".
+ * Changes vs original:
+ *   1) ✅ NEW: Full-width hero slider (MenuHero) at the top
+ *   2) ✅ FIX: useMemo for filteredDishes → no re-render storm
+ *   3) ✅ FIX: Removed `layout` from grid motion.div → no card reflow jump
+ *   4) ✅ FIX: Removed `layout` from cart item motion.div → no cart bar jump
+ *   5) Local dessert fallback (Bastani + Faloodeh) preserved
+ *   6) DessertArticleCard link at top of dessert grid preserved
+ *   7) Main content wrapped with id="menu-content" so hero CTA can scroll to it
  * ------------------------------------------------------------------
  */
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -23,10 +20,10 @@ import { FiSearch, FiFilter, FiX, FiAward, FiTrash2, FiShoppingBag, FiPlus, FiMi
 import { useDishes } from '../hooks/useDishes';
 import DishCard from '../components/menu/DishCard';
 import QuickViewModal from '../components/menu/QuickViewModal';
+import MenuHero from '../components/menu/MenuHero'; // ✅ NEW
 import ReservationBar from '../components/home/ReservationBar';
 import { useTheme } from '../context/ThemeContext';
 import { useCart } from '../context/CartContext';
-// ✅ NEW: local dessert fallback + article link card
 import { getLocalDesserts } from '../data/dessertsContent';
 import DessertArticleCard from '../components/desserts/DessertArticleCard';
 
@@ -48,7 +45,7 @@ function getDishImageUrl(dish) {
   }
   const folder = CATEGORY_IMAGE_MAP[dish.category] || 'main';
   const key = dish.code || dish._id;
-  return `/images/dishes/${folder}/${key}.png`;
+  return `/images/dishes/${folder}/${key}.webp`;
 }
 
 export default function Menu() {
@@ -83,56 +80,55 @@ export default function Menu() {
   const cardDepth = isDark
     ? 'shadow-[0_1px_0_0_rgba(255,255,255,0.06)_inset,0_14px_30px_-12px_rgba(0,0,0,0.65)] hover:shadow-[0_1px_0_0_rgba(255,255,255,0.08)_inset,0_18px_36px_-10px_rgba(0,0,0,0.75)]'
     : 'shadow-[0_1px_0_0_rgba(255,255,255,0.9)_inset,0_14px_28px_-10px_rgba(0,0,0,0.12)] hover:shadow-[0_1px_0_0_rgba(255,255,255,0.9)_inset,0_18px_34px_-8px_rgba(0,0,0,0.18)]';
-  const heroGradient = isDark
-    ? 'bg-gradient-to-r from-[#FFD700] via-[#FFE8A3] to-[#FFD700]'
-    : 'bg-gradient-to-r from-[#D32F2F] via-[#8B2020] to-[#D32F2F]';
 
   useEffect(() => { setCategory(urlCategory); }, [urlCategory]);
   useEffect(() => { setSearchTerm(urlSearch); }, [urlSearch]);
 
   const bestSellerCodes = ['0018', '0029', '0010', '0064'];
 
-  // ===== فیلتر کردن غذاها =====
-  let filteredDishes = dishes.filter((dish) => {
-    const searchableValues = [dish.name?.fa, dish.name?.ar, dish.name?.en, dish.code].filter(Boolean);
-    const matchesSearch = searchTerm
-      ? searchableValues.some((val) => val.toString().toLowerCase().includes(searchTerm.toLowerCase()))
-      : true;
+  // ===== فیلتر کردن غذاها (useMemo برای جلوگیری از re-render اضافی) =====
+  const filteredDishes = useMemo(() => {
+    let result = dishes.filter((dish) => {
+      const searchableValues = [dish.name?.fa, dish.name?.ar, dish.name?.en, dish.code].filter(Boolean);
+      const matchesSearch = searchTerm
+        ? searchableValues.some((val) => val.toString().toLowerCase().includes(searchTerm.toLowerCase()))
+        : true;
 
-    let matchesSpecial = true;
-    if (specialFilter === 'best') {
-      matchesSpecial = bestSellerCodes.includes(dish.code);
+      let matchesSpecial = true;
+      if (specialFilter === 'best') {
+        matchesSpecial = bestSellerCodes.includes(dish.code);
+      }
+
+      let matchesCategory = true;
+      if (category === 'dessert') {
+        const searchString = `${dish.name?.fa || ''} ${dish.name?.en || ''} ${dish.name?.ar || ''}`.toLowerCase();
+        const isDessert =
+          searchString.includes('فالوده') ||
+          searchString.includes('بستنی') ||
+          searchString.includes('دسر') ||
+          searchString.includes('faloodeh') ||
+          searchString.includes('ice cream') ||
+          searchString.includes('icecream') ||
+          searchString.includes('bastani') ||
+          searchString.includes('dessert') ||
+          searchString.includes('حلويات') ||
+          searchString.includes('حلو') ||
+          dish.category === 'dessert';
+        matchesCategory = isDessert;
+      } else if (category !== 'all') {
+        matchesCategory = dish.category === category;
+      }
+
+      return matchesSearch && matchesSpecial && matchesCategory;
+    });
+
+    // Fallback: اگر دسته دسر باشد و دیتابیس چیزی برنگرداند، دسرهای محلی نمایش داده می‌شوند
+    if (category === 'dessert' && result.length === 0 && !loading) {
+      result = getLocalDesserts(lang.slice(0, 2));
     }
 
-    let matchesCategory = true;
-    if (category === 'dessert') {
-      const searchString = `${dish.name?.fa || ''} ${dish.name?.en || ''} ${dish.name?.ar || ''}`.toLowerCase();
-      const isDessert =
-        searchString.includes('فالوده') ||
-        searchString.includes('بستنی') ||
-        searchString.includes('دسر') ||
-        searchString.includes('faloodeh') ||
-        searchString.includes('ice cream') ||
-        searchString.includes('icecream') ||
-        searchString.includes('bastani') ||
-        searchString.includes('dessert') ||
-        searchString.includes('حلويات') ||
-        searchString.includes('حلو') ||
-        dish.category === 'dessert';
-      matchesCategory = isDessert;
-    } else if (category !== 'all') {
-      matchesCategory = dish.category === category;
-    }
-
-    return matchesSearch && matchesSpecial && matchesCategory;
-  });
-
-  // ✅ NEW: If we're on the dessert category and the API returned nothing
-  // matching our keywords, fall back to the local dessert catalogue so
-  // the page never shows "No matching dishes found".
-  if (category === 'dessert' && filteredDishes.length === 0 && !loading) {
-    filteredDishes = getLocalDesserts(lang.slice(0, 2));
-  }
+    return result;
+  }, [dishes, searchTerm, specialFilter, category, loading, lang]);
 
   const handleSearchChange = (value) => {
     setSearchTerm(value);
@@ -151,21 +147,6 @@ export default function Menu() {
     }
   }, [loading, dishes, highlightId]);
 
-  if (loading) {
-    return (
-      <section className={`max-w-7xl mx-auto px-4 py-12 ${bgClass}`}>
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-          <div className="hidden lg:block h-96 bg-gray-100 dark:bg-gray-800 rounded-2xl animate-pulse" />
-          <div className="lg:col-span-3 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[1, 2, 3, 4, 5, 6].map(i => <div key={i} className="bg-gray-100 dark:bg-gray-800 rounded-2xl h-64 animate-pulse" />)}
-          </div>
-        </div>
-      </section>
-    );
-  }
-
-  if (error) return <p className="text-center text-red-500 py-10">{error}</p>;
-
   const categories = [
     { key: 'all', label: t('menu.categories.all') },
     { key: 'main', label: t('menu.categories.main') },
@@ -177,132 +158,155 @@ export default function Menu() {
   ];
 
   return (
-    <section className={`max-w-7xl mx-auto px-4 py-12 ${bgClass} transition-colors duration-300`}>
-      {/* هدر */}
-      <div className="mb-10 text-center lg:text-right">
-        <h1 className={`text-4xl font-black mb-2 bg-clip-text text-transparent ${heroGradient}`}>
-          {t('menu.title')}
-        </h1>
-        <p className={mutedClass}>{t('menu.subtitle')}</p>
-      </div>
+    <>
+      {/* ✅ NEW: Full-width hero slider at the top */}
+      <MenuHero isDark={isDark} />
 
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-        {/* سایدبار فیلترینگ */}
-        <aside className="hidden lg:block lg:col-span-1">
-          <div className="sticky top-24 space-y-6">
-            <div className={`p-4 rounded-2xl border ${cardBg} ${cardDepth} transition-all duration-300 hover:-translate-y-0.5`}>
-              <div className="flex items-center gap-2 bg-gray-100 dark:bg-gray-800 rounded-xl px-3 py-2">
-                <FiSearch className={mutedClass} />
-                <input
-                  type="text"
-                  placeholder={t('menu.searchPlaceholder')}
-                  value={searchTerm}
-                  onChange={(e) => handleSearchChange(e.target.value)}
-                  className="bg-transparent outline-none flex-1 text-sm"
-                />
-                {searchTerm && <FiX onClick={() => handleSearchChange('')} className="cursor-pointer" />}
+      {/* ✅ Main content section — id="menu-content" lets hero CTA scroll here */}
+      <section
+        id="menu-content"
+        className={`max-w-7xl mx-auto px-4 py-12 ${bgClass} transition-colors duration-300`}
+      >
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+          {/* سایدبار فیلترینگ */}
+          <aside className="hidden lg:block lg:col-span-1">
+            <div className="sticky top-24 space-y-6">
+              <div className={`p-4 rounded-2xl border ${cardBg} ${cardDepth} transition-all duration-300 hover:-translate-y-0.5`}>
+                <div className="flex items-center gap-2 bg-gray-100 dark:bg-gray-800 rounded-xl px-3 py-2">
+                  <FiSearch className={mutedClass} />
+                  <input
+                    type="text"
+                    placeholder={t('menu.searchPlaceholder')}
+                    value={searchTerm}
+                    onChange={(e) => handleSearchChange(e.target.value)}
+                    className="bg-transparent outline-none flex-1 text-sm"
+                  />
+                  {searchTerm && <FiX onClick={() => handleSearchChange('')} className="cursor-pointer" />}
+                </div>
               </div>
-            </div>
 
-            <div className={`p-4 rounded-2xl border ${cardBg} ${cardDepth} transition-all duration-300 hover:-translate-y-0.5`}>
-              <h3 className={`font-bold mb-4 flex items-center gap-2 ${textClass}`}>
-                <FiFilter /> {t('menu.categoriesTitle')}
-              </h3>
-              <div className="flex flex-col gap-2">
-                {categories.map((cat) => (
+              <div className={`p-4 rounded-2xl border ${cardBg} ${cardDepth} transition-all duration-300 hover:-translate-y-0.5`}>
+                <h3 className={`font-bold mb-4 flex items-center gap-2 ${textClass}`}>
+                  <FiFilter /> {t('menu.categoriesTitle')}
+                </h3>
+                <div className="flex flex-col gap-2">
+                  {categories.map((cat) => (
+                    <button
+                      key={cat.key}
+                      onClick={() => { setCategory(cat.key); setSpecialFilter('all'); }}
+                      className={`text-right px-4 py-2 rounded-xl transition-all duration-300 text-sm font-medium ${
+                        category === cat.key && specialFilter === 'all'
+                          ? accentBg
+                          : `${isDark ? 'hover:bg-white/5' : 'hover:bg-gray-100'} ${textClass}`
+                      }`}
+                    >
+                      {cat.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className={`p-4 rounded-2xl border ${cardBg} ${cardDepth} transition-all duration-300 hover:-translate-y-0.5`}>
+                <h3 className={`font-bold mb-4 flex items-center gap-2 ${textClass}`}>
+                  <FiAward className="text-[#FFD700]" /> {t('menu.specialOffers')}
+                </h3>
+                <div className="flex flex-col gap-2">
                   <button
-                    key={cat.key}
-                    onClick={() => { setCategory(cat.key); setSpecialFilter('all'); }}
-                    className={`text-right px-4 py-2 rounded-xl transition-all duration-300 text-sm font-medium ${
-                      category === cat.key && specialFilter === 'all'
-                        ? accentBg
-                        : `${isDark ? 'hover:bg-white/5' : 'hover:bg-gray-100'} ${textClass}`
+                    onClick={() => setSpecialFilter('best')}
+                    className={`text-right px-4 py-3 rounded-xl transition-all duration-300 text-sm font-bold border ${
+                      specialFilter === 'best'
+                        ? `border-transparent ${accentBg}`
+                        : `border-dashed ${isDark ? 'border-white/20 hover:bg-white/5' : 'border-gray-300 hover:bg-gray-50'} ${textClass}`
                     }`}
                   >
-                    {cat.label}
+                    🍴 {t('menu.bestSellers')}
                   </button>
+                </div>
+                {specialFilter === 'best' && (
+                  <p className="text-xs mt-3 text-gray-500">{t('menu.bestSellersDesc')}</p>
+                )}
+              </div>
+            </div>
+          </aside>
+
+          {/* لیست غذاها */}
+          <div className="lg:col-span-3">
+            {loading ? (
+              <>
+              <div className="lg:hidden mb-6 h-11" aria-hidden="true" />
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {[1, 2, 3, 4, 5, 6].map(i => (
+                  <div key={i} className="bg-gray-100 dark:bg-gray-800 rounded-2xl h-64 animate-pulse" />
                 ))}
               </div>
-            </div>
+              </>
+            ) : error ? (
+              <p className="text-center text-red-500 py-10">{error}</p>
+            ) : (
+              <>
+                {/* دسته‌بندی موبایل */}
+                <div className="lg:hidden mb-6 overflow-x-auto pb-2">
+                  <div className="flex gap-2 min-w-max">
+                    <button
+                      onClick={() => { setSpecialFilter('best'); }}
+                      className={`px-4 py-2 rounded-full text-sm font-bold whitespace-nowrap ${
+                        specialFilter === 'best' ? accentBg : `${cardBg} ${textClass}`
+                      }`}
+                    >
+                      🍴 {t('menu.bestSellers')}
+                    </button>
+                    {categories.map((cat) => (
+                      <button
+                        key={cat.key}
+                        onClick={() => { setCategory(cat.key); setSpecialFilter('all'); }}
+                        className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap ${
+                          category === cat.key && specialFilter === 'all'
+                            ? accentBg
+                            : `${cardBg} ${textClass}`
+                        }`}
+                      >
+                        {cat.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
 
-            <div className={`p-4 rounded-2xl border ${cardBg} ${cardDepth} transition-all duration-300 hover:-translate-y-0.5`}>
-              <h3 className={`font-bold mb-4 flex items-center gap-2 ${textClass}`}>
-                <FiAward className="text-[#FFD700]" /> {t('menu.specialOffers')}
-              </h3>
-              <div className="flex flex-col gap-2">
-                <button
-                  onClick={() => setSpecialFilter('best')}
-                  className={`text-right px-4 py-3 rounded-xl transition-all duration-300 text-sm font-bold border ${
-                    specialFilter === 'best'
-                      ? `border-transparent ${accentBg}`
-                      : `border-dashed ${isDark ? 'border-white/20 hover:bg-white/5' : 'border-gray-300 hover:bg-gray-50'} ${textClass}`
-                  }`}
-                >
-                  🍴 {t('menu.bestSellers')}
-                </button>
-              </div>
-              {specialFilter === 'best' && (
-                <p className="text-xs mt-3 text-gray-500">{t('menu.bestSellersDesc')}</p>
-              )}
-            </div>
+                {/* کارت لینک به مقاله SEO — فقط در دسته دسر */}
+                {category === 'dessert' && (
+                  <DessertArticleCard lang={lang.slice(0, 2)} isDark={isDark} />
+                )}
+
+                {filteredDishes.length === 0 ? (
+                  <div className={`text-center py-20 border-2 border-dashed rounded-3xl ${isDark ? 'border-white/10' : 'border-gray-200'}`}>
+                    <p className={`${mutedClass} text-lg`}>{t('menu.noResults')}</p>
+                  </div>
+                ) : (
+                  // ✅ FIX: حذف `layout` از motion.div — جلوگیری از پرش موقع تغییر دسته
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.2 }}
+                    className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6"
+                  >
+                    {filteredDishes.map((dish, index) => (
+                      <DishCard
+                        key={dish._id}
+                        dish={dish}
+                        highlight={dish._id === highlightId}
+                        onQuickView={setQuickViewDish}
+                        priority={index === 0}
+                      />
+                    ))}
+                  </motion.div>
+                )}
+              </>
+            )}
           </div>
-        </aside>
-
-        {/* لیست غذاها */}
-        <div className="lg:col-span-3">
-          <div className="lg:hidden mb-6 overflow-x-auto pb-2">
-            <div className="flex gap-2 min-w-max">
-              <button
-                onClick={() => { setSpecialFilter('best'); }}
-                className={`px-4 py-2 rounded-full text-sm font-bold whitespace-nowrap ${
-                  specialFilter === 'best' ? accentBg : `${cardBg} ${textClass}`
-                }`}
-              >
-                🍴 {t('menu.bestSellers')}
-              </button>
-              {categories.map((cat) => (
-                <button
-                  key={cat.key}
-                  onClick={() => { setCategory(cat.key); setSpecialFilter('all'); }}
-                  className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap ${
-                    category === cat.key && specialFilter === 'all'
-                      ? accentBg
-                      : `${cardBg} ${textClass}`
-                  }`}
-                >
-                  {cat.label}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* ✅ NEW: when viewing desserts, show the article link card */}
-          {category === 'dessert' && (
-            <DessertArticleCard lang={lang.slice(0, 2)} isDark={isDark} />
-          )}
-
-          {filteredDishes.length === 0 ? (
-            <div className={`text-center py-20 border-2 border-dashed rounded-3xl ${isDark ? 'border-white/10' : 'border-gray-200'}`}>
-              <p className={`${mutedClass} text-lg`}>{t('menu.noResults')}</p>
-            </div>
-          ) : (
-            <motion.div layout className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
-              {filteredDishes.map((dish, index) => (
-                <DishCard
-                  key={dish._id}
-                  dish={dish}
-                  highlight={dish._id === highlightId}
-                  onQuickView={setQuickViewDish}
-                  priority={index === 0}
-                />
-              ))}
-            </motion.div>
-          )}
         </div>
-      </div>
 
-      <ReservationBar />
-      <QuickViewModal dish={quickViewDish} onClose={() => setQuickViewDish(null)} />
+        <ReservationBar />
+        <QuickViewModal dish={quickViewDish} onClose={() => setQuickViewDish(null)} />
+      </section>
 
       <AnimatePresence>
         {cart.length > 0 && (
@@ -322,11 +326,12 @@ export default function Menu() {
                 const itemName = item.name?.[lang] || item.name?.en || '';
                 const imageUrl = getDishImageUrl(item);
                 return (
+                  // ✅ FIX: حذف `layout` از کارت‌های سبد — جلوگیری از پرش نوار سبد
                   <motion.div
                     key={item._id}
-                    layout
                     initial={{ scale: 0.8, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
+                    transition={{ duration: 0.2 }}
                     className={`flex-shrink-0 flex items-center gap-2 p-2 rounded-xl border ${
                       isDark ? 'bg-[#1C1C1C] border-gray-700' : 'bg-white border-gray-200'
                     }`}
@@ -417,6 +422,6 @@ export default function Menu() {
           </motion.div>
         )}
       </AnimatePresence>
-    </section>
+    </>
   );
 }

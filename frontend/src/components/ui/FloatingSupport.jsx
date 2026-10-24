@@ -110,6 +110,8 @@ export default function FloatingSupport() {
             whileTap={{ scale: 0.9 }}
             whileHover={{ scale: 1.08 }}
             onClick={() => setIsMenuOpen(!isMenuOpen)}
+            aria-label={t('supportAgent.title', 'پشتیبانی')}
+            aria-expanded={isMenuOpen}
             className={`relative w-14 h-14 md:w-16 md:h-16 rounded-full flex items-center justify-center shadow-2xl text-white transition-all duration-300 ${
               isMenuOpen ? 'bg-gray-700' : (isHovered ? 'bg-[#25D366]' : accentBg)
             }`}
@@ -166,7 +168,7 @@ export default function FloatingSupport() {
               <div className={`p-4 border-b ${isDark ? 'border-white/10' : 'border-gray-200'} flex items-center justify-between`}>
                 <div className="flex items-center gap-3">
                   {activeCategory && (
-                    <button onClick={() => setActiveCategory(null)} className={`p-1 rounded-full ${mutedClass} ${hoverClass}`}>
+                    <button aria-label="Back" onClick={() => setActiveCategory(null)} className={`p-1 rounded-full ${mutedClass} ${hoverClass}`}>
                       {isRtl ? <FiArrowRight /> : <FiChevronRight style={{ transform: 'rotate(180deg)' }} />}
                     </button>
                   )}
@@ -178,7 +180,7 @@ export default function FloatingSupport() {
                     </span>
                   </h3>
                 </div>
-                <button onClick={() => setIsChatOpen(false)} className={`p-2 rounded-full ${mutedClass} ${hoverClass}`}>
+                <button aria-label="Close" onClick={() => setIsChatOpen(false)} className={`p-2 rounded-full ${mutedClass} ${hoverClass}`}>
                   <FiX />
                 </button>
               </div>

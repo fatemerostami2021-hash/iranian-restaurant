@@ -6,13 +6,14 @@ import {
 } from 'react-icons/fi';
 import axios from 'axios';
 
-// ===== کمک‌کننده: گرفتن عکس غذا (مشابه useDishes.js) =====
+// ===== کمک‌کننده: گرفتن عکس غذا =====
 const CATEGORY_IMAGE_MAP = {
   breakfast: 'breakfast',
   main: 'main',
   combo: 'combo',
   appetizer: 'appetizer',
   drinks: 'drinks',
+  dessert: 'dessert', // ✅ اضافه شد
 };
 
 function getDishImageUrl(dish) {
@@ -23,8 +24,18 @@ function getDishImageUrl(dish) {
   }
   const folder = CATEGORY_IMAGE_MAP[dish.category] || 'main';
   const key = dish.code || dish._id;
-  return `/images/dishes/${folder}/${key}.png`;
+  return `/images/dishes/${folder}/${key}.webp`;
 }
+
+// ===== لیست دسته‌بندی‌ها (برای استفاده در فرم و فیلتر) =====
+const CATEGORIES = [
+  { value: 'breakfast', label: 'صبحانه' },
+  { value: 'main', label: 'غذای اصلی' },
+  { value: 'combo', label: 'سینی‌ها' },
+  { value: 'appetizer', label: 'پیش‌غذا' },
+  { value: 'drinks', label: 'نوشیدنی‌ها' },
+  { value: 'dessert', label: 'دسرها' }, // ✅ دسته دسر اضافه شد
+];
 
 // ===== کامپوننت فرم افزودن/ویرایش با آپلود عکس و ویدیو =====
 function DishForm({ dish, onSave, onCancel, isEditing }) {
@@ -203,14 +214,6 @@ function DishForm({ dish, onSave, onCancel, isEditing }) {
     { key: 'ar', label: 'العربية', dir: 'rtl' }
   ];
 
-  const categoryOptions = [
-    { value: 'breakfast', label: 'صبحانه' },
-    { value: 'main', label: 'غذای اصلی' },
-    { value: 'combo', label: 'سینی‌ها' },
-    { value: 'appetizer', label: 'پیش‌غذا' },
-    { value: 'drinks', label: 'نوشیدنی‌ها' }
-  ];
-
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
       <div className="bg-gray-900 rounded-2xl p-6 w-full max-w-3xl max-h-[90vh] overflow-y-auto border border-gray-700 shadow-2xl">
@@ -265,7 +268,7 @@ function DishForm({ dish, onSave, onCancel, isEditing }) {
                 onChange={handleChange}
                 className="w-full bg-gray-800 border border-gray-700 rounded-lg p-2 text-white focus:ring-2 focus:ring-[#FFD700] focus:outline-none"
               >
-                {categoryOptions.map(opt => (
+                {CATEGORIES.map(opt => (
                   <option key={opt.value} value={opt.value}>{opt.label}</option>
                 ))}
               </select>
@@ -568,11 +571,9 @@ export default function MenuManagement() {
           className="bg-gray-700 text-white px-3 py-1 rounded-lg border border-gray-600 focus:outline-none focus:ring-2 focus:ring-[#FFD700]"
         >
           <option value="all">همه دسته‌ها</option>
-          <option value="breakfast">صبحانه</option>
-          <option value="main">غذای اصلی</option>
-          <option value="combo">سینی‌ها</option>
-          <option value="appetizer">پیش‌غذا</option>
-          <option value="drinks">نوشیدنی‌ها</option>
+          {CATEGORIES.map(opt => (
+            <option key={opt.value} value={opt.value}>{opt.label}</option>
+          ))}
         </select>
         
         <button 

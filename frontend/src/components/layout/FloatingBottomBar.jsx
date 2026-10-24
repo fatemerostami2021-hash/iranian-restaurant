@@ -59,6 +59,7 @@ export default function FloatingBottomBar() {
         {hoveredItem === 'careers' && <Tooltip text={t('floatingBar.careers', 'فرصت‌های شغلی')} />}
         <Link
           to="/careers"
+          aria-label={t('floatingBar.careers', 'فرصت‌های شغلی')}
           className={`${btnBaseClass} ${isDark ? 'text-[#FFD700]' : 'text-[#D32F2F]'}`}
         >
           <MdWorkOutline size={24} />

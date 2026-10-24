@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "oxlint",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "prebuild": "node scripts/export-seo-data.mjs"
   },
   "dependencies": {
     "@fontsource/vazirmatn": "^5.3.0",

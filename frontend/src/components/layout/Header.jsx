@@ -93,7 +93,7 @@ export default function Header() {
     return location.pathname.startsWith(href);
   };
 
-  const logoSrc = '/images/logo/logo-header.png';
+  const logoSrc = '/images/logo/logo-header.webp';
 
   const headerClasses = theme === 'dark' 
     ? 'bg-[#1C1C1C] border-[#F4B41A]/30' 
@@ -127,7 +127,7 @@ export default function Header() {
         src={logoSrc}
         alt={t('restaurant.name')}
         className="h-9 md:h-11 w-auto object-contain transition-transform duration-300 group-hover:scale-105 shrink-0"
-        loading="lazy"
+        loading="eager" width="200" height="129"
       />
       <span className={`text-sm md:text-lg font-bold ${brandColor} truncate hidden sm:inline transition-colors duration-300`}>
         {t('restaurant.name')}

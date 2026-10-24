@@ -22,7 +22,7 @@ function getDishImageUrl(item) {
   }
   const folder = CATEGORY_IMAGE_MAP[item.category] || 'main';
   const key = item.code || item._id;
-  return `/images/dishes/${folder}/${key}.png`;
+  return `/images/dishes/${folder}/${key}.webp`;
 }
 
 export default function CartDrawer({ isOpen, onClose }) {

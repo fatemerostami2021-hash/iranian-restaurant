@@ -13,12 +13,12 @@ import 'swiper/css/effect-coverflow';
 import 'swiper/css/thumbs';
 
 const galleryImages = [
-  { src: '/images/gallery/home-gallery1.png', alt: 'Gallery 1', label: 'غذاهای اصیل' },
-  { src: '/images/gallery/home-gallery2.png', alt: 'Gallery 2', label: 'سالن VIP' },
-  { src: '/images/gallery/home-gallery3.png', alt: 'Gallery 3', label: 'کباب‌های خاص' },
-  { src: '/images/gallery/home-gallery4.png', alt: 'Gallery 4', label: 'فضای مدرن' },
-  { src: '/images/gallery/home-gallery5.png', alt: 'Gallery 5', label: 'سفره‌های رنگین' },
-  { src: '/images/gallery/home-gallery6.png', alt: 'Gallery 6', label: 'لحظات خاص' },
+  { src: '/images/gallery/home-gallery1.webp', alt: 'Gallery 1', label: 'غذاهای اصیل' },
+  { src: '/images/gallery/home-gallery2.webp', alt: 'Gallery 2', label: 'سالن VIP' },
+  { src: '/images/gallery/home-gallery3.webp', alt: 'Gallery 3', label: 'کباب‌های خاص' },
+  { src: '/images/gallery/home-gallery4.webp', alt: 'Gallery 4', label: 'فضای مدرن' },
+  { src: '/images/gallery/home-gallery5.webp', alt: 'Gallery 5', label: 'سفره‌های رنگین' },
+  { src: '/images/gallery/home-gallery6.webp', alt: 'Gallery 6', label: 'لحظات خاص' },
 ];
 
 export default function CinematicGallery() {

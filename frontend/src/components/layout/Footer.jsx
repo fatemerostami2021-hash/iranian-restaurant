@@ -30,14 +30,14 @@ export default function Footer() {
     : 'bg-[#F5E6D3] border-[#D32F2F]/10';
   const textClass = isDark ? 'text-white' : 'text-[#1A1A1A]';
   const mutedClass = isDark ? 'text-gray-400' : 'text-[#5C4A3A]';
-  const accentText = isDark ? 'text-[#FFD700]' : 'text-[#D32F2F]';
+  const accentText = isDark ? 'text-[#FFD700]' : 'text-[#B71C1C]';
   const hoverClass = isDark ? 'hover:text-[#FFD700]' : 'hover:text-[#D32F2F]';
 
   const socialLinks = [
-    { icon: FaWhatsapp, href: `https://wa.me/${siteSettings.whatsappNumber}`, color: isDark ? 'hover:bg-[#25D366]' : 'hover:bg-[#25D366] hover:text-white' },
-    { icon: FiInstagram, href: siteSettings.instagram, color: isDark ? 'hover:bg-gradient-to-tr hover:from-[#F58529] hover:via-[#DD2A7B] hover:to-[#8134AF]' : 'hover:bg-gradient-to-tr hover:from-[#F58529] hover:via-[#DD2A7B] hover:to-[#8134AF] hover:text-white' },
-    { icon: FaTelegramPlane, href: siteSettings.telegram, color: isDark ? 'hover:bg-[#229ED9]' : 'hover:bg-[#229ED9] hover:text-white' },
-    { icon: FiPhone, href: `tel:${siteSettings.phoneNumber.replace(/\s/g, '')}`, color: isDark ? 'hover:bg-[#007EE5]' : 'hover:bg-[#007EE5] hover:text-white' },
+    { icon: FaWhatsapp, label: 'WhatsApp', href: `https://wa.me/${siteSettings.whatsappNumber}`, color: isDark ? 'hover:bg-[#25D366]' : 'hover:bg-[#25D366] hover:text-white' },
+    { icon: FiInstagram, label: 'Instagram', href: siteSettings.instagram, color: isDark ? 'hover:bg-gradient-to-tr hover:from-[#F58529] hover:via-[#DD2A7B] hover:to-[#8134AF]' : 'hover:bg-gradient-to-tr hover:from-[#F58529] hover:via-[#DD2A7B] hover:to-[#8134AF] hover:text-white' },
+    { icon: FaTelegramPlane, label: 'Telegram', href: siteSettings.telegram, color: isDark ? 'hover:bg-[#229ED9]' : 'hover:bg-[#229ED9] hover:text-white' },
+    { icon: FiPhone, label: 'Phone', href: `tel:${siteSettings.phoneNumber.replace(/\s/g, '')}`, color: isDark ? 'hover:bg-[#007EE5]' : 'hover:bg-[#007EE5] hover:text-white' },
   ];
 
   const quickLinks = [
@@ -79,7 +79,7 @@ export default function Footer() {
         {/* ردیف ۱: لوگو + ساعت + آیکون‌ها */}
         <div className="flex items-center justify-between mb-3">
           <Link to="/" className="flex items-center gap-2 shrink-0">
-            <img src="/images/logo/logo-header.png" alt="Logo" className="h-6 w-auto object-contain" />
+            <img src="/images/logo/logo-header.webp" alt="Logo" className="h-6 w-auto object-contain" />
             <span className={`text-sm font-bold ${accentText}`}>{t('restaurant.name')}</span>
           </Link>
           
@@ -95,7 +95,7 @@ export default function Footer() {
                   href={social.href} 
                   target="_blank" 
                   rel="noreferrer"
-                  className={`w-7 h-7 rounded-full flex items-center justify-center ${mutedClass} ${social.color} border ${isDark ? 'border-white/10' : 'border-[#D32F2F]/10'} transition-all duration-300`}
+                  aria-label={social.label} className={`w-7 h-7 rounded-full flex items-center justify-center ${mutedClass} ${social.color} border ${isDark ? 'border-white/10' : 'border-[#D32F2F]/10'} transition-all duration-300`}
                 >
                   <social.icon size={13} />
                 </a>
@@ -127,7 +127,7 @@ export default function Footer() {
               href={siteSettings.mapLink || 'https://maps.google.com/?q=Salwa+Road+Doha+Qatar'} 
               target="_blank" 
               rel="noreferrer"
-              className={`w-7 h-7 rounded-lg flex items-center justify-center border ${isDark ? 'border-white/10 bg-white/5' : 'border-[#D32F2F]/10 bg-white/60'}`}
+              aria-label="Google Maps" className={`w-7 h-7 rounded-lg flex items-center justify-center border ${isDark ? 'border-white/10 bg-white/5' : 'border-[#D32F2F]/10 bg-white/60'}`}
             >
               <FiMapPin size={12} className={accentText} />
             </a>
@@ -142,7 +142,7 @@ export default function Footer() {
           {/* برندینگ */}
           <div className="space-y-3">
             <Link to="/" className="flex items-center gap-2">
-              <img src="/images/logo/logo-header.png" alt="Logo" className="h-10 w-auto object-contain" />
+              <img src="/images/logo/logo-header.webp" alt="Logo" className="h-10 w-auto object-contain" />
               <span className={`text-lg font-bold ${accentText}`}>{t('restaurant.name')}</span>
             </Link>
             <p className={`text-sm leading-relaxed ${mutedClass}`}>
@@ -231,7 +231,7 @@ export default function Footer() {
           <p className={`text-[10px] md:text-xs ${mutedClass}`}>
             &copy; {new Date().getFullYear()} {t('restaurant.name')} - {t('footer.rights')}
           </p>
-          <span className={`text-[9px] md:text-[10px] ${mutedClass} opacity-70`}>
+          <span className={`text-[9px] md:text-[10px] ${mutedClass}`}>
             {t('footer.designedBy', 'طراحی و توسعه توسط: فاطمه رستمی')}
           </span>
         </div>

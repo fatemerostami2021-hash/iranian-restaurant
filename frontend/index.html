@@ -144,10 +144,32 @@
         html, body, #root { background-color: #FFF8F0; }
       }
     </style>
-    <link rel="preload" as="image" href="/images/desserts/dessert-poster.webp?v=3" type="image/webp" fetchpriority="high" />
+    <link rel="preload" as="image" href="/images/hero/hero-poster-1280.webp" imagesrcset="/images/hero/hero-poster-640.webp 640w, /images/hero/hero-poster-1280.webp 1280w" imagesizes="100vw" fetchpriority="high" />
+    <script>
+      // Route-specific LCP preload for /menu (the home page keeps its own static preload above)
+      (function () {
+        var p = location.pathname.replace(/\/+$/, '');
+        if (p !== '/menu') return;
+        var l = document.createElement('link');
+        l.rel = 'preload'; l.as = 'image';
+        l.href = '/images/hero/picture/Kebab-Dagh-menu-hero.webp';
+        l.setAttribute('fetchpriority', 'high');
+        document.head.appendChild(l);
+      })();
+    </script>
+    <style id="app-shell-css">
+      #app-shell .sh-header{height:61px;background:#FFF8F0;border-bottom:1px solid rgba(211,47,47,.1)}
+      #app-shell .sh-hero{position:relative;width:100%;height:40vh;min-height:240px;max-height:560px;overflow:hidden;background:#0a0a0a}
+      #app-shell .sh-hero img{position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover}
+      #app-shell .sh-hero:after{content:"";position:absolute;top:0;left:0;right:0;bottom:0;background:linear-gradient(to bottom,rgba(0,0,0,.2),transparent,rgba(0,0,0,.4))}
+      @media (min-width:640px){#app-shell .sh-hero{height:50vh}}
+      @media (min-width:768px){#app-shell .sh-header{height:65px}#app-shell .sh-hero{height:60vh}}
+      @media (prefers-color-scheme:dark){#app-shell .sh-header{background:#0a0a0a;border-bottom-color:rgba(255,255,255,.1)}}
+    </style>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root"><div id="app-shell" aria-hidden="true"><div class="sh-header"></div><div class="sh-hero"><img src="/images/hero/hero-poster-1280.webp" srcset="/images/hero/hero-poster-640.webp 640w, /images/hero/hero-poster-1280.webp 1280w" sizes="100vw" alt="" width="1280" height="480" fetchpriority="high" decoding="async"></div></div></div>
+    <script>if (location.pathname.replace(/\/+$/, '') !== '') { var s = document.getElementById('app-shell'); if (s) s.remove(); }</script>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>

@@ -27,6 +27,7 @@ import {
 } from 'react-icons/md';
 import { FaFacebookF, FaTwitter, FaLinkedinIn } from 'react-icons/fa';
 import DOMPurify from 'dompurify';
+import { Helmet } from 'react-helmet-async';
 
 const API_URL = import.meta.env.VITE_API_URL || '';
 
@@ -377,6 +378,8 @@ export default function ArticleDetail() {
   const shareUrl = encodeURIComponent(window.location.href);
   const shareText = encodeURIComponent(title);
 
+  const seoDesc = (excerpt || content.replace(/<[^>]+>/g, ' ')).replace(/\s+/g, ' ').trim().slice(0, 160);
+  const seoImage = image.startsWith('http') ? image : `https://kababdagh.com${image.startsWith('/') ? '' : '/'}${image}`;
   const averageRating = comments.length > 0
     ? (comments.reduce((acc, c) => acc + (c.rating || 0), 0) / comments.length).toFixed(1)
     : 0;
@@ -387,6 +390,18 @@ export default function ArticleDetail() {
 
   return (
     <div className={`min-h-screen ${isDark ? 'bg-[#0A0A0A]' : 'bg-[#F7F0E6]'} transition-colors duration-500`}>
+      <Helmet>
+        <title>{`${title} | Kabab Dagh Nan Dagh`}</title>
+        <meta name="description" content={seoDesc} />
+        <meta property="og:type" content="article" />
+        <meta property="og:title" content={title} />
+        <meta property="og:description" content={seoDesc} />
+        <meta property="og:url" content={`https://kababdagh.com/articles/${article.slug}`} />
+        <meta property="og:image" content={seoImage} />
+        <meta name="twitter:title" content={title} />
+        <meta name="twitter:description" content={seoDesc} />
+        <meta name="twitter:image" content={seoImage} />
+      </Helmet>
       {/* Progress Bar */}
       <div className="fixed top-0 left-0 right-0 z-50 h-1 bg-transparent">
         <div

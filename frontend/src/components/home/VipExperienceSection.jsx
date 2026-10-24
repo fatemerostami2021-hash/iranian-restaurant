@@ -59,7 +59,7 @@ export default function VipExperienceSection() {
       {/* ===== پس‌زمینه تصویر (در هر دو تم) ===== */}
       <div className="absolute inset-0">
         <img
-          src="/images/home/home-vip.jpg"
+          src="/images/home/home-vip.webp"
           alt="VIP Dining Experience"
           className={`w-full h-full object-cover scale-105 transition-opacity duration-500 ${
             isDark ? 'opacity-100' : 'opacity-30'

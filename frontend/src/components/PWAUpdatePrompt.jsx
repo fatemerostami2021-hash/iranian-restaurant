@@ -18,7 +18,7 @@ export default function PWAUpdatePrompt() {
     const check = async () => {
       try {
         const registration = await navigator.serviceWorker.ready;
-        registration.update();
+        /* no immediate update(): the browser already checks sw.js on every page load */
 
         registration.addEventListener('updatefound', () => {
           const newWorker = registration.installing;
@@ -46,7 +46,9 @@ export default function PWAUpdatePrompt() {
     intervalId = setInterval(check, 60000);
 
     /* وقتی SW عوض شد، ریلود کن */
+    const hadController = !!navigator.serviceWorker.controller;
     navigator.serviceWorker.addEventListener('controllerchange', () => {
+      if (!hadController) return; // first install: nothing to refresh
       window.location.reload();
     });
 

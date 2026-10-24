@@ -66,6 +66,10 @@ export default defineConfig({
     
     rollupOptions: {
       output: {
+        // IMPORTANT: the old catch-all `if (id.includes('node_modules')) return 'vendor'`
+        // was removed. It forced every library (three, gsap, google oauth, ...) into one
+        // eager chunk, even the ones only used by lazy sections. Now libraries that are
+        // only imported from lazy chunks stay in those lazy chunks.
         manualChunks: (id) => {
           if (id.includes('node_modules/react-dom')) return 'react-dom'
           if (id.includes('node_modules/react/')) return 'react-core'
@@ -79,7 +83,7 @@ export default defineConfig({
           if (id.includes('node_modules/clsx') || id.includes('node_modules/tailwind-merge')) return 'utils'
           if (id.includes('node_modules/swiper')) return 'swiper'
           if (id.includes('node_modules/@heroicons')) return 'icons'
-          if (id.includes('node_modules')) return 'vendor'
+          return undefined
         },
         
         entryFileNames: 'assets/[name]-[hash].js',

@@ -1,36 +1,41 @@
-import { Helmet } from 'react-helmet-async';
+import { lazy } from 'react';
 import HeroVideo from '../components/home/HeroVideo';
 import DeliveryApps from '../components/home/DeliveryApps';
-import CinematicGallery from '../components/home/CinematicGallery';
-import HomeExperienceSection from '../components/home/HomeExperienceSection';
 import FAQSection from '../components/home/FAQSection';
 import MenuWaveSlider from '../components/home/MenuWaveSlider';
 import SimpleWaveDivider from '../components/home/SimpleWaveDivider';
-// ✅ اضافه کردن import برای BestSellersGallery
-import BestSellersGallery from '../components/home/BestSellersGallery';
-// ✅ بخش دسر: فالوده شیرازی + بستنی سنتی (سه‌بعدی)
 import LazyDessertSection from '../components/home/LazyDessertSection';
+import LazyOnVisible from '../components/LazyOnVisible';
 
+// Below-the-fold sections: separate chunks, mounted only when scrolled near.
+const BestSellersGallery = lazy(() => import('../components/home/BestSellersGallery'));
+const HomeExperienceSection = lazy(() => import('../components/home/HomeExperienceSection'));
+const CinematicGallery = lazy(() => import('../components/home/CinematicGallery'));
+
+// Title/description for this page come from RouteSeo.jsx
 export default function Home() {
   return (
     <div>
-      <Helmet>
-        <title>كباب داغ نان داغ | أفضل كباب و طعام إيراني في الدوحة</title>
-        <meta name="description" content="مطعم كباب داغ نان داغ، تجربة الطعم الأصيل والتقليدي الإيراني في قطر. اطلب الكباب والتموين عبر الإنترنت في الدوحة." />
-      </Helmet>
-
       <HeroVideo />
       <MenuWaveSlider />
-       <LazyDessertSection />
-       <BestSellersGallery />
-      <HomeExperienceSection />
-      
-      <CinematicGallery />
+      <LazyDessertSection />
+
+      <LazyOnVisible minHeight={620}>
+        <BestSellersGallery />
+      </LazyOnVisible>
+
+      <LazyOnVisible minHeight={620}>
+        <HomeExperienceSection />
+      </LazyOnVisible>
+
+      <LazyOnVisible minHeight={620}>
+        <CinematicGallery />
+      </LazyOnVisible>
 
       <DeliveryApps />
-      {/* ✅ جداساز دوم: موج ساده */}
       <SimpleWaveDivider />
 
+      {/* FAQ stays eager on purpose (SEO text / FAQ schema) */}
       <FAQSection />
     </div>
   );

@@ -10,7 +10,7 @@ import SplitWords from './SplitWords';
  *  - desktop: full-screen, full-bleed video (object-fit: cover); mobile: the copy sits on the video in a glass card
  *  - lower-third ad copy (both desserts always in the DOM for SEO, the active one reveals word-by-word)
  *  - a rotating three.js ice-cream bowl (GSAP turntable) on the opposite side
- *  - fast video: poster + webm / small mp4 / original sources, preload="auto"
+ *  - fast video: poster + webm / small mp4 / original sources, preload="metadata"
  */
 gsap.registerPlugin(ScrollTrigger);
 
@@ -192,7 +192,7 @@ const DessertCanvas = forwardRef(function DessertCanvas(
         loop={loop}
         muted={muted}
         playsInline
-        preload="auto"
+        preload="metadata"
         disablePictureInPicture
       />
       <div className="dz-canvas__scrim" aria-hidden="true" />

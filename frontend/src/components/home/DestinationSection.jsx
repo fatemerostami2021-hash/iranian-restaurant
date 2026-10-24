@@ -5,16 +5,16 @@ import TypingQuotes from './TypingQuotes';
 
 const destinationImages = {
   doha: [
-    '/images/destinations/doha/Museum-of-Islamic-Art.png',
-    '/images/destinations/doha/Doha-Corniche.png',
-    '/images/destinations/doha/West-Bay-Towers.png',
-    '/images/destinations/doha/Souq-Waqif.png',
+    '/images/destinations/doha/Museum-of-Islamic-Art.webp',
+    '/images/destinations/doha/Doha-Corniche.webp',
+    '/images/destinations/doha/West-Bay-Towers.webp',
+    '/images/destinations/doha/Souq-Waqif.webp',
   ],
   shiraz: [
-    '/images/destinations/shiraz/Hafezieh.png',
-    '/images/destinations/shiraz/Nasir-al-Mulk-Mosque.png',
-    '/images/destinations/shiraz/Eram-Garden.png',
-    '/images/destinations/shiraz/Persepolis.png',
+    '/images/destinations/shiraz/Hafezieh.webp',
+    '/images/destinations/shiraz/Nasir-al-Mulk-Mosque.webp',
+    '/images/destinations/shiraz/Eram-Garden.webp',
+    '/images/destinations/shiraz/Persepolis.webp',
   ],
 };
 

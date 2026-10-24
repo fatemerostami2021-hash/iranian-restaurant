@@ -118,7 +118,7 @@ export default function WhyChooseUsSection() {
             >
               {/* عکس */}
               <img
-                src="/images/home/why-kababdagh.jpg"
+                src="/images/home/why-kababdagh.webp"
                 alt={t('homePage.whyUs.title', 'چرا کباب داغ نان داغ؟')}
                 className="w-full h-full object-cover transition-transform duration-700 hover:scale-110"
                 loading="lazy"

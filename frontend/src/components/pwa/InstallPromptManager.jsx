@@ -138,7 +138,7 @@ export default function InstallPromptManager() {
     setView('none');
   };
 
-  const appIcon = '/images/logo/logo-header.png';
+  const appIcon = '/images/logo/logo-header.webp';
 
   /* ============================================================
      لایه ۱: بنر ملایم پایین صفحه

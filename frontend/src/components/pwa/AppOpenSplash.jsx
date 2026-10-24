@@ -67,7 +67,7 @@ export default function AppOpenSplash() {
               style={{ boxShadow: `0 0 45px 8px ${isDark ? 'rgba(255,215,0,0.4)' : 'rgba(211,47,47,0.35)'}` }}
             >
               <img
-                src="/images/logo/logo-header.png"
+                src="/images/logo/logo-header.webp"
                 alt="Kabab Dagh Nan Dagh"
                 className="w-full h-full object-cover"
               />
