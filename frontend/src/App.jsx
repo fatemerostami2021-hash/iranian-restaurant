@@ -1,5 +1,5 @@
 // src/App.jsx
-import { lazy, Suspense } from 'react';
+import { lazy, Suspense, useEffect } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { ThemeProvider } from './context/ThemeContext';
 import { CartProvider } from './context/CartContext';
@@ -53,6 +53,11 @@ const admin = (el) => <Suspense fallback={null}>{el}</Suspense>;
 
 function App() {
   const { showPrompt, dismiss } = useAuthPrompt();
+
+  // remove the static first-screen shell once React has painted
+  useEffect(() => {
+    document.getElementById('app-shell')?.remove();
+  }, []);
 
   return (
     <ThemeProvider>

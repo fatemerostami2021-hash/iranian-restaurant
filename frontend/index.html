@@ -158,6 +158,7 @@
       })();
     </script>
     <style id="app-shell-css">
+      #app-shell{position:absolute;top:0;left:0;right:0;z-index:50;pointer-events:none}
       #app-shell .sh-header{height:61px;background:#FFF8F0;border-bottom:1px solid rgba(211,47,47,.1)}
       #app-shell .sh-hero{position:relative;width:100%;height:40vh;min-height:240px;max-height:560px;overflow:hidden;background:#0a0a0a}
       #app-shell .sh-hero img{position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover}
@@ -168,7 +169,8 @@
     </style>
   </head>
   <body>
-    <div id="root"><div id="app-shell" aria-hidden="true"><div class="sh-header"></div><div class="sh-hero"><img src="/images/hero/hero-poster-1280.webp" srcset="/images/hero/hero-poster-640.webp 640w, /images/hero/hero-poster-1280.webp 1280w" sizes="100vw" alt="" width="1280" height="480" fetchpriority="high" decoding="async"></div></div></div>
+    <div id="app-shell" aria-hidden="true"><div class="sh-header"></div><div class="sh-hero"><img src="/images/hero/hero-poster-1280.webp" srcset="/images/hero/hero-poster-640.webp 640w, /images/hero/hero-poster-1280.webp 1280w" sizes="100vw" alt="" width="1280" height="480" fetchpriority="high" decoding="async"></div></div>
+    <div id="root"></div>
     <script>if (location.pathname.replace(/\/+$/, '') !== '') { var s = document.getElementById('app-shell'); if (s) s.remove(); }</script>
     <script type="module" src="/src/main.jsx"></script>
   </body>

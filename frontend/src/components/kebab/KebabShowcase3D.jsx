@@ -275,7 +275,7 @@ export default function KebabShowcase3D({ title = '', subtitle = '', lang = 'en'
       };
     };
 
-    const io0 = new IntersectionObserver(([e]) => { if (e.isIntersecting) { io0.disconnect(); { let started = false; const go = () => { if (started || disposed) return; started = true; start(); }; const later = () => setTimeout(go, 3500); window.addEventListener('scroll', go, { once: true, passive: true }); window.addEventListener('touchstart', go, { once: true, passive: true }); if (document.readyState === 'complete') later(); else window.addEventListener('load', later, { once: true }); } } }, { rootMargin: '400px' });
+    const io0 = new IntersectionObserver(([e]) => { if (e.isIntersecting) { io0.disconnect(); { let started = false; const go = () => { if (started || disposed) return; started = true; start(); }; const later = () => {}; /* 3D starts only on the first scroll or touch */ window.addEventListener('scroll', go, { once: true, passive: true }); window.addEventListener('touchstart', go, { once: true, passive: true }); if (document.readyState === 'complete') later(); else window.addEventListener('load', later, { once: true }); } } }, { rootMargin: '400px' });
     io0.observe(stage);
     return () => { disposed = true; io0.disconnect(); cleanup(); };
   }, [reduce]);
