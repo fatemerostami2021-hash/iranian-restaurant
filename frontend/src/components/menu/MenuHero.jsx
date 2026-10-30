@@ -175,7 +175,7 @@ export default function MenuHero({ isDark = false }) {
       {/* ===== SEO meta tags + JSON-LD structured data ===== */}
       <Helmet>
         <html lang={supportedLang} dir={isRtl ? 'rtl' : 'ltr'} />
-        <title>{content.title} | Kabab Dagh Nan Dagh Doha</title>
+        <title>{`${content.title} | Kabab Dagh Nan Dagh Doha`}</title>
         <meta name="description" content={content.subtitle} />
         <meta
           name="keywords"

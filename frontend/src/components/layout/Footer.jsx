@@ -64,7 +64,7 @@ export default function Footer() {
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold transition-all duration-300 ${
                 isDark
                   ? 'bg-[#FFD700]/10 text-[#FFD700] border border-[#FFD700]/30 hover:bg-[#FFD700]/20'
-                  : 'bg-[#D32F2F]/10 text-[#D32F2F] border border-[#D32F2F]/30 hover:bg-[#D32F2F]/20'
+                  : 'bg-[#D32F2F]/10 text-[#B71C1C] border border-[#D32F2F]/30 hover:bg-[#D32F2F]/20'
               }`}
             >
               <MdWorkOutline size={14} className="shrink-0" />
