@@ -152,7 +152,7 @@ export default function Footer() {
 
           {/* لینک‌های سریع */}
           <div>
-            <h4 className={`font-bold text-lg mb-4 ${textClass}`}>{t('nav.home', 'دسترسی سریع')}</h4>
+            <h2 className={`font-bold text-lg mb-4 ${textClass}`}>{t('nav.home', 'دسترسی سریع')}</h2>
             <ul className="space-y-2">
               {quickLinks.map(link => (
                 <li key={link.key}>
@@ -166,7 +166,7 @@ export default function Footer() {
 
           {/* تماس */}
           <div>
-            <h4 className={`font-bold text-lg mb-4 ${textClass}`}>{t('contact.info.addressTitle', 'اطلاعات تماس')}</h4>
+            <h2 className={`font-bold text-lg mb-4 ${textClass}`}>{t('contact.info.addressTitle', 'اطلاعات تماس')}</h2>
             <ul className="space-y-3">
               <li className={`flex items-start gap-2 text-sm ${mutedClass}`}>
                 <FiMapPin className={`mt-0.5 shrink-0 ${accentText}`} size={16} />
@@ -183,7 +183,7 @@ export default function Footer() {
 
           {/* ساعت و شبکه‌های اجتماعی */}
           <div>
-            <h4 className={`font-bold text-lg mb-4 ${textClass}`}>{t('contact.info.hoursTitle', 'ساعات کاری')}</h4>
+            <h2 className={`font-bold text-lg mb-4 ${textClass}`}>{t('contact.info.hoursTitle', 'ساعات کاری')}</h2>
 
             <div className="flex gap-3 mb-4">
               <div className={`flex-1 p-3 rounded-xl border ${isDark ? 'border-white/10 bg-white/5' : 'border-[#D32F2F]/10 bg-white/60'}`}>
@@ -214,7 +214,7 @@ export default function Footer() {
                   href={social.href} 
                   target="_blank" 
                   rel="noreferrer"
-                  className={`w-10 h-10 rounded-full flex items-center justify-center ${mutedClass} ${social.color} border ${isDark ? 'border-white/10' : 'border-[#D32F2F]/10'} transition-all duration-300 shrink-0`}
+                  aria-label={social.label} className={`w-10 h-10 rounded-full flex items-center justify-center ${mutedClass} ${social.color} border ${isDark ? 'border-white/10' : 'border-[#D32F2F]/10'} transition-all duration-300 shrink-0`}
                 >
                   <social.icon size={18} />
                 </a>
